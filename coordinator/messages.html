@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Messages — Coordinator | FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../styles/tokens.css"/>
+  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  <link rel="stylesheet" href="../styles/coordinator.css"/>
+  <style>
+    /* Messaging page: content-area must pass full height to msg-layout */
+    .content-area {
+      padding: var(--space-4) !important;
+      gap: 0 !important;
+      overflow: hidden !important; /* No page scroll — panels scroll internally */
+    }
+    .msg-layout {
+      flex: 1;
+      min-height: 0; /* Critical for flex scroll */
+      height: 100%;
+    }
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="../scripts/auth.js"></script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-user-cog"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Coordinator Portal</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Management</div>
+      <a href="groups.html" class="nav-item"><i class="fas fa-layer-group nav-item-icon"></i><span class="nav-item-label">All FYP Groups</span></a>
+      <a href="proposals.html" class="nav-item"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">Review Proposals</span></a>
+      <a href="assignments.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Assignments</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Communication</div>
+      <a href="messages.html" class="nav-item active"><i class="fas fa-comments nav-item-icon"></i><span class="nav-item-label">Messages</span><span class="nav-badge nav-badge-info">3</span></a>
+      <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn nav-item-icon"></i><span class="nav-item-label">Announcements</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluations.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Manage Evaluations</span></a>
+      <a href="reports.html" class="nav-item"><i class="fas fa-chart-bar nav-item-icon"></i><span class="nav-item-label">Reports</span></a>
+    </div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Messages</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="portal-badge"><i class="fas fa-user-cog"></i> Coordinator</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i><span class="notif-dot"></span></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">SM</div><div class="user-info hidden-sm"><div class="user-name">Dr. Sara Malik</div><div class="user-role">Coordinator</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="msg-layout">
+      <!-- Thread List -->
+      <div class="msg-sidebar">
+        <div class="msg-sidebar-header">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+            <div style="font-size:var(--font-size-base);font-weight:800;color:var(--color-text)">Inbox</div>
+            <button class="btn-coord" style="padding:.35rem .8rem;font-size:.7rem;border-radius:var(--radius-lg)" onclick="openModal('newMsgModal')"><i class="fas fa-edit"></i> New</button>
+          </div>
+          <div style="position:relative"><i class="fas fa-search" style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--color-text-faint);font-size:.8rem;pointer-events:none"></i><input type="text" placeholder="Search conversations…" style="width:100%;padding:.45rem 1rem .45rem 2.2rem;border:1.5px solid var(--color-border);border-radius:var(--radius-lg);font-family:var(--font-family);font-size:.75rem;outline:none" oninput="filterThreads(this.value)"/></div>
+          <div style="display:flex;gap:.3rem;margin-top:.6rem">
+            <button class="thread-filter-btn active" onclick="filterByRole('all',this)">All</button>
+            <button class="thread-filter-btn" onclick="filterByRole('student',this)">Students</button>
+            <button class="thread-filter-btn" onclick="filterByRole('supervisor',this)">Supervisors</button>
+          </div>
+        </div>
+        <div class="msg-list" id="threadList"></div>
+      </div>
+
+      <!-- Conversation Area -->
+      <div class="msg-main" id="chatArea">
+        <div class="msg-main-header" id="chatHeader">
+          <div>
+            <div class="msg-main-name" id="chatName">Select a conversation</div>
+            <div class="msg-main-sub" id="chatSub"><span>Click a conversation to start messaging</span></div>
+          </div>
+        </div>
+        <div class="msg-body" id="chatBody">
+          <div style="display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:var(--space-4);color:var(--color-text-faint)">
+            <i class="fas fa-comments" style="font-size:3rem;opacity:.3"></i>
+            <div style="font-size:var(--font-size-sm);font-weight:600">Select a conversation from the left panel</div>
+          </div>
+        </div>
+        <div class="msg-input-area" id="chatInputArea" style="display:none">
+          <textarea class="msg-input" id="msgInput" rows="1" placeholder="Type a message…" onkeydown="handleMsgKey(event)"></textarea>
+          <button class="action-btn" title="Attach file" style="flex-shrink:0"><i class="fas fa-paperclip"></i></button>
+          <button class="msg-send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- New Message Modal -->
+<div class="modal-overlay" id="newMsgModal">
+  <div class="modal modal-md">
+    <div class="modal-header"><div class="modal-title">New Message</div><button class="modal-close" onclick="closeModal('newMsgModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">To (Search by name or group)</label>
+        <select class="form-select"><option value="">-- Select Recipient --</option>
+          <optgroup label="Supervisors"><option>Dr. Ali Hassan</option><option>Dr. Usman Qureshi</option><option>Dr. Fatima Noor</option><option>Dr. Kamran Raza</option></optgroup>
+          <optgroup label="Students"><option>Ahmed Farooq (G-042)</option><option>Zara Ahmad (G-038)</option><option>Aima Khalid (G-019)</option></optgroup>
+          <optgroup label="Groups (Broadcast)"><option>All Supervisors</option><option>All Students</option><option>All Groups — G-042, G-038…</option></optgroup>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Subject</label><input type="text" class="form-input" placeholder="e.g. Proposal deadline reminder"/></div>
+      <div class="form-group"><label class="form-label">Message</label><textarea class="form-textarea" style="min-height:130px" placeholder="Type your message here…"></textarea></div>
+      <div class="form-group"><label class="form-label">Attach File (optional)</label><input type="file" class="form-input" style="padding:.4rem"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('newMsgModal')">Cancel</button>
+      <button class="btn-coord" onclick="closeModal('newMsgModal');showToast('✅ Message sent successfully!','success')"><i class="fas fa-paper-plane"></i> Send Message</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.thread-filter-btn{padding:.25rem .65rem;border-radius:var(--radius-full);border:none;background:transparent;font-family:var(--font-family);font-size:.65rem;font-weight:700;color:var(--color-text-muted);cursor:pointer;transition:all var(--transition-fast);}
+.thread-filter-btn.active{background:var(--coord-primary);color:white;}
+</style>
+
+<script src="../scripts/auth.js"></script>
+<script src="../scripts/coordinator.js"></script>
+<script>
+const THREADS = [
+  { id:1, name:'Ahmed Farooq', role:'student', group:'G-042', initials:'AF',
+    preview:'Respected Ma\'am, I wanted to ask about the proposal…', time:'Today 10:22 AM', unread:true,
+    messages:[
+      { from:'them', text:'Respected Ma\'am, I wanted to ask about the proposal submission deadline. Can it be extended as our supervisor requested some major revisions?', time:'10:22 AM' },
+      { from:'me',   text:'The deadline is May 5, 2026 and cannot be extended. Please ensure you incorporate supervisor feedback and submit by the deadline.', time:'10:35 AM' },
+      { from:'them', text:'Thank you Ma\'am. I will make the required changes and submit on time. Our draft is nearly ready.', time:'10:40 AM' },
+    ]
+  },
+  { id:2, name:'Dr. Ali Hassan', role:'supervisor', group:'(Supervisor)', initials:'AH',
+    preview:'I have reviewed G-042\'s progress and they are on track.', time:'Yesterday', unread:true,
+    messages:[
+      { from:'them', text:'Respected Dr. Malik, I have reviewed G-042\'s progress logs for the past month. They are performing well and on track for the mid-term evaluation.', time:'Apr 23 · 02:10 PM' },
+      { from:'me',   text:'Thank you Dr. Hassan. Please ensure they submit the final proposal by May 5th. I noticed it is still in draft status.', time:'Apr 23 · 03:00 PM' },
+      { from:'them', text:'Noted. I will follow up with Ahmed Farooq\'s group today.', time:'Apr 23 · 03:12 PM' },
+    ]
+  },
+  { id:3, name:'Zara Ahmad', role:'student', group:'G-038', initials:'ZA',
+    preview:'Please find attached our revised proposal document.', time:'Yesterday', unread:true,
+    messages:[
+      { from:'them', text:'Dear Dr. Malik, please find attached our revised proposal document for G-038. We have incorporated all the feedback from the previous review.', time:'Apr 22 · 11:00 AM' },
+      { from:'me',   text:'Thank you Zara. I will review it shortly. Please also ensure the bibliography section follows IEEE format.', time:'Apr 22 · 02:30 PM' },
+    ]
+  },
+  { id:4, name:'Dr. Fatima Noor', role:'supervisor', group:'(Supervisor)', initials:'FN',
+    preview:'Could you please assign an evaluator for G-019 for mid-term?', time:'Apr 20', unread:false,
+    messages:[
+      { from:'them', text:'Could you please assign an evaluator for G-019 for the mid-term evaluation? The group is progressing well and their literature review is solid.', time:'Apr 20 · 09:30 AM' },
+      { from:'me',   text:'I will schedule the mid-term evaluations for all groups in the first week of July. Dr. Usman Qureshi has been tentatively assigned to your groups. I will confirm shortly.', time:'Apr 20 · 10:15 AM' },
+    ]
+  },
+  { id:5, name:'Aima Khalid', role:'student', group:'G-019', initials:'AK',
+    preview:'We have a question regarding the mid-term report format.', time:'Apr 18', unread:false,
+    messages:[
+      { from:'them', text:'Respected Ma\'am, we have a question regarding the mid-term report format. Should we follow the CUI thesis format or is there a separate template?', time:'Apr 18 · 02:00 PM' },
+      { from:'me',   text:'Please use the official FYP Mid-Term Progress Report template available on the portal under Submissions > Templates. Let me know if you have further questions.', time:'Apr 18 · 04:00 PM' },
+    ]
+  },
+];
+
+let activeThread = null;
+
+function renderThreads(data) {
+  document.getElementById('threadList').innerHTML = data.map(t => `
+    <div class="msg-thread ${t.unread ? 'unread' : ''} ${activeThread && activeThread.id===t.id ? 'active' : ''}" onclick="openThread(${t.id})" data-role="${t.role}">
+      <div class="msg-thread-avatar">${t.initials}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="msg-thread-name">${t.name}</div>
+          <div class="msg-thread-time">${t.time}</div>
+        </div>
+        <div style="font-size:.65rem;color:var(--coord-light);font-weight:700;margin-bottom:1px">${t.role === 'supervisor' ? '👨‍🏫 Supervisor' : '👨‍🎓 Student · ' + t.group}</div>
+        <div class="msg-thread-preview" style="max-width:220px">${t.preview}</div>
+      </div>
+      ${t.unread ? '<div class="msg-unread-dot"></div>' : ''}
+    </div>
+  `).join('');
+}
+
+function openThread(id) {
+  activeThread = THREADS.find(t => t.id === id);
+  if (!activeThread) return;
+  activeThread.unread = false;
+  renderThreads(THREADS);
+  document.getElementById('chatName').textContent = activeThread.name;
+  document.getElementById('chatSub').innerHTML = `<div class="msg-online-dot"></div> ${activeThread.role === 'supervisor' ? 'Supervisor' : 'Student · ' + activeThread.group}`;
+  document.getElementById('chatBody').innerHTML = activeThread.messages.map(m => `
+    <div class="msg-bubble-wrap ${m.from === 'me' ? 'mine' : ''}">
+      <div class="msg-bubble-avatar">${m.from === 'me' ? 'SM' : activeThread.initials}</div>
+      <div>
+        <div class="msg-bubble ${m.from === 'me' ? 'mine' : 'theirs'}">${m.text}</div>
+        <div class="msg-time ${m.from === 'me' ? 'mine' : ''}">${m.time}</div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('chatInputArea').style.display = 'flex';
+  const body = document.getElementById('chatBody');
+  setTimeout(() => { body.scrollTop = body.scrollHeight; }, 10);
+}
+
+function sendMessage() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text || !activeThread) return;
+  const now = new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+  activeThread.messages.push({ from:'me', text, time:now });
+  activeThread.preview = text;
+  activeThread.time = 'Just now';
+  input.value = '';
+  input.style.height = '';
+  openThread(activeThread.id);
+}
+
+function handleMsgKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  const input = e.target;
+  input.style.height = '';
+  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+}
+
+function filterThreads(q) {
+  const filtered = q ? THREADS.filter(t => t.name.toLowerCase().includes(q.toLowerCase()) || t.preview.toLowerCase().includes(q.toLowerCase())) : THREADS;
+  renderThreads(filtered);
+}
+
+function filterByRole(role, btn) {
+  document.querySelectorAll('.thread-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = role === 'all' ? THREADS : THREADS.filter(t => t.role === role);
+  renderThreads(filtered);
+}
+
+renderThreads(THREADS);
+openThread(1);
+</script>
+</body>
+</html>

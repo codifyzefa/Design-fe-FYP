@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supervisor Selection — FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../styles/tokens.css" />
+  <link rel="stylesheet" href="../styles/dashboard.css" />
+  <style>
+    .sup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-5); }
+    .sup-card { background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); transition: all var(--transition-base); display: flex; flex-direction: column; }
+    .sup-card:hover { border-color: var(--color-primary); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .sup-header { display: flex; gap: var(--space-4); margin-bottom: var(--space-4); align-items: center; }
+    .sup-avatar { width: 64px; height: 64px; border-radius: var(--radius-lg); background: var(--color-lightbg); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; }
+    .sup-info { display: flex; flex-direction: column; }
+    .sup-name { font-size: var(--font-size-md); font-weight: 700; color: var(--color-text); }
+    .sup-designation { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+    .sup-domain { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-4); font-weight: 500; flex: 1; }
+    .sup-actions { border-top: 1px solid var(--color-border-light); padding-top: var(--space-4); display: flex; gap: var(--space-3); }
+    .locked-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); z-index: 10; display: flex; align-items: center; justify-content: center; flex-direction: column; border-radius: inherit; }
+  </style>
+</head>
+<body class="dashboard-body">
+  
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="sidebar-logo-text">
+          <div class="sidebar-title">CUI DFYP</div>
+          <div class="sidebar-role">Student Portal</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Overview</div>
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Group & Supervisor</div>
+        <a href="partners.html" class="nav-item"><i class="fas fa-users nav-item-icon"></i><span class="nav-item-label">FYP Partners</span></a>
+        <a href="supervisor.html" class="nav-item active"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Selection</span></a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Project Execution</div>
+        <a href="idea.html" class="nav-item"><i class="fas fa-lightbulb nav-item-icon"></i><span class="nav-item-label">Project Idea</span></a>
+        <a href="tasks.html" class="nav-item"><i class="fas fa-tasks nav-item-icon"></i><span class="nav-item-label">Task Manager</span></a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-page-title">Supervisor Selection</div>
+      </div>
+    </header>
+
+    <main class="content-area" style="position: relative;">
+      
+      <!-- Logic Check Overlay (Simulated) -->
+      <div class="locked-overlay" id="lockedState" style="display: none;">
+        <i class="fas fa-lock text-muted" style="font-size: 3rem; margin-bottom: var(--space-4);"></i>
+        <h2 style="font-size: var(--font-size-xl); color: var(--color-text); font-weight: 800; margin-bottom: var(--space-2);">Module Locked</h2>
+        <p style="color: var(--color-text-muted); font-size: var(--font-size-sm); max-width: 400px; text-align: center;">You must first form a group and submit a project idea before you can request a supervisor.</p>
+        <div style="display: flex; gap: var(--space-3); margin-top: var(--space-5);">
+          <a href="partners.html" class="btn btn-outline">Go to Partners</a>
+          <a href="idea.html" class="btn btn-primary">Submit Idea</a>
+        </div>
+      </div>
+
+      <div class="sup-grid">
+        <div class="sup-card">
+          <div class="sup-header">
+            <div class="sup-avatar">AH</div>
+            <div class="sup-info">
+              <span class="sup-name">Dr. Ali Hassan</span>
+              <span class="sup-designation">Associate Professor</span>
+            </div>
+          </div>
+          <div class="sup-domain"><i class="fas fa-tag text-primary" style="margin-right:0.5rem;"></i>AI, Machine Learning, Computer Vision</div>
+          <div class="sup-actions">
+            <button class="btn btn-primary btn-sm w-full">Request Supervisor</button>
+            <button class="btn btn-secondary-outline btn-sm"><i class="fas fa-user"></i></button>
+          </div>
+        </div>
+
+        <div class="sup-card">
+          <div class="sup-header">
+            <div class="sup-avatar">ZA</div>
+            <div class="sup-info">
+              <span class="sup-name">Dr. Zeeshan Ali</span>
+              <span class="sup-designation">Assistant Professor</span>
+            </div>
+          </div>
+          <div class="sup-domain"><i class="fas fa-tag text-primary" style="margin-right:0.5rem;"></i>Web Technologies, Cloud Computing</div>
+          <div class="sup-actions">
+            <button class="btn btn-primary btn-sm w-full">Request Supervisor</button>
+            <button class="btn btn-secondary-outline btn-sm"><i class="fas fa-user"></i></button>
+          </div>
+        </div>
+        
+        <div class="sup-card">
+          <div class="sup-header">
+            <div class="sup-avatar">SM</div>
+            <div class="sup-info">
+              <span class="sup-name">Ms. Sana Malik</span>
+              <span class="sup-designation">Lecturer</span>
+            </div>
+          </div>
+          <div class="sup-domain"><i class="fas fa-tag text-primary" style="margin-right:0.5rem;"></i>IoT, Embedded Systems, Robotics</div>
+          <div class="sup-actions">
+            <button class="btn btn-primary btn-sm w-full">Request Supervisor</button>
+            <button class="btn btn-secondary-outline btn-sm"><i class="fas fa-user"></i></button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+  <script src="../scripts/auth.js"></script>
+</body>
+</html>

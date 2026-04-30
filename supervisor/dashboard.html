@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Supervisor Dashboard — FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../styles/tokens.css"/>
+  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  <style>
+    :root{--color-portal:#5b21b6;--color-portal-light:#7c3aed;}
+    .sidebar{background:var(--color-portal);}
+    .sidebar .nav-item.active{background:var(--color-portal-light);box-shadow:0 4px 16px rgba(124,58,237,.4);}
+    .sidebar .sidebar-logo-icon{background:rgba(255,255,255,.14);}
+    .sidebar-role{color:rgba(255,255,255,.55)!important;}
+    .portal-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .6rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);border-radius:var(--radius-full);font-size:.6rem;font-weight:800;color:var(--color-portal);text-transform:uppercase;letter-spacing:.1em;}
+    .project-row{display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--color-border-light);transition:background var(--transition-fast);cursor:pointer;}
+    .project-row:last-child{border-bottom:none;}
+    .project-row:hover{background:var(--color-lightbg);}
+    .pr-avatar{width:44px;height:44px;background:rgba(91,33,182,.1);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:var(--color-portal);flex-shrink:0;}
+    .pr-title{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);}
+    .pr-meta{font-size:.7rem;color:var(--color-text-faint);font-weight:600;margin-top:2px;}
+    .pr-progress{flex:1;max-width:120px;}
+    .pr-bar{height:5px;background:var(--color-border-light);border-radius:var(--radius-full);overflow:hidden;margin-bottom:2px;}
+    .pr-bar-fill{height:100%;background:linear-gradient(90deg,var(--color-portal),var(--color-portal-light));border-radius:var(--radius-full);}
+    .pr-pct{font-size:.6rem;font-weight:700;color:var(--color-portal);}
+    .pending-item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--color-border-light);transition:background var(--transition-fast);}
+    .pending-item:last-child{border-bottom:none;}
+    .pending-item:hover{background:var(--color-lightbg);}
+    .pi-icon{width:36px;height:36px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;}
+    .pi-title{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);}
+    .pi-meta{font-size:.65rem;color:var(--color-text-faint);font-weight:600;}
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="../scripts/auth.js"></script>
+<script>const user = AUTH.requireRole('supervisor'); if(user) initTopbar(user);</script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Supervisor Portal</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div>
+      <a href="dashboard.html" class="nav-item active" data-label="Dashboard"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">My Projects</div>
+      <a href="projects.html" class="nav-item" data-label="Assigned Projects"><i class="fas fa-project-diagram nav-item-icon"></i><span class="nav-item-label">Assigned Projects</span><span class="nav-badge nav-badge-warning">4</span></a>
+      <a href="logs.html" class="nav-item" data-label="Progress Logs"><i class="fas fa-list-check nav-item-icon"></i><span class="nav-item-label">Review Logs</span><span class="nav-badge nav-badge-danger">3</span></a>
+      <a href="feedback.html" class="nav-item" data-label="Feedback"><i class="fas fa-comment-alt nav-item-icon"></i><span class="nav-item-label">Give Feedback</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluate.html" class="nav-item" data-label="Evaluate"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluate Groups</span></a>
+      <a href="meetings.html" class="nav-item" data-label="Meetings"><i class="fas fa-calendar-alt nav-item-icon"></i><span class="nav-item-label">Meeting Requests</span><span class="nav-badge nav-badge-warning">2</span></a>
+    </div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Supervisor Dashboard</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="portal-badge"><i class="fas fa-chalkboard-teacher"></i> Supervisor Portal</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="notifications-dropdown" id="notifDropdown">
+          <div class="dropdown-header"><span class="dropdown-header-title">Notifications</span><button class="dropdown-action-btn">Mark all read</button></div>
+          <div class="notif-list">
+            <div class="notif-item notif-unread"><div class="notif-icon notif-icon-warning"><i class="fas fa-file-alt"></i></div><div class="notif-body"><div class="notif-title">Progress Log Pending Review</div><div class="notif-msg">Group G-042 submitted Week 13 log — awaiting your review.</div><div class="notif-time">Today · 09:15 AM</div></div></div>
+            <div class="notif-item notif-unread"><div class="notif-icon notif-icon-info"><i class="fas fa-calendar"></i></div><div class="notif-body"><div class="notif-title">Meeting Request</div><div class="notif-msg">Ahmed Farooq (G-042) requests a meeting for May 6, 2026.</div><div class="notif-time">Yesterday</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">--</div><div class="user-info hidden-sm"><div class="user-name">Loading…</div><div class="user-role">Supervisor</div></div><i class="fas fa-chevron-down user-chevron hidden-sm"></i></button>
+        <div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <!-- Welcome -->
+    <div class="welcome-banner animate-fade-in" style="background:linear-gradient(135deg,#5b21b6,#7c3aed)">
+      <div class="welcome-banner-info">
+        <div class="welcome-banner-title">Welcome, Dr. Hassan! 👋</div>
+        <div class="welcome-banner-subtitle">You have 3 progress logs pending review and 2 meeting requests.</div>
+      </div>
+      <a href="logs.html" class="btn welcome-banner-cta" style="background:white;color:#5b21b6">Review Logs <i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row animate-fade-in-delay-1">
+      <div class="stat-card"><div class="stat-card-icon" style="background:#f5f3ff;color:#7c3aed"><i class="fas fa-layer-group"></i></div><div class="stat-card-body"><div class="stat-card-label">Assigned Groups</div><div class="stat-card-value">4</div><div class="stat-card-sub"><span class="chip chip-info"><span class="chip-dot"></span>Active</span></div></div></div>
+      <div class="stat-card"><div class="stat-card-icon" style="background:#fef2f2;color:var(--color-danger)"><i class="fas fa-hourglass-half"></i></div><div class="stat-card-body"><div class="stat-card-label">Logs Pending</div><div class="stat-card-value">3</div><div class="stat-card-sub"><span class="chip chip-danger"><span class="chip-dot"></span>Needs Review</span></div></div></div>
+      <div class="stat-card"><div class="stat-card-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-star"></i></div><div class="stat-card-body"><div class="stat-card-label">Evaluations Done</div><div class="stat-card-value">2 / 4</div><div class="stat-card-sub"><span class="chip chip-success"><span class="chip-dot"></span>50%</span></div></div></div>
+      <div class="stat-card"><div class="stat-card-icon" style="background:#fffbeb;color:#d97706"><i class="fas fa-calendar-check"></i></div><div class="stat-card-body"><div class="stat-card-label">Meetings Pending</div><div class="stat-card-value">2</div><div class="stat-card-sub"><span class="chip chip-warning"><span class="chip-dot"></span>Requests</span></div></div></div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dashboard-grid animate-fade-in-delay-2">
+
+      <!-- Assigned Projects -->
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Assigned FYP Groups</div><div class="card-subtitle">Spring 2026</div></div><a href="projects.html" class="btn btn-outline btn-sm">View All</a></div>
+        <div>
+          <div class="project-row">
+            <div class="pr-avatar">AF</div>
+            <div style="flex:1;min-width:0"><div class="pr-title">AI-Powered Traffic Management System</div><div class="pr-meta">G-042 · Ahmed Farooq + 2 · 3 members</div></div>
+            <div class="pr-progress"><div class="pr-bar"><div class="pr-bar-fill" style="width:25%"></div></div><div class="pr-pct">25% Complete</div></div>
+            <span class="chip chip-warning"><span class="chip-dot"></span>Proposal</span>
+          </div>
+          <div class="project-row">
+            <div class="pr-avatar">ZA</div>
+            <div style="flex:1;min-width:0"><div class="pr-title">Smart Healthcare Monitoring System Using IoT</div><div class="pr-meta">G-038 · Zara Ahmad + 3 · 4 members</div></div>
+            <div class="pr-progress"><div class="pr-bar"><div class="pr-bar-fill" style="width:60%"></div></div><div class="pr-pct">60% Complete</div></div>
+            <span class="chip chip-info"><span class="chip-dot"></span>Mid-Term</span>
+          </div>
+          <div class="project-row">
+            <div class="pr-avatar">HK</div>
+            <div style="flex:1;min-width:0"><div class="pr-title">E-Learning Platform with Adaptive Content</div><div class="pr-meta">G-055 · Hassan Khan + 1 · 2 members</div></div>
+            <div class="pr-progress"><div class="pr-bar"><div class="pr-bar-fill" style="width:45%"></div></div><div class="pr-pct">45% Complete</div></div>
+            <span class="chip chip-info"><span class="chip-dot"></span>Mid-Term</span>
+          </div>
+          <div class="project-row">
+            <div class="pr-avatar">MR</div>
+            <div style="flex:1;min-width:0"><div class="pr-title">Blockchain-Based Student Credential System</div><div class="pr-meta">G-061 · Maria Rashid + 2 · 3 members</div></div>
+            <div class="pr-progress"><div class="pr-bar"><div class="pr-bar-fill" style="width:80%"></div></div><div class="pr-pct">80% Complete</div></div>
+            <span class="chip chip-success"><span class="chip-dot"></span>Final Phase</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div style="display:flex;flex-direction:column;gap:var(--space-5);">
+
+        <!-- Pending Actions -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Pending Actions</div></div>
+          <div>
+            <div class="pending-item">
+              <div class="pi-icon" style="background:#fef2f2;color:var(--color-danger)"><i class="fas fa-file-alt"></i></div>
+              <div style="flex:1"><div class="pi-title">Review Week 13 Log — G-042</div><div class="pi-meta">Ahmed Farooq · Submitted May 3</div></div>
+              <button class="btn btn-primary btn-sm" onclick="window.location.href='logs.html'">Review</button>
+            </div>
+            <div class="pending-item">
+              <div class="pi-icon" style="background:#fffbeb;color:#d97706"><i class="fas fa-file-alt"></i></div>
+              <div style="flex:1"><div class="pi-title">Review Week 12 Log — G-038</div><div class="pi-meta">Zara Ahmad · Submitted May 2</div></div>
+              <button class="btn btn-primary btn-sm">Review</button>
+            </div>
+            <div class="pending-item">
+              <div class="pi-icon" style="background:#eff6ff;color:var(--color-secondary)"><i class="fas fa-calendar"></i></div>
+              <div style="flex:1"><div class="pi-title">Meeting Request — G-042</div><div class="pi-meta">May 6, 2026 · 10:00 AM</div></div>
+              <div style="display:flex;gap:.4rem"><button class="btn btn-outline btn-sm">Decline</button><button class="btn btn-primary btn-sm" onclick="alert('Meeting confirmed for May 6!')">Confirm</button></div>
+            </div>
+            <div class="pending-item">
+              <div class="pi-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-star"></i></div>
+              <div style="flex:1"><div class="pi-title">Submit Mid-Term Score — G-055</div><div class="pi-meta">Deadline: Jul 20, 2026</div></div>
+              <button class="btn btn-outline btn-sm" onclick="window.location.href='evaluate.html'">Evaluate</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Activity</div></div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-2);">
+            <div style="display:flex;gap:.75rem;align-items:flex-start;padding:.5rem 0;border-bottom:1px solid var(--color-border-light);">
+              <div style="width:28px;height:28px;background:#ecfdf5;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:#059669;font-size:.7rem;flex-shrink:0"><i class="fas fa-check"></i></div>
+              <div><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Approved Week 12 Log — G-042</div><div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600">Apr 28 · 11:30 AM</div></div>
+            </div>
+            <div style="display:flex;gap:.75rem;align-items:flex-start;padding:.5rem 0;border-bottom:1px solid var(--color-border-light);">
+              <div style="width:28px;height:28px;background:#f5f3ff;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:#7c3aed;font-size:.7rem;flex-shrink:0"><i class="fas fa-comment-alt"></i></div>
+              <div><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Added feedback — G-042</div><div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600">Apr 22 · 02:00 PM</div></div>
+            </div>
+            <div style="display:flex;gap:.75rem;align-items:flex-start;padding:.5rem 0;">
+              <div style="width:28px;height:28px;background:#fffbeb;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:#d97706;font-size:.7rem;flex-shrink:0"><i class="fas fa-star"></i></div>
+              <div><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Submitted evaluation — G-038</div><div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600">Jul 16 · 10:00 AM</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let _collapsed=false;
+window.toggleSidebar=function(){_collapsed=!_collapsed;document.getElementById('sidebar')?.classList.toggle('collapsed',_collapsed);document.getElementById('mainWrap')?.classList.toggle('expanded',_collapsed);const ico=document.getElementById('collapseIcon');if(ico)ico.className=_collapsed?'fas fa-chevron-right':'fas fa-chevron-left';const lt=document.getElementById('sidebarLogoText');if(lt)lt.style.display=_collapsed?'none':'';};
+window.openMobileSidebar=function(){document.getElementById('sidebar')?.classList.add('mobile-open');document.getElementById('sidebarOverlay')?.classList.add('show');document.body.style.overflow='hidden';};
+window.closeMobileSidebar=function(){document.getElementById('sidebar')?.classList.remove('mobile-open');document.getElementById('sidebarOverlay')?.classList.remove('show');document.body.style.overflow='';};
+window.toggleNotifications=function(){document.getElementById('notifDropdown')?.classList.toggle('open');document.getElementById('userDropdown')?.classList.remove('open');};
+window.toggleUserMenu=function(){document.getElementById('userDropdown')?.classList.toggle('open');document.getElementById('notifDropdown')?.classList.remove('open');};
+document.addEventListener('click',e=>{if(!document.getElementById('notifWrap')?.contains(e.target))document.getElementById('notifDropdown')?.classList.remove('open');if(!document.getElementById('userWrap')?.contains(e.target))document.getElementById('userDropdown')?.classList.remove('open');});
+const _d=document.getElementById('currentDate');if(_d)_d.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
+</script>
+</body>
+</html>

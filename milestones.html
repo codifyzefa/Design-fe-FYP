@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Milestones — FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles/tokens.css"/>
+  <link rel="stylesheet" href="styles/dashboard.css"/>
+  <style>
+    .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+    .page-header-title{font-size:1.5rem;font-weight:900;color:var(--color-text);margin-bottom:var(--space-1);}
+    .page-header-sub{font-size:var(--font-size-sm);color:var(--color-text-muted);}
+    /* Progress Bar Full */
+    .overall-progress-card{background:linear-gradient(135deg,var(--color-primary) 0%,var(--color-secondary) 100%);border-radius:var(--radius-2xl);padding:var(--space-7) var(--space-8);color:white;}
+    .op-title{font-size:1.1rem;font-weight:800;margin-bottom:var(--space-2);}
+    .op-sub{font-size:var(--font-size-sm);color:rgba(255,255,255,.7);margin-bottom:var(--space-5);}
+    .op-bar-wrap{height:12px;background:rgba(255,255,255,.2);border-radius:var(--radius-full);overflow:hidden;margin-bottom:var(--space-3);}
+    .op-bar{height:100%;background:white;border-radius:var(--radius-full);transition:width .8s ease;}
+    .op-stats{display:flex;gap:var(--space-8);}
+    .op-stat-val{font-size:1.4rem;font-weight:900;}
+    .op-stat-lbl{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;}
+    /* Milestone Cards */
+    .milestones-grid{display:flex;flex-direction:column;gap:var(--space-4);}
+    .milestone-card{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);overflow:hidden;transition:border-color var(--transition-base),box-shadow var(--transition-base);}
+    .milestone-card:hover{border-color:var(--color-border-blue);box-shadow:var(--shadow-md);}
+    .milestone-card.done{border-color:#a7f3d0;}
+    .milestone-card.active-ms{border-color:var(--color-secondary);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+    .ms-header{padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--color-border-light);display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap;}
+    .ms-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;flex-shrink:0;}
+    .ms-num-done{background:#059669;color:white;}
+    .ms-num-active{background:var(--color-secondary);color:white;box-shadow:0 0 0 4px rgba(37,99,235,.15);}
+    .ms-num-pending{background:var(--color-border-light);color:var(--color-text-faint);border:1.5px solid var(--color-border);}
+    .ms-info{flex:1;}
+    .ms-title{font-size:var(--font-size-base);font-weight:800;color:var(--color-text);}
+    .ms-date{font-size:var(--font-size-xs);color:var(--color-text-faint);font-weight:600;margin-top:2px;}
+    .ms-body{padding:var(--space-5) var(--space-6);}
+    .ms-desc{font-size:var(--font-size-sm);color:var(--color-text-muted);line-height:1.75;font-weight:500;margin-bottom:var(--space-4);}
+    .ms-deliverables{display:flex;flex-direction:column;gap:.4rem;}
+    .ms-del-item{display:flex;align-items:center;gap:.5rem;font-size:var(--font-size-sm);}
+    .ms-del-item i.done-ico{color:#059669;}
+    .ms-del-item i.pending-ico{color:var(--color-text-faint);}
+    .ms-upload{margin-top:var(--space-4);border-top:1px solid var(--color-border-light);padding-top:var(--space-4);}
+    .ms-upload label{display:block;font-size:var(--font-size-xs);font-weight:700;color:var(--color-text-muted);margin-bottom:.4rem;}
+    /* Mini modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(3px);z-index:300;align-items:center;justify-content:center;padding:var(--space-5);}
+    .modal-overlay.open{display:flex;}
+    .modal{background:white;border-radius:var(--radius-3xl);width:100%;max-width:520px;box-shadow:var(--shadow-xl);animation:scaleIn .2s ease-out;}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--color-border-light);}
+    .modal-title{font-size:1.1rem;font-weight:800;color:var(--color-text);}
+    .modal-close{width:32px;height:32px;border-radius:var(--radius-md);background:var(--color-surface-alt);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);}
+    .modal-close:hover{background:var(--color-danger);color:white;}
+    .modal-body{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4);}
+    .modal-footer{padding:var(--space-4) var(--space-6);border-top:1px solid var(--color-border-light);display:flex;justify-content:flex-end;gap:var(--space-3);}
+    .form-group{display:flex;flex-direction:column;gap:.4rem;}
+    .form-label{font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-secondary);}
+    .form-input,.form-textarea{width:100%;padding:.65rem 1rem;border:1.5px solid var(--color-border);border-radius:var(--radius-lg);font-family:var(--font-family);font-size:var(--font-size-sm);color:var(--color-text);background:white;outline:none;transition:border-color var(--transition-fast);}
+    .form-input:focus,.form-textarea:focus{border-color:var(--color-secondary);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+    .form-textarea{resize:vertical;min-height:90px;}
+    .file-upload-area{border:2px dashed var(--color-border-blue);border-radius:var(--radius-xl);padding:var(--space-6);text-align:center;cursor:pointer;transition:all var(--transition-base);background:var(--color-lightbg);}
+    .file-upload-area:hover{border-color:var(--color-secondary);background:#eff6ff;}
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="scripts/auth.js"></script>
+<script>AUTH.requireRole('student');</script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Student</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a><a href="proposal.html" class="nav-item"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">My Project</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Management</div><a href="supervisor.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor</span></a><a href="progress.html" class="nav-item"><i class="fas fa-chart-line nav-item-icon"></i><span class="nav-item-label">Progress Logs</span></a><a href="milestones.html" class="nav-item active"><i class="fas fa-flag nav-item-icon"></i><span class="nav-item-label">Milestones</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div><a href="evaluation.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluations</span></a><a href="submissions.html" class="nav-item"><i class="fas fa-upload nav-item-icon"></i><span class="nav-item-label">Submissions</span></a><a href="reports.html" class="nav-item"><i class="fas fa-file-download nav-item-icon"></i><span class="nav-item-label">Reports</span></a></div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="confirmLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Milestones</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="phase-chip"><span class="phase-chip-dot"></span> Proposal Phase</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">--</div><div class="user-info hidden-sm"><div class="user-name">Loading</div><div class="user-role">Student</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="confirmLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">Project Milestones</div><div class="page-header-sub">Track your FYP deliverables and key deadlines</div></div>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('msModal').classList.add('open')"><i class="fas fa-plus"></i> Request Milestone</button>
+    </div>
+
+    <!-- Overall Progress -->
+    <div class="overall-progress-card animate-fade-in-delay-1">
+      <div class="op-title">Overall FYP Progress</div>
+      <div class="op-sub">AI-Powered Traffic Management System · Spring 2026</div>
+      <div class="op-bar-wrap"><div class="op-bar" style="width:25%"></div></div>
+      <div class="op-stats">
+        <div><div class="op-stat-val">2</div><div class="op-stat-lbl">Completed</div></div>
+        <div><div class="op-stat-val">1</div><div class="op-stat-lbl">In Progress</div></div>
+        <div><div class="op-stat-val">5</div><div class="op-stat-lbl">Upcoming</div></div>
+        <div><div class="op-stat-val">25%</div><div class="op-stat-lbl">Overall</div></div>
+      </div>
+    </div>
+
+    <!-- Milestones -->
+    <div class="milestones-grid animate-fade-in-delay-2">
+
+      <!-- M1: Done -->
+      <div class="milestone-card done">
+        <div class="ms-header">
+          <div class="ms-num ms-num-done"><i class="fas fa-check"></i></div>
+          <div class="ms-info"><div class="ms-title">M1: Group Registration &amp; Topic Selection</div><div class="ms-date">Completed: Feb 10, 2026</div></div>
+          <span class="chip chip-success"><span class="chip-dot"></span>Completed</span>
+        </div>
+        <div class="ms-body">
+          <p class="ms-desc">Register FYP group members and finalize the project topic with coordinator approval.</p>
+          <div class="ms-deliverables">
+            <div class="ms-del-item"><i class="fas fa-check-circle done-ico"></i><span>Group registration form submitted</span></div>
+            <div class="ms-del-item"><i class="fas fa-check-circle done-ico"></i><span>Project title approved by coordinator</span></div>
+            <div class="ms-del-item"><i class="fas fa-check-circle done-ico"></i><span>Group ID assigned: G-042</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- M2: Done -->
+      <div class="milestone-card done">
+        <div class="ms-header">
+          <div class="ms-num ms-num-done"><i class="fas fa-check"></i></div>
+          <div class="ms-info"><div class="ms-title">M2: Supervisor Assignment</div><div class="ms-date">Completed: Mar 5, 2026</div></div>
+          <span class="chip chip-success"><span class="chip-dot"></span>Completed</span>
+        </div>
+        <div class="ms-body">
+          <p class="ms-desc">Coordinator assigns a qualified faculty supervisor based on project domain and expertise.</p>
+          <div class="ms-deliverables">
+            <div class="ms-del-item"><i class="fas fa-check-circle done-ico"></i><span>Dr. Ali Hassan assigned (AI/ML specialist)</span></div>
+            <div class="ms-del-item"><i class="fas fa-check-circle done-ico"></i><span>First supervisor meeting held</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- M3: Active -->
+      <div class="milestone-card active-ms">
+        <div class="ms-header">
+          <div class="ms-num ms-num-active">3</div>
+          <div class="ms-info"><div class="ms-title">M3: Proposal Submission &amp; Approval</div><div class="ms-date">Due: May 5, 2026 <span style="color:#d97706;font-weight:700;">(12 days remaining)</span></div></div>
+          <span class="chip chip-warning"><span class="chip-dot"></span>In Progress</span>
+        </div>
+        <div class="ms-body">
+          <p class="ms-desc">Submit the formal FYP proposal document with problem statement, objectives, methodology, and timeline.</p>
+          <div class="ms-deliverables">
+            <div class="ms-del-item"><i class="fas fa-check-circle done-ico"></i><span>Draft proposal written</span></div>
+            <div class="ms-del-item"><i class="fas fa-check-circle done-ico"></i><span>Supervisor review completed</span></div>
+            <div class="ms-del-item"><i class="fas fa-circle pending-ico"></i><span>Final PDF submission pending</span></div>
+            <div class="ms-del-item"><i class="fas fa-circle pending-ico"></i><span>Coordinator approval pending</span></div>
+          </div>
+          <div class="ms-upload">
+            <label>Submit Proposal PDF</label>
+            <button class="btn btn-primary btn-sm" onclick="window.location.href='proposal.html'"><i class="fas fa-upload"></i> Go to Proposal Submission</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- M4: Upcoming -->
+      <div class="milestone-card">
+        <div class="ms-header">
+          <div class="ms-num ms-num-pending">4</div>
+          <div class="ms-info"><div class="ms-title">M4: Literature Review &amp; System Design</div><div class="ms-date">Due: Jun 15, 2026</div></div>
+          <span class="chip chip-gray"><span class="chip-dot"></span>Upcoming</span>
+        </div>
+        <div class="ms-body">
+          <p class="ms-desc">Complete a comprehensive literature review and finalize the system architecture design.</p>
+          <div class="ms-deliverables">
+            <div class="ms-del-item"><i class="fas fa-circle pending-ico"></i><span>Literature review document (min 20 papers)</span></div>
+            <div class="ms-del-item"><i class="fas fa-circle pending-ico"></i><span>System architecture diagram</span></div>
+            <div class="ms-del-item"><i class="fas fa-circle pending-ico"></i><span>Technology stack finalized</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- M5: Upcoming -->
+      <div class="milestone-card">
+        <div class="ms-header">
+          <div class="ms-num ms-num-pending">5</div>
+          <div class="ms-info"><div class="ms-title">M5: Mid-Term Progress Review</div><div class="ms-date">Due: Jul 15, 2026</div></div>
+          <span class="chip chip-gray"><span class="chip-dot"></span>Upcoming</span>
+        </div>
+        <div class="ms-body">
+          <p class="ms-desc">Mid-term evaluation by supervisor and coordinator panel. Demonstrate working prototype of core module.</p>
+          <div class="ms-deliverables">
+            <div class="ms-del-item"><i class="fas fa-circle pending-ico"></i><span>Progress report submitted</span></div>
+            <div class="ms-del-item"><i class="fas fa-circle pending-ico"></i><span>Working prototype demonstrated</span></div>
+            <div class="ms-del-item"><i class="fas fa-circle pending-ico"></i><span>Presentation delivered to evaluation panel</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- M6 -->
+      <div class="milestone-card">
+        <div class="ms-header">
+          <div class="ms-num ms-num-pending">6</div>
+          <div class="ms-info"><div class="ms-title">M6: Final Implementation</div><div class="ms-date">Due: Oct 30, 2026</div></div>
+          <span class="chip chip-gray"><span class="chip-dot"></span>Upcoming</span>
+        </div>
+        <div class="ms-body"><p class="ms-desc">Complete the full system implementation, testing, and quality assurance phase.</p></div>
+      </div>
+
+      <!-- M7 -->
+      <div class="milestone-card">
+        <div class="ms-header">
+          <div class="ms-num ms-num-pending">7</div>
+          <div class="ms-info"><div class="ms-title">M7: Final Report &amp; Documentation</div><div class="ms-date">Due: Nov 20, 2026</div></div>
+          <span class="chip chip-gray"><span class="chip-dot"></span>Upcoming</span>
+        </div>
+        <div class="ms-body"><p class="ms-desc">Submit the complete FYP thesis/report following the approved CUI format and documentation standards.</p></div>
+      </div>
+
+      <!-- M8 -->
+      <div class="milestone-card">
+        <div class="ms-header">
+          <div class="ms-num ms-num-pending">8</div>
+          <div class="ms-info"><div class="ms-title">M8: Final Defense &amp; Exhibition</div><div class="ms-date">Due: Dec 5–10, 2026</div></div>
+          <span class="chip chip-gray"><span class="chip-dot"></span>Upcoming</span>
+        </div>
+        <div class="ms-body"><p class="ms-desc">Final viva voce examination and FYP exhibition for evaluation by the faculty committee and external evaluators.</p></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Milestone Modal -->
+<div class="modal-overlay" id="msModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Request Custom Milestone</div><button class="modal-close" onclick="document.getElementById('msModal').classList.remove('open')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Milestone Title</label><input type="text" class="form-input" placeholder="e.g. Prototype Demo"/></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="Describe what you plan to achieve…"></textarea></div>
+      <div class="form-group"><label class="form-label">Target Date</label><input type="date" class="form-input"/></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="document.getElementById('msModal').classList.remove('open')">Cancel</button><button class="btn btn-primary" onclick="document.getElementById('msModal').classList.remove('open');alert('✅ Milestone request sent to your supervisor for approval.')"><i class="fas fa-paper-plane"></i> Request</button></div>
+  </div>
+</div>
+
+<script src="scripts/auth.js"></script>
+<script src="scripts/dashboard.js"></script>
+</body>
+</html>

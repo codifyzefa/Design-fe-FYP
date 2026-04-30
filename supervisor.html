@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Supervisor — FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles/tokens.css"/>
+  <link rel="stylesheet" href="styles/dashboard.css"/>
+  <style>
+    .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+    .page-header-title{font-size:1.5rem;font-weight:900;color:var(--color-text);margin-bottom:var(--space-1);}
+    .page-header-sub{font-size:var(--font-size-sm);color:var(--color-text-muted);}
+    .sup-profile-card{background:linear-gradient(135deg,var(--color-primary),var(--color-secondary));border-radius:var(--radius-3xl);padding:var(--space-8);display:flex;align-items:flex-start;gap:var(--space-6);color:white;flex-wrap:wrap;}
+    .sup-avatar-lg{width:88px;height:88px;background:rgba(255,255,255,.15);border-radius:var(--radius-2xl);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800;color:white;flex-shrink:0;border:3px solid rgba(255,255,255,.25);}
+    .sup-name{font-size:1.4rem;font-weight:900;margin-bottom:.25rem;}
+    .sup-desg{font-size:var(--font-size-sm);color:rgba(255,255,255,.75);font-weight:600;margin-bottom:var(--space-3);}
+    .sup-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:var(--space-4);}
+    .sup-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .7rem;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-full);font-size:.7rem;font-weight:700;color:rgba(255,255,255,.9);}
+    .sup-contacts{display:flex;flex-direction:column;gap:.5rem;}
+    .sup-contact-item{display:flex;align-items:center;gap:.5rem;font-size:var(--font-size-sm);color:rgba(255,255,255,.8);font-weight:500;}
+    .sup-contact-item i{font-size:.75rem;color:rgba(255,255,255,.55);width:16px;}
+    .sup-actions{margin-left:auto;display:flex;flex-direction:column;gap:.5rem;}
+    .sup-action-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:white;border-radius:var(--radius-lg);padding:.55rem 1rem;font-family:var(--font-family);font-size:var(--font-size-sm);font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:all var(--transition-fast);white-space:nowrap;}
+    .sup-action-btn:hover{background:rgba(255,255,255,.25);}
+    /* Meetings */
+    .meetings-list{display:flex;flex-direction:column;gap:var(--space-3);}
+    .meeting-item{display:flex;align-items:flex-start;gap:var(--space-4);padding:var(--space-4) var(--space-5);background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-xl);transition:border-color var(--transition-fast);}
+    .meeting-item:hover{border-color:var(--color-border-blue);}
+    .meeting-icon{width:40px;height:40px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+    .meeting-title{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);margin-bottom:2px;}
+    .meeting-meta{font-size:.7rem;color:var(--color-text-faint);font-weight:600;}
+    .meeting-notes{font-size:var(--font-size-sm);color:var(--color-text-muted);margin-top:.4rem;line-height:1.6;font-weight:500;}
+    /* Feedback from Supervisor */
+    .feedback-list{display:flex;flex-direction:column;gap:var(--space-4);}
+    .feedback-item{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);padding:var(--space-5) var(--space-6);}
+    .feedback-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-3);}
+    .feedback-topic{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);}
+    .feedback-date{font-size:.7rem;color:var(--color-text-faint);font-weight:600;}
+    .feedback-text{font-size:var(--font-size-sm);color:var(--color-text-muted);line-height:1.75;font-weight:500;}
+    /* Modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(3px);z-index:300;align-items:center;justify-content:center;padding:var(--space-5);}
+    .modal-overlay.open{display:flex;}
+    .modal{background:white;border-radius:var(--radius-3xl);width:100%;max-width:500px;box-shadow:var(--shadow-xl);animation:scaleIn .2s ease-out;}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--color-border-light);}
+    .modal-title{font-size:1.1rem;font-weight:800;color:var(--color-text);}
+    .modal-close{width:32px;height:32px;border-radius:var(--radius-md);background:var(--color-surface-alt);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);}
+    .modal-close:hover{background:var(--color-danger);color:white;}
+    .modal-body{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4);}
+    .modal-footer{padding:var(--space-4) var(--space-6);border-top:1px solid var(--color-border-light);display:flex;justify-content:flex-end;gap:var(--space-3);}
+    .form-group{display:flex;flex-direction:column;gap:.4rem;}
+    .form-label{font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-secondary);}
+    .form-input,.form-select,.form-textarea{width:100%;padding:.65rem 1rem;border:1.5px solid var(--color-border);border-radius:var(--radius-lg);font-family:var(--font-family);font-size:var(--font-size-sm);color:var(--color-text);background:white;outline:none;transition:border-color var(--transition-fast);}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--color-secondary);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+    .form-textarea{resize:vertical;min-height:100px;}
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="scripts/auth.js"></script>
+<script>AUTH.requireRole('student');</script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Student</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a><a href="proposal.html" class="nav-item"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">My Project</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Management</div><a href="supervisor.html" class="nav-item active"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor</span></a><a href="progress.html" class="nav-item"><i class="fas fa-chart-line nav-item-icon"></i><span class="nav-item-label">Progress Logs</span></a><a href="milestones.html" class="nav-item"><i class="fas fa-flag nav-item-icon"></i><span class="nav-item-label">Milestones</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div><a href="evaluation.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluations</span></a><a href="submissions.html" class="nav-item"><i class="fas fa-upload nav-item-icon"></i><span class="nav-item-label">Submissions</span></a><a href="reports.html" class="nav-item"><i class="fas fa-file-download nav-item-icon"></i><span class="nav-item-label">Reports</span></a></div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="confirmLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">My Supervisor</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="phase-chip"><span class="phase-chip-dot"></span> Proposal Phase</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">AF</div><div class="user-info hidden-sm"><div class="user-name">Ahmed Farooq</div><div class="user-role">Student</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="confirmLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <!-- Supervisor Profile -->
+    <div class="sup-profile-card animate-fade-in">
+      <div class="sup-avatar-lg">AH</div>
+      <div style="flex:1;">
+        <div class="sup-name">Dr. Ali Hassan</div>
+        <div class="sup-desg">Associate Professor · Department of Computer Science</div>
+        <div class="sup-chips">
+          <span class="sup-chip"><i class="fas fa-brain"></i> Artificial Intelligence</span>
+          <span class="sup-chip"><i class="fas fa-robot"></i> Machine Learning</span>
+          <span class="sup-chip"><i class="fas fa-eye"></i> Computer Vision</span>
+        </div>
+        <div class="sup-contacts">
+          <div class="sup-contact-item"><i class="fas fa-envelope"></i> ali.hassan@cuiatd.edu.pk</div>
+          <div class="sup-contact-item"><i class="fas fa-calendar-alt"></i> Office Hours: Mon–Wed 10:00 AM – 12:00 PM</div>
+          <div class="sup-contact-item"><i class="fas fa-map-marker-alt"></i> Room S-312, CS Block, CUI Abbottabad</div>
+          <div class="sup-contact-item"><i class="fas fa-graduation-cap"></i> Ph.D. Computer Science — NUST Islamabad</div>
+        </div>
+      </div>
+      <div class="sup-actions">
+        <button class="sup-action-btn" onclick="document.getElementById('meetModal').classList.add('open')"><i class="fas fa-calendar-plus"></i> Request Meeting</button>
+        <button class="sup-action-btn" onclick="document.getElementById('msgModal').classList.add('open')"><i class="fas fa-envelope"></i> Send Message</button>
+      </div>
+    </div>
+
+    <!-- Two Column -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);" class="animate-fade-in-delay-1">
+
+      <!-- Meetings -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">Meeting History</div><span class="chip chip-info"><span class="chip-dot"></span>6 meetings</span></div>
+        <div class="meetings-list">
+          <div class="meeting-item">
+            <div class="meeting-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-video"></i></div>
+            <div>
+              <div class="meeting-title">Progress Review — Week 12</div>
+              <div class="meeting-meta">Apr 22, 2026 · 10:30 AM · Virtual (Google Meet)</div>
+              <div class="meeting-notes">Reviewed YOLOv8 results — 89% mAP. Next: integrate with signal controller.</div>
+            </div>
+          </div>
+          <div class="meeting-item">
+            <div class="meeting-icon" style="background:#eff6ff;color:#2563eb"><i class="fas fa-building"></i></div>
+            <div>
+              <div class="meeting-title">Proposal Draft Review</div>
+              <div class="meeting-meta">Apr 10, 2026 · 11:00 AM · On Campus (S-312)</div>
+              <div class="meeting-notes">Proposal structure finalized. Abstract revised. Action: submit before May 5.</div>
+            </div>
+          </div>
+          <div class="meeting-item">
+            <div class="meeting-icon" style="background:#f5f3ff;color:#7c3aed"><i class="fas fa-video"></i></div>
+            <div>
+              <div class="meeting-title">Kick-off Meeting</div>
+              <div class="meeting-meta">Mar 8, 2026 · 10:00 AM · Virtual</div>
+              <div class="meeting-notes">First meeting. Discussed project scope and expectations for semester.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supervisor Feedback -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">Supervisor Feedback</div><a href="evaluation.html" class="btn btn-outline btn-sm">View Evaluations</a></div>
+        <div class="feedback-list">
+          <div class="feedback-item">
+            <div class="feedback-header"><div class="feedback-topic"><i class="fas fa-thumbs-up" style="color:#059669"></i> Strength</div><div class="feedback-date">Apr 22, 2026</div></div>
+            <div class="feedback-text">Excellent model accuracy achieved. The computer vision pipeline is well-structured and the dataset quality is good. Keep up the momentum.</div>
+          </div>
+          <div class="feedback-item">
+            <div class="feedback-header"><div class="feedback-topic"><i class="fas fa-exclamation-triangle" style="color:#d97706"></i> Improvement Area</div><div class="feedback-date">Apr 10, 2026</div></div>
+            <div class="feedback-text">The adaptive signal algorithm needs more rigorous testing. Consider running simulations with SUMO traffic simulator before live testing. Also improve documentation.</div>
+          </div>
+          <div class="feedback-item">
+            <div class="feedback-header"><div class="feedback-topic"><i class="fas fa-lightbulb" style="color:#7c3aed"></i> Suggestion</div><div class="feedback-date">Mar 8, 2026</div></div>
+            <div class="feedback-text">Read the following papers: "TrafficNet" (CVPR 2024), "Adaptive Signal Control with DRL" (IEEE ITS 2023). Set up weekly code reviews via GitHub.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row animate-fade-in-delay-2">
+      <div class="stat-card"><div class="stat-card-icon stat-card-icon-blue"><i class="fas fa-star"></i></div><div class="stat-card-body"><div class="stat-card-label">Supervisor Score</div><div class="stat-card-value">72/100</div><div class="stat-card-sub"><span class="chip chip-info"><span class="chip-dot"></span>Ongoing</span></div></div></div>
+      <div class="stat-card"><div class="stat-card-icon stat-card-icon-green"><i class="fas fa-calendar-check"></i></div><div class="stat-card-body"><div class="stat-card-label">Meetings Held</div><div class="stat-card-value">6</div><div class="stat-card-sub"><span class="chip chip-success"><span class="chip-dot"></span>On Track</span></div></div></div>
+      <div class="stat-card"><div class="stat-card-icon stat-card-icon-purple"><i class="fas fa-tasks"></i></div><div class="stat-card-body"><div class="stat-card-label">Logs Approved</div><div class="stat-card-value">10 / 12</div><div class="stat-card-sub"><span class="chip chip-success"><span class="chip-dot"></span>83%</span></div></div></div>
+      <div class="stat-card"><div class="stat-card-icon stat-card-icon-amber"><i class="fas fa-calendar"></i></div><div class="stat-card-body"><div class="stat-card-label">Next Meeting</div><div class="stat-card-value">May 6</div><div class="stat-card-sub"><span class="chip chip-warning"><span class="chip-dot"></span>Scheduled</span></div></div></div>
+    </div>
+  </main>
+</div>
+
+<!-- Meeting Request Modal -->
+<div class="modal-overlay" id="meetModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Request a Meeting</div><button class="modal-close" onclick="document.getElementById('meetModal').classList.remove('open')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Meeting Type</label><select class="form-select"><option>Virtual (Google Meet)</option><option>On Campus</option></select></div>
+      <div class="form-group"><label class="form-label">Preferred Date</label><input type="date" class="form-input"/></div>
+      <div class="form-group"><label class="form-label">Preferred Time</label><select class="form-select"><option>10:00 AM – 11:00 AM</option><option>11:00 AM – 12:00 PM</option><option>02:00 PM – 03:00 PM</option></select></div>
+      <div class="form-group"><label class="form-label">Agenda / Purpose</label><textarea class="form-textarea" placeholder="What would you like to discuss?"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="document.getElementById('meetModal').classList.remove('open')">Cancel</button><button class="btn btn-primary" onclick="document.getElementById('meetModal').classList.remove('open');alert('✅ Meeting request sent to Dr. Ali Hassan. You will be notified once confirmed.')"><i class="fas fa-paper-plane"></i> Send Request</button></div>
+  </div>
+</div>
+
+<!-- Message Modal -->
+<div class="modal-overlay" id="msgModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Send Message to Supervisor</div><button class="modal-close" onclick="document.getElementById('msgModal').classList.remove('open')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Subject</label><input type="text" class="form-input" placeholder="e.g. Query regarding algorithm testing"/></div>
+      <div class="form-group"><label class="form-label">Message</label><textarea class="form-textarea" style="min-height:130px" placeholder="Type your message here…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="document.getElementById('msgModal').classList.remove('open')">Cancel</button><button class="btn btn-primary" onclick="document.getElementById('msgModal').classList.remove('open');alert('✅ Message sent to Dr. Ali Hassan via FYP Portal.')"><i class="fas fa-paper-plane"></i> Send Message</button></div>
+  </div>
+</div>
+
+<script src="scripts/auth.js"></script>
+<script src="scripts/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portal — FYP Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../styles/tokens.css" />
+  <link rel="stylesheet" href="../styles/dashboard.css" />
+  <style>
+    /* SPA View Management */
+    .app-view { display: none; animation: fadeIn 0.3s ease-out; }
+    .app-view.active { display: block; }
+    
+    /* Sidebar Dropdowns */
+    .nav-dropdown-menu {
+      display: none;
+      flex-direction: column;
+      background: rgba(0,0,0,0.1);
+      border-radius: var(--radius-lg);
+      margin: 2px 0 8px 0;
+      overflow: hidden;
+    }
+    .nav-item.dropdown-open { background: rgba(255,255,255,0.05); }
+    .nav-item.dropdown-open .nav-dropdown-icon { transform: rotate(180deg); }
+    .nav-dropdown-menu.open { display: flex; }
+    .nav-subitem {
+      padding: 0.5rem 1rem 0.5rem 3rem;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.75rem;
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+    .nav-subitem::before { content: ''; position: absolute; left: 2.2rem; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 50%; }
+    .nav-subitem:hover, .nav-subitem.active { color: white; background: rgba(255,255,255,0.1); }
+    .nav-subitem.active::before { background: var(--color-secondary); box-shadow: 0 0 8px var(--color-secondary); }
+    
+    /* Request Cards */
+    .req-card { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); border: 1.5px solid var(--color-border); border-radius: var(--radius-xl); background: white; margin-bottom: var(--space-4); transition: border var(--transition-fast); }
+    .req-card:hover { border-color: var(--color-primary); }
+    .req-info { display: flex; align-items: center; gap: var(--space-4); }
+    .req-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--color-lightbg); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
+    
+    /* Supervisor Cards */
+    .sup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-5); }
+    .sup-card { background: white; border: 1.5px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); display: flex; flex-direction: column; transition: transform var(--transition-fast), box-shadow var(--transition-fast); }
+    .sup-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--color-border-blue); }
+    
+    /* Idea Cards */
+    .idea-card { background: white; border: 1.5px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); margin-bottom: var(--space-4); }
+    
+    /* Task Manager (ClickUp Style) */
+    .board-container { display: flex; gap: var(--space-5); overflow-x: auto; min-height: 70vh; padding-bottom: 2rem; }
+    .board-column { background: var(--color-surface-alt); border-radius: var(--radius-xl); min-width: 320px; max-width: 350px; display: flex; flex-direction: column; border: 1px solid var(--color-border-light); box-shadow: var(--shadow-xs); }
+    .column-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--color-border); font-weight: 800; font-size: var(--font-size-md); display: flex; justify-content: space-between; align-items: center; }
+    .col-todo { border-top: 4px solid #9ca3af; border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
+    .col-prog { border-top: 4px solid var(--color-secondary); border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
+    .col-done { border-top: 4px solid var(--color-success); border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
+    .column-body { padding: var(--space-4); flex: 1; display: flex; flex-direction: column; gap: var(--space-3); min-height: 200px; transition: background 0.2s; }
+    .column-body.drag-over { background: rgba(37,99,235,0.05); }
+    
+    .task-card { background: white; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); cursor: grab; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s ease; position: relative; }
+    .task-card:active { cursor: grabbing; transform: scale(0.98); }
+    .task-card:hover { box-shadow: var(--shadow-md); border-color: var(--color-primary); }
+    .task-card.dragging { opacity: 0.5; box-shadow: none; border: 2px dashed var(--color-primary); }
+    
+    .task-date.overdue { background: #fef2f2; color: var(--color-danger); }
+    .task-date.completed { background: #ecfdf5; color: var(--color-success); }
+    
+    /* Task Modal */
+    .task-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; }
+    .task-modal.show { display: flex; animation: fadeInFast 0.2s ease; }
+    .task-modal-content { background: white; border-radius: var(--radius-2xl); width: 100%; max-width: 500px; padding: var(--space-6); box-shadow: var(--shadow-xl); transform: scale(0.95); transition: transform 0.2s ease; }
+    .task-modal.show .task-modal-content { transform: scale(1); }
+  </style>
+</head>
+<body class="dashboard-body">
+  
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="sidebar-logo-text"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Student Portal</div></div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      
+      <div class="nav-group">
+        <div class="nav-group-label">Overview</div>
+        <a href="#" class="nav-item active" data-target="view-dashboard" onclick="navigateSPA(event)">
+          <i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">Group & Supervisor</div>
+        
+        <div class="nav-item" onclick="toggleDropdown(this)">
+          <i class="fas fa-users nav-item-icon"></i>
+          <span class="nav-item-label">FYP Partners</span>
+          <i class="fas fa-chevron-down nav-dropdown-icon" style="margin-left:auto; font-size:0.7rem; transition:transform 0.2s;"></i>
+        </div>
+        <div class="nav-dropdown-menu">
+          <a href="#" class="nav-subitem" data-target="view-new-request" onclick="navigateSPA(event)">New Request</a>
+          <a href="#" class="nav-subitem" data-target="view-incoming-requests" onclick="navigateSPA(event)">Incoming Requests</a>
+        </div>
+
+        <a href="#" class="nav-item" data-target="view-supervisor" onclick="navigateSPA(event)">
+          <i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Selection</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">Project Execution</div>
+        
+        <div class="nav-item" onclick="toggleDropdown(this)">
+          <i class="fas fa-lightbulb nav-item-icon"></i>
+          <span class="nav-item-label">Project Idea</span>
+          <i class="fas fa-chevron-down nav-dropdown-icon" style="margin-left:auto; font-size:0.7rem; transition:transform 0.2s;"></i>
+        </div>
+        <div class="nav-dropdown-menu">
+          <a href="#" class="nav-subitem" data-target="view-new-idea" onclick="navigateSPA(event)">New Idea</a>
+          <a href="#" class="nav-subitem" data-target="view-approved-ideas" onclick="navigateSPA(event)">Approved Ideas</a>
+        </div>
+
+        <a href="#" class="nav-item" data-target="view-tasks" onclick="navigateSPA(event)">
+          <i class="fas fa-tasks nav-item-icon"></i><span class="nav-item-label">Task Manager</span>
+        </a>
+      </div>
+
+    </nav>
+    <div class="sidebar-footer">
+      <a href="#" class="nav-item nav-item-logout" onclick="confirmLogout(event)">
+        <i class="fas fa-power-off nav-item-icon"></i><span class="nav-item-label">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div>
+          <div class="topbar-page-title" id="pageTitle">Dashboard</div>
+          <div class="topbar-subtitle">CUI Abbottabad</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="phase-chip" style="margin-right: 0.5rem; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 20px; padding: 5px 12px; display: flex; align-items: center; gap: 8px;">
+          <span class="phase-chip-dot" style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span>
+          <span class="phase-chip-time" style="font-size: 0.7rem; font-weight: 700; color: #065f46;">Phase 1: Student Registration</span>
+        </div>
+        <button class="topbar-icon-btn" style="margin-right: 0.5rem;">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot" style="position:absolute; top:8px; right:8px; width:7px; height:7px; background:var(--color-danger); border-radius:50%; border:2px solid white;"></span>
+        </button>
+        <button class="user-btn" onclick="confirmLogout(event)">
+          <div class="user-avatar" id="navAvatar">ST</div>
+          <div class="user-info hidden-sm">
+            <div class="user-name" id="navName">Student</div>
+            <div class="user-role">Student</div>
+          </div>
+        </button>
+      </div>
+    </header>
+
+    <main class="content-area">
+      
+      <!-- ================= VIEW: DASHBOARD ================= -->
+      <div id="view-dashboard" class="app-view active">
+        
+        <!-- Welcome Card -->
+        <div class="card" style="margin-bottom: var(--space-4); padding: var(--space-6);">
+          <h1 style="font-size: var(--font-size-2xl); font-weight: 800; color: var(--color-text); margin-bottom: var(--space-1);">FYP Portal Control</h1>
+          <p style="font-size: var(--font-size-sm); color: var(--color-text-muted);">Global oversight of FYP workflows, group formations, and project evaluations.</p>
+        </div>
+
+        <!-- FYP Onboarding Status Card -->
+        <div class="card" style="margin-bottom: var(--space-6); padding: var(--space-6);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-6);">
+            <div style="display: flex; gap: var(--space-4); align-items: center;">
+              <div style="width: 42px; height: 42px; background: #eff6ff; color: var(--color-primary); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div>
+                <h2 style="font-size: var(--font-size-lg); font-weight: 800; color: var(--color-text); margin-bottom: 2px;">FYP Onboarding Status</h2>
+                <p style="font-size: var(--font-size-sm); color: var(--color-text-faint);">Real-time statistics for current cycle registration.</p>
+              </div>
+            </div>
+            <div class="phase-chip" style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 20px; padding: 6px 12px; display: flex; align-items: center;">
+              <span class="phase-chip-time" style="font-size: 0.7rem; font-weight: 700; color: #5b21b6;">Phase: Registration</span>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-4);">
+            <div style="background: white; border: 1px solid var(--color-border-light); border-radius: var(--radius-xl); padding: var(--space-4); text-align: left;">
+              <div style="font-size: 2rem; font-weight: 800; color: var(--color-text); margin-bottom: 4px;">1</div>
+              <div style="font-size: 0.6rem; font-weight: 800; color: var(--color-text-faint); text-transform: uppercase; letter-spacing: 0.05em;">TOTAL STUDENTS</div>
+            </div>
+            <div style="background: #ecfdf5; border-radius: var(--radius-xl); padding: var(--space-4); text-align: left;">
+              <div style="font-size: 2rem; font-weight: 800; color: #059669; margin-bottom: 4px;">1</div>
+              <div style="font-size: 0.6rem; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.05em;">GROUP MEMBERS</div>
+            </div>
+            <div style="background: #fef2f2; border-radius: var(--radius-xl); padding: var(--space-4); text-align: left;">
+              <div style="font-size: 2rem; font-weight: 800; color: #dc2626; margin-bottom: 4px;">0</div>
+              <div style="font-size: 0.6rem; font-weight: 800; color: #ef4444; text-transform: uppercase; letter-spacing: 0.05em;">IDEAS SUBMITTED</div>
+            </div>
+            <div style="background: #f5f3ff; border-radius: var(--radius-xl); padding: var(--space-4); text-align: left;">
+              <div style="font-size: 2rem; font-weight: 800; color: #7c3aed; margin-bottom: 4px;">0</div>
+              <div style="font-size: 0.6rem; font-weight: 800; color: #8b5cf6; text-transform: uppercase; letter-spacing: 0.05em;">APPROVED IDEAS</div>
+            </div>
+            <div style="background: #fffbeb; border-radius: var(--radius-xl); padding: var(--space-4); text-align: left;">
+              <div style="font-size: 2rem; font-weight: 800; color: #d97706; margin-bottom: 4px;">0</div>
+              <div style="font-size: 0.6rem; font-weight: 800; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.05em;">TASKS PROGRESS</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detailed Records Section -->
+        <div style="display: flex; align-items: center; margin-bottom: var(--space-4); gap: var(--space-3);">
+          <div style="width: 4px; height: 18px; background: var(--color-primary); border-radius: 2px;"></div>
+          <h2 style="font-size: var(--font-size-md); font-weight: 800; color: var(--color-text);">Detailed FYP Records</h2>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 320px; gap: var(--space-5); align-items: start;">
+          <!-- Main Tabs Column -->
+          <div class="card" style="padding: var(--space-5); min-height: 250px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-5);">
+              <div style="display: flex; gap: var(--space-4); border-bottom: 1.5px solid var(--color-border-light); padding-bottom: 10px; flex: 1; margin-right: var(--space-6);">
+                <a href="#" style="font-size: var(--font-size-sm); font-weight: 700; color: var(--color-primary); border-bottom: 2px solid var(--color-primary); padding-bottom: 11px; margin-bottom: -11px; text-decoration: none;"><i class="fas fa-users" style="margin-right:6px;"></i> Group Members</a>
+                <a href="#" style="font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text-muted); text-decoration: none;"><i class="fas fa-inbox" style="margin-right:6px;"></i> Requests</a>
+                <a href="#" style="font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text-muted); text-decoration: none;"><i class="fas fa-lightbulb" style="margin-right:6px;"></i> Ideas</a>
+              </div>
+              <div style="position:relative; width: 220px;">
+                <i class="fas fa-search text-muted" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:0.8rem;"></i>
+                <input type="text" class="form-input" placeholder="Search records..." style="padding-left: 2rem; background: var(--color-lightbg); border: none; font-size:0.8rem;" />
+              </div>
+            </div>
+            <div style="text-align: center; padding: var(--space-6) 0; color: var(--color-text-muted);">
+              <p style="font-size:var(--font-size-sm);">No detailed records to display yet.</p>
+            </div>
+          </div>
+
+          <!-- Side Widget Column -->
+          <div class="card" style="padding: var(--space-5); min-height: 250px; display:flex; flex-direction:column;">
+            <h3 style="font-size: var(--font-size-md); font-weight: 800; margin-bottom: 2px; color:var(--color-text);">Task Completion</h3>
+            <p style="font-size: 0.7rem; color: var(--color-text-muted); margin-bottom: var(--space-5);">Overall Project Progress</p>
+            
+            <div style="flex:1; display: flex; justify-content: center; align-items: center; position: relative;">
+              <svg viewBox="0 0 36 36" style="width: 140px; height: 140px;">
+                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#eff6ff" stroke-width="3.5"/>
+                <path stroke-dasharray="25, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--color-primary)" stroke-width="3.5" stroke-linecap="round" style="animation: fillChart 1s ease-out forwards;"/>
+              </svg>
+              <div style="position: absolute; display:flex; flex-direction:column; align-items:center;">
+                <span style="font-size: 1.5rem; font-weight: 800; color: var(--color-text); line-height:1;">25%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= VIEW: NEW REQUEST ================= -->
+      <div id="view-new-request" class="app-view">
+        <div class="card" style="max-width:600px; margin:0 auto;">
+          <h2 style="font-size:var(--font-size-xl); margin-bottom:var(--space-2);">Find FYP Partners</h2>
+          <p class="text-muted" style="font-size:var(--font-size-sm); margin-bottom:var(--space-5);">Search for students by Registration Number or Email to send a group request.</p>
+          
+          <div class="form-group" style="display:flex; gap:var(--space-2);">
+            <input type="text" class="form-input" placeholder="e.g. SP21-BCS-005" id="searchStudentInput" />
+            <button class="btn btn-primary" onclick="searchStudent()"><i class="fas fa-search"></i> Search</button>
+          </div>
+          
+          <div id="searchResults" style="margin-top:var(--space-6); display:none;">
+            <div class="req-card">
+              <div class="req-info">
+                <div class="req-avatar">ZA</div>
+                <div>
+                  <div style="font-weight:700; color:var(--color-text);">Zain Ali</div>
+                  <div style="font-size:0.7rem; color:var(--color-text-muted);">BS CS • FA22 • CGPA: 3.45</div>
+                </div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="sendRequest(this)"><i class="fas fa-paper-plane"></i> Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= VIEW: INCOMING REQUESTS ================= -->
+      <div id="view-incoming-requests" class="app-view">
+        <h2 style="font-size:var(--font-size-xl); margin-bottom:var(--space-5);">Incoming Requests</h2>
+        
+        <div class="req-card">
+          <div class="req-info">
+            <div class="req-avatar">FK</div>
+            <div>
+              <div style="font-weight:700; color:var(--color-text);">Fatima Khan</div>
+              <div style="font-size:0.7rem; color:var(--color-text-muted);">BS SE • FA23 • CGPA: 3.72</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:var(--space-2);">
+            <button class="btn btn-primary btn-sm"><i class="fas fa-check"></i> Accept</button>
+            <button class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Reject</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= VIEW: SUPERVISOR SELECTION ================= -->
+      <div id="view-supervisor" class="app-view">
+        <div class="sup-grid">
+          <div class="sup-card">
+            <div style="display:flex; gap:var(--space-4); margin-bottom:var(--space-4);">
+              <div style="width:64px; height:64px; border-radius:var(--radius-lg); background:var(--color-lightbg); color:var(--color-primary); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.5rem;">AH</div>
+              <div>
+                <div style="font-weight:800; font-size:var(--font-size-md);">Dr. Ali Hassan</div>
+                <div style="font-size:var(--font-size-xs); color:var(--color-text-muted);">Associate Professor</div>
+              </div>
+            </div>
+            <div style="font-size:var(--font-size-sm); color:var(--color-text-secondary); margin-bottom:var(--space-5); flex:1;">
+              <i class="fas fa-tag text-primary" style="margin-right:4px;"></i> AI, Machine Learning, Computer Vision
+            </div>
+            <button class="btn btn-primary w-full">Request Supervisor</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= VIEW: NEW IDEA ================= -->
+      <div id="view-new-idea" class="app-view">
+        <div class="card" style="max-width:800px; margin:0 auto;">
+          <h2 style="font-size:var(--font-size-xl); margin-bottom:var(--space-5);">Submit Project Idea</h2>
+          <form onsubmit="handleIdeaSubmit(event)">
+            <div class="form-group mb-16"><label class="form-label">Title</label><input type="text" class="form-input" required/></div>
+            <div class="form-group mb-16"><label class="form-label">Problem Statement</label><textarea class="form-textarea" required></textarea></div>
+            <div class="form-group mb-16"><label class="form-label">Technology Stack</label><input type="text" class="form-input" placeholder="e.g. React, Node.js" required/></div>
+            <div class="form-group mb-16"><label class="form-label">Proposal (PDF)</label><input type="file" class="form-input" accept="application/pdf"/></div>
+            <button class="btn btn-primary btn-lg w-full">Submit Idea</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================= VIEW: APPROVED IDEAS ================= -->
+      <div id="view-approved-ideas" class="app-view">
+        <h2 style="font-size:var(--font-size-xl); margin-bottom:var(--space-5);">University Approved Ideas</h2>
+        <div class="idea-card">
+          <h3 style="font-size:var(--font-size-lg); color:var(--color-primary); font-weight:800; margin-bottom:8px;">Blockchain Voting System</h3>
+          <p style="font-size:var(--font-size-sm); color:var(--color-text-secondary); margin-bottom:16px;">A secure e-voting system using smart contracts.</p>
+          <div style="display:flex; gap:16px; font-size:0.75rem; color:var(--color-text-muted); font-weight:600; margin-bottom:16px;">
+            <span><i class="fas fa-tag"></i> Cybersecurity</span>
+            <span><i class="fas fa-user-tie"></i> Dr. Zeeshan</span>
+          </div>
+          <button class="btn btn-outline btn-sm">Select Idea</button>
+        </div>
+      </div>
+
+      <!-- ================= VIEW: TASK MANAGER ================= -->
+      <div id="view-tasks" class="app-view">
+        <div style="display:flex; justify-content:space-between; margin-bottom:var(--space-5);">
+          <h2 style="font-size:var(--font-size-xl);">Project Tasks</h2>
+          <button class="btn btn-primary" onclick="TaskManager.openModal()"><i class="fas fa-plus"></i> Add Task</button>
+        </div>
+        
+        <div class="board-container">
+          <!-- To Do -->
+          <div class="board-column">
+            <div class="column-header col-todo"><span>To Do</span><span class="chip chip-gray" id="count-to-do">0</span></div>
+            <div class="column-body" id="board-col-to-do"></div>
+          </div>
+          <!-- In Progress -->
+          <div class="board-column">
+            <div class="column-header col-prog"><span>In Progress</span><span class="chip chip-info" id="count-in-progress">0</span></div>
+            <div class="column-body" id="board-col-in-progress"></div>
+          </div>
+          <!-- Completed -->
+          <div class="board-column">
+            <div class="column-header col-done"><span>Completed</span><span class="chip chip-success" id="count-completed">0</span></div>
+            <div class="column-body" id="board-col-completed"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Task Modal -->
+  <div class="task-modal" id="taskModal">
+    <div class="task-modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-5); border-bottom:1px solid var(--color-border-light); padding-bottom:var(--space-3);">
+        <h3 id="taskModalTitle" style="font-size:var(--font-size-lg); color:var(--color-text);">Add Task</h3>
+        <i class="fas fa-times text-muted" style="cursor:pointer;" onclick="TaskManager.closeModal()"></i>
+      </div>
+      <form id="taskForm">
+        <input type="hidden" id="taskId" />
+        <div class="form-group mb-16"><label class="form-label">Title</label><input type="text" id="taskTitle" class="form-input" required/></div>
+        <div class="form-group mb-16"><label class="form-label">Description</label><textarea id="taskDesc" class="form-textarea" rows="3"></textarea></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <select id="taskPriority" class="form-select" required>
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Due Date</label>
+            <input type="date" id="taskDue" class="form-input" required/>
+          </div>
+        </div>
+        <div class="form-group mb-16">
+          <label class="form-label">Status</label>
+          <select id="taskStatus" class="form-select" required>
+            <option value="To Do">To Do</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+        <div style="display:flex; justify-content:space-between; gap:8px;">
+          <button type="button" class="btn btn-danger btn-sm" id="btnDeleteTask" onclick="TaskManager.handleDelete()" style="display:none;"><i class="fas fa-trash"></i> Delete</button>
+          <div style="display:flex; justify-content:flex-end; gap:8px; flex:1;">
+            <button type="button" class="btn btn-outline" onclick="TaskManager.closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Task</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../scripts/auth.js"></script>
+  <script src="../scripts/taskManager.js"></script>
+  <script>
+    // SPA Routing Logic
+    function navigateSPA(e) {
+      e.preventDefault();
+      const targetId = e.currentTarget.dataset.target;
+      const titleText = e.currentTarget.textContent.trim();
+      
+      // Update DOM classes
+      document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+      document.getElementById(targetId).classList.add('active');
+      
+      document.querySelectorAll('.nav-item, .nav-subitem').forEach(el => el.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+
+      // Update Topbar
+      document.getElementById('pageTitle').textContent = titleText;
+    }
+
+    // Sidebar Dropdown Toggle
+    function toggleDropdown(el) {
+      el.classList.toggle('dropdown-open');
+      const menu = el.nextElementSibling;
+      menu.classList.toggle('open');
+    }
+
+    // Interactive Demo scripts
+    function searchStudent() {
+      document.getElementById('searchStudentInput').value = 'SP21-BCS-005';
+      document.getElementById('searchResults').style.display = 'block';
+    }
+    
+    function sendRequest(btn) {
+      btn.innerHTML = '<i class="fas fa-check"></i> Sent';
+      btn.classList.remove('btn-outline');
+      btn.classList.add('btn-primary');
+      btn.disabled = true;
+    }
+
+    function handleIdeaSubmit(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+      setTimeout(() => {
+        alert('Project Idea Submitted and saved to local storage!');
+        e.target.reset();
+        btn.innerHTML = 'Submit Idea';
+      }, 800);
+    }
+
+    // Init Auth
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = AUTH.requireRole('Student');
+      if (user) {
+        document.getElementById('welcomeName').textContent = user.name.split(' ')[0];
+        document.getElementById('navName').textContent = user.name;
+        document.getElementById('navAvatar').textContent = user.avatar || user.name.slice(0,2).toUpperCase();
+      }
+    });
+  </script>
+</body>
+</html>

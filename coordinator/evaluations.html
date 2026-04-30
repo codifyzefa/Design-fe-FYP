@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Manage Evaluations — Coordinator | FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../styles/tokens.css"/>
+  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  <link rel="stylesheet" href="../styles/coordinator.css"/>
+  <style>
+    .eval-phase-tabs{display:flex;gap:0;background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-xl);padding:.3rem;margin-bottom:var(--space-4);width:fit-content;}
+    .eval-tab{padding:.45rem 1.1rem;border-radius:var(--radius-lg);border:none;background:transparent;font-family:var(--font-family);font-size:var(--font-size-sm);font-weight:700;color:var(--color-text-muted);cursor:pointer;transition:all var(--transition-fast);}
+    .eval-tab.active{background:var(--coord-primary);color:white;box-shadow:0 4px 12px rgba(6,95,70,.25);}
+    .score-bar{height:8px;background:var(--color-border-light);border-radius:var(--radius-full);overflow:hidden;}
+    .score-fill{height:100%;border-radius:var(--radius-full);background:linear-gradient(90deg,var(--coord-primary),var(--coord-light));}
+    .evaluator-chip{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .55rem;background:rgba(6,95,70,.1);border:1px solid rgba(6,95,70,.2);border-radius:var(--radius-full);font-size:.6rem;font-weight:700;color:var(--coord-primary);}
+    .schedule-card{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);overflow:hidden;margin-bottom:var(--space-5);}
+    .sc-header{padding:var(--space-5) var(--space-6);background:var(--color-surface-alt);border-bottom:1px solid var(--color-border-light);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+    .sc-phase{font-size:1rem;font-weight:800;color:var(--color-text);}
+    .sc-date{font-size:.7rem;color:var(--color-text-faint);font-weight:600;}
+    .eval-row{display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-6);border-bottom:1px solid var(--color-border-light);transition:background var(--transition-fast);flex-wrap:wrap;}
+    .eval-row:last-child{border-bottom:none;}
+    .eval-row:hover{background:var(--color-lightbg);}
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="../scripts/auth.js"></script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-user-cog"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Coordinator Portal</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Management</div>
+      <a href="groups.html" class="nav-item"><i class="fas fa-layer-group nav-item-icon"></i><span class="nav-item-label">All FYP Groups</span></a>
+      <a href="proposals.html" class="nav-item"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">Review Proposals</span></a>
+      <a href="assignments.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Assignments</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Communication</div>
+      <a href="messages.html" class="nav-item"><i class="fas fa-comments nav-item-icon"></i><span class="nav-item-label">Messages</span></a>
+      <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn nav-item-icon"></i><span class="nav-item-label">Announcements</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluations.html" class="nav-item active"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Manage Evaluations</span></a>
+      <a href="reports.html" class="nav-item"><i class="fas fa-chart-bar nav-item-icon"></i><span class="nav-item-label">Reports</span></a>
+    </div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Manage Evaluations</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="portal-badge"><i class="fas fa-user-cog"></i> Coordinator</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">SM</div><div class="user-info hidden-sm"><div class="user-name">Dr. Sara Malik</div><div class="user-role">Coordinator</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">Evaluation Management</div><div class="page-header-sub">Schedule evaluations, assign evaluators, and monitor scores across all phases</div></div>
+      <div style="display:flex;gap:var(--space-3)">
+        <button class="btn btn-outline btn-sm" onclick="openModal('evalScheduleModal')"><i class="fas fa-calendar-plus"></i> Schedule Evaluation</button>
+        <button class="btn-coord" onclick="openModal('assignEvaluatorModal')"><i class="fas fa-user-plus"></i> Assign Evaluators</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="mini-stats animate-fade-in-delay-1">
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-check-circle"></i></div><div><div class="mini-stat-val">8</div><div class="mini-stat-lbl">Evals Completed</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#fffbeb;color:#d97706"><i class="fas fa-clock"></i></div><div><div class="mini-stat-val">16</div><div class="mini-stat-lbl">Pending (Mid-Term)</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#eff6ff;color:var(--color-primary)"><i class="fas fa-star"></i></div><div><div class="mini-stat-val">74.8</div><div class="mini-stat-lbl">Avg Score</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#f5f3ff;color:#7c3aed"><i class="fas fa-user-check"></i></div><div><div class="mini-stat-val">3</div><div class="mini-stat-lbl">Active Evaluators</div></div></div>
+    </div>
+
+    <!-- Phase Tabs -->
+    <div class="eval-phase-tabs animate-fade-in-delay-2">
+      <button class="eval-tab" onclick="switchTab('proposal',this)">Proposal Review</button>
+      <button class="eval-tab active" onclick="switchTab('midterm',this)">Mid-Term</button>
+      <button class="eval-tab" onclick="switchTab('final',this)">Final Defense</button>
+    </div>
+
+    <!-- Proposal Phase -->
+    <div id="tab-proposal" class="eval-phase-content" style="display:none">
+      <div class="schedule-card">
+        <div class="sc-header">
+          <div><div class="sc-phase">Proposal Review Phase</div><div class="sc-date">Apr 1 – May 15, 2026 · 19 Submissions · <span style="color:#059669;font-weight:700">Completed</span></div></div>
+          <div style="display:flex;gap:.5rem"><button class="btn btn-outline btn-sm" onclick="showToast('Downloading proposal evaluation report…','info')"><i class="fas fa-download"></i> Export Results</button></div>
+        </div>
+        <div class="data-table-wrap" style="border:none;border-radius:0">
+          <table class="data-table">
+            <thead><tr><th>Group</th><th>Project Title</th><th>Evaluator</th><th>Score</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><strong style="color:var(--coord-primary)">G-042</strong></td><td><div class="td-primary">AI Traffic Management System</div></td><td><span class="evaluator-chip"><i class="fas fa-user"></i> Dr. U. Qureshi</span></td><td><div style="display:flex;align-items:center;gap:.5rem"><div class="score-bar" style="width:80px"><div class="score-fill" style="width:78%"></div></div><span style="font-weight:800;font-size:.8rem;color:var(--coord-primary)">78/100</span></div></td><td><span class="chip chip-success"><span class="chip-dot"></span>Graded</span></td><td><button class="action-btn action-btn-success" onclick="showToast('Opening evalutation details…','info')"><i class="fas fa-eye"></i></button></td></tr>
+              <tr><td><strong style="color:var(--coord-primary)">G-038</strong></td><td><div class="td-primary">Smart Healthcare Monitoring</div></td><td><span class="evaluator-chip"><i class="fas fa-user"></i> Dr. Kamran Raza</span></td><td><div style="display:flex;align-items:center;gap:.5rem"><div class="score-bar" style="width:80px"><div class="score-fill" style="width:85%"></div></div><span style="font-weight:800;font-size:.8rem;color:var(--coord-primary)">85/100</span></div></td><td><span class="chip chip-success"><span class="chip-dot"></span>Graded</span></td><td><button class="action-btn action-btn-success"><i class="fas fa-eye"></i></button></td></tr>
+              <tr><td><strong style="color:var(--coord-primary)">G-055</strong></td><td><div class="td-primary">E-Learning Platform</div></td><td><span class="evaluator-chip"><i class="fas fa-user"></i> Dr. U. Qureshi</span></td><td><div style="display:flex;align-items:center;gap:.5rem"><div class="score-bar" style="width:80px"><div class="score-fill" style="width:72%"></div></div><span style="font-weight:800;font-size:.8rem;color:var(--coord-primary)">72/100</span></div></td><td><span class="chip chip-success"><span class="chip-dot"></span>Graded</span></td><td><button class="action-btn action-btn-success"><i class="fas fa-eye"></i></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mid-Term Phase -->
+    <div id="tab-midterm" class="eval-phase-content">
+      <div class="schedule-card animate-fade-in-delay-3">
+        <div class="sc-header">
+          <div><div class="sc-phase">Mid-Term Evaluation Phase</div><div class="sc-date">Jul 10 – Jul 25, 2026 · 24 Groups · <span style="color:#d97706;font-weight:700">Upcoming — 76 days away</span></div></div>
+          <div style="display:flex;gap:.5rem">
+            <button class="btn btn-outline btn-sm" onclick="openModal('assignEvaluatorModal')"><i class="fas fa-user-plus"></i> Assign Evaluators</button>
+            <button class="btn-coord" onclick="openModal('evalScheduleModal')"><i class="fas fa-calendar-plus"></i> Schedule Slots</button>
+          </div>
+        </div>
+        <div style="padding:var(--space-5) var(--space-6);">
+          <div style="background:var(--color-lightbg);border:1px solid var(--color-border-blue);border-radius:var(--radius-xl);padding:var(--space-4);display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5);">
+            <i class="fas fa-info-circle" style="color:var(--color-secondary);font-size:1.1rem;flex-shrink:0"></i>
+            <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);font-weight:500">Mid-Term evaluations are scheduled for <strong>July 10–25, 2026</strong>. Assign evaluators to each group now to allow them time to review submitted progress reports before the evaluation date.</div>
+          </div>
+          <div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);margin-bottom:var(--space-3)">Groups Awaiting Evaluator Assignment</div>
+          <div id="midtermGroupList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final Defense Phase -->
+    <div id="tab-final" class="eval-phase-content" style="display:none">
+      <div class="schedule-card">
+        <div class="sc-header"><div><div class="sc-phase">Final Defense Phase</div><div class="sc-date">Dec 5 – Dec 10, 2026 · Scheduled</div></div><button class="btn-coord" onclick="openModal('evalScheduleModal')"><i class="fas fa-calendar-plus"></i> Schedule Viva Slots</button></div>
+        <div style="padding:var(--space-5) var(--space-6)">
+          <div style="background:var(--color-lightbg);border:1px solid var(--color-border-blue);border-radius:var(--radius-xl);padding:var(--space-4);display:flex;align-items:center;gap:var(--space-3)">
+            <i class="fas fa-calendar-alt" style="color:var(--color-secondary);font-size:1.1rem;flex-shrink:0"></i>
+            <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);font-weight:500">Final defense evaluations are scheduled for <strong>Dec 5–10, 2026</strong>. Defense scheduling and panel assignments will be configurable starting November 1, 2026.</div>
+          </div>
+          <div style="margin-top:var(--space-5)">
+            <div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);margin-bottom:var(--space-3)">Evaluation Panel Setup</div>
+            <div class="data-table-wrap" style="border:none;border-radius:0">
+              <table class="data-table"><thead><tr><th>Panel</th><th>Panel Members</th><th>Groups Assigned</th><th>Venue</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Panel A</strong></td><td>Dr. Ali Hassan, Dr. External-1</td><td>G-042, G-038, G-055, G-023</td><td>CS-301</td><td><span class="chip chip-gray"><span class="chip-dot"></span>Draft</span></td></tr>
+                <tr><td><strong>Panel B</strong></td><td>Dr. Fatima Noor, Dr. External-2</td><td>G-061, G-019, G-031, G-011</td><td>CS-302</td><td><span class="chip chip-gray"><span class="chip-dot"></span>Draft</span></td></tr>
+                <tr><td><strong>Panel C</strong></td><td>Dr. Usman Qureshi, Dr. External-1</td><td>G-007, G-044, G-036</td><td>CS-303</td><td><span class="chip chip-gray"><span class="chip-dot"></span>Draft</span></td></tr>
+              </tbody></table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Schedule Modal -->
+<div class="modal-overlay" id="evalScheduleModal">
+  <div class="modal modal-md">
+    <div class="modal-header"><div class="modal-title">Schedule Evaluation Phase</div><button class="modal-close" onclick="closeModal('evalScheduleModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Evaluation Phase</label><select class="form-select"><option>Mid-Term Evaluation</option><option>Final Defense (Viva)</option><option>Proposal Review</option></select></div>
+      <div class="form-row-2">
+        <div class="form-group"><label class="form-label">Start Date</label><input type="date" class="form-input" value="2026-07-10"/></div>
+        <div class="form-group"><label class="form-label">End Date</label><input type="date" class="form-input" value="2026-07-25"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Submission Deadline for Reports</label><input type="date" class="form-input" value="2026-07-08"/></div>
+      <div class="form-group"><label class="form-label">Slot Duration (minutes)</label><select class="form-select"><option>20 minutes</option><option>30 minutes</option><option selected>45 minutes</option><option>60 minutes</option></select></div>
+      <div class="form-group"><label class="form-label">Evaluation Venue(s)</label><input type="text" class="form-input" value="CS-301, CS-302, CS-303" placeholder="Room numbers or virtual platforms"/></div>
+      <div class="form-group"><label class="form-label">Notify All Groups?</label><select class="form-select"><option>Yes — Send announcement to all groups immediately</option><option>No — Save as draft only</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('evalScheduleModal')">Cancel</button>
+      <button class="btn-coord" onclick="closeModal('evalScheduleModal');showToast('✅ Evaluation phase scheduled! All groups notified.','success')"><i class="fas fa-calendar-check"></i> Schedule & Notify</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assign Evaluator Modal -->
+<div class="modal-overlay" id="assignEvaluatorModal">
+  <div class="modal modal-md">
+    <div class="modal-header"><div class="modal-title">Assign Evaluators to Groups</div><button class="modal-close" onclick="closeModal('assignEvaluatorModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Evaluation Phase</label><select class="form-select"><option>Mid-Term Evaluation</option><option>Final Defense (Viva)</option></select></div>
+      <div class="form-group"><label class="form-label">Select Group</label><select class="form-select" id="evalGroupSel"><option value="">-- All Unassigned Groups --</option><option>G-042 — AI Traffic Management</option><option>G-038 — Smart Healthcare</option><option>G-019 — Federated Learning</option><option>G-055 — E-Learning Platform</option></select></div>
+      <div class="form-group"><label class="form-label">Primary Evaluator</label><select class="form-select"><option>Dr. Usman Qureshi</option><option>Dr. Kamran Raza</option><option>Dr. Fatima Noor</option><option>External Evaluator</option></select></div>
+      <div class="form-group"><label class="form-label">Co-Evaluator (optional)</label><select class="form-select"><option value="">-- None --</option><option>Dr. Usman Qureshi</option><option>Dr. Kamran Raza</option><option>Dr. Fatima Noor</option><option>External Evaluator</option></select></div>
+      <div class="form-group"><label class="form-label">Evaluation Date</label><input type="date" class="form-input" value="2026-07-15"/></div>
+      <div class="form-group"><label class="form-label">Time Slot</label><select class="form-select"><option>09:00 AM – 09:45 AM</option><option>10:00 AM – 10:45 AM</option><option>11:00 AM – 11:45 AM</option><option>02:00 PM – 02:45 PM</option><option>03:00 PM – 03:45 PM</option></select></div>
+      <div class="form-group"><label class="form-label">Venue</label><input type="text" class="form-input" placeholder="e.g. CS-301 or Google Meet"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('assignEvaluatorModal')">Cancel</button>
+      <button class="btn-coord" onclick="closeModal('assignEvaluatorModal');showToast('✅ Evaluator assigned and schedule confirmed. Notification sent.','success')"><i class="fas fa-user-check"></i> Confirm Assignment</button>
+    </div>
+  </div>
+</div>
+
+<script src="../scripts/auth.js"></script>
+<script src="../scripts/coordinator.js"></script>
+<script>
+const MIDTERM_GROUPS = [
+  { id:'G-042', title:'AI Traffic Management System',       sup:'Dr. Ali Hassan',    evaluator:'',               score:null },
+  { id:'G-038', title:'Smart Healthcare Monitoring',       sup:'Dr. Ali Hassan',    evaluator:'Dr. U. Qureshi', score:null },
+  { id:'G-055', title:'E-Learning Platform',               sup:'Dr. Ali Hassan',    evaluator:'',               score:null },
+  { id:'G-019', title:'Federated Learning for Healthcare', sup:'Dr. Fatima Noor',   evaluator:'',               score:null },
+  { id:'G-031', title:'Smart Energy Management',           sup:'Dr. U. Qureshi',    evaluator:'Dr. K. Raza',    score:null },
+  { id:'G-044', title:'Autonomous Drone Navigation',        sup:'Dr. Kamran Raza',   evaluator:'',               score:null },
+];
+
+function renderMidtermGroups() {
+  document.getElementById('midtermGroupList').innerHTML = MIDTERM_GROUPS.map(g => `
+    <div class="eval-row">
+      <span style="font-weight:800;color:var(--coord-primary);width:50px;flex-shrink:0">${g.id}</span>
+      <div style="flex:1;min-width:0"><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">${g.title}</div><div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600">Supervisor: ${g.sup}</div></div>
+      ${g.evaluator
+        ? `<span class="evaluator-chip"><i class="fas fa-user-check"></i> ${g.evaluator}</span><span class="chip chip-success" style="font-size:.6rem"><span class="chip-dot"></span>Assigned</span>`
+        : `<span class="chip chip-warning" style="font-size:.6rem"><span class="chip-dot"></span>Not Assigned</span>`}
+      <button class="btn-coord" style="padding:.35rem .8rem;font-size:.7rem;border-radius:var(--radius-lg)" onclick="document.getElementById('evalGroupSel').value='${g.id}';openModal('assignEvaluatorModal')">${g.evaluator ? 'Reassign' : 'Assign'}</button>
+    </div>
+  `).join('');
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.eval-phase-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.eval-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).style.display = '';
+}
+
+renderMidtermGroups();
+</script>
+</body>
+</html>

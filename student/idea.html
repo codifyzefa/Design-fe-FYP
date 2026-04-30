@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Idea — FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../styles/tokens.css" />
+  <link rel="stylesheet" href="../styles/dashboard.css" />
+  <style>
+    .section-dropdown { margin-bottom: var(--space-6); }
+    .dropdown-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--radius-lg); cursor: pointer; transition: all var(--transition-fast); }
+    .dropdown-header:hover { border-color: var(--color-secondary); }
+    .dropdown-title { font-size: var(--font-size-md); font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); }
+    .dropdown-content { padding: var(--space-5) 0; display: none; }
+    .dropdown-content.open { display: block; }
+    .idea-card { background: white; border: 1.5px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); margin-bottom: var(--space-4); transition: border var(--transition-fast); }
+    .idea-card:hover { border-color: var(--color-primary); }
+    .idea-title { font-size: var(--font-size-lg); font-weight: 800; color: var(--color-primary); margin-bottom: var(--space-2); }
+    .idea-desc { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-4); line-height: 1.6; }
+    .idea-meta { display: flex; gap: var(--space-4); font-size: var(--font-size-xs); font-weight: 600; color: var(--color-text-muted); }
+  </style>
+</head>
+<body class="dashboard-body">
+  
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="sidebar-logo-text"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Student Portal</div></div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Overview</div>
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Group & Supervisor</div>
+        <a href="partners.html" class="nav-item"><i class="fas fa-users nav-item-icon"></i><span class="nav-item-label">FYP Partners</span></a>
+        <a href="supervisor.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Selection</span></a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Project Execution</div>
+        <a href="idea.html" class="nav-item active"><i class="fas fa-lightbulb nav-item-icon"></i><span class="nav-item-label">Project Idea</span></a>
+        <a href="tasks.html" class="nav-item"><i class="fas fa-tasks nav-item-icon"></i><span class="nav-item-label">Task Manager</span></a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="topbar-left"><div class="topbar-page-title">Project Idea</div></div>
+    </header>
+
+    <main class="content-area">
+      
+      <div class="section-dropdown">
+        <div class="dropdown-header" onclick="toggleDropdown('newIdea')">
+          <div class="dropdown-title"><i class="fas fa-plus-circle text-primary"></i> New Idea</div>
+          <i class="fas fa-chevron-down text-muted" id="icon-newIdea"></i>
+        </div>
+        <div class="dropdown-content open" id="content-newIdea">
+          <div class="card">
+            <form>
+              <div class="form-group mb-16">
+                <label class="form-label">Project Title</label>
+                <input type="text" class="form-input" placeholder="e.g. AI Based Traffic Management" required/>
+              </div>
+              <div class="form-group mb-16">
+                <label class="form-label">Problem Statement</label>
+                <textarea class="form-textarea" placeholder="Describe the core problem..."></textarea>
+              </div>
+              <div class="form-group mb-16">
+                <label class="form-label">Proposed Solution & Description</label>
+                <textarea class="form-textarea" placeholder="How will your project solve this..."></textarea>
+              </div>
+              <div class="form-group mb-16">
+                <label class="form-label">Technology Stack</label>
+                <input type="text" class="form-input" placeholder="e.g. React, Node.js, Python, TensorFlow"/>
+              </div>
+              <div class="form-group mb-16">
+                <label class="form-label">Upload Proposal Document (PDF)</label>
+                <input type="file" class="form-input" accept="application/pdf" />
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Idea</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-dropdown">
+        <div class="dropdown-header" onclick="toggleDropdown('appIdea')">
+          <div class="dropdown-title"><i class="fas fa-check-circle text-primary"></i> Approved Ideas (University Provided)</div>
+          <i class="fas fa-chevron-down text-muted" id="icon-appIdea"></i>
+        </div>
+        <div class="dropdown-content" id="content-appIdea">
+          <div class="idea-card">
+            <div class="idea-title">Blockchain Based Voting System</div>
+            <div class="idea-desc">A secure and transparent e-voting system utilizing smart contracts to ensure data immutability.</div>
+            <div class="idea-meta">
+              <span><i class="fas fa-tag"></i> Cybersecurity</span>
+              <span><i class="fas fa-user-tie"></i> Dr. Zeeshan Ali</span>
+            </div>
+            <div style="margin-top:var(--space-4);">
+              <button class="btn btn-outline btn-sm">Select Idea</button>
+            </div>
+          </div>
+          <div class="idea-card">
+            <div class="idea-title">Smart Agriculture IoT Hub</div>
+            <div class="idea-desc">An integrated sensor network system for monitoring soil moisture and environmental conditions to automate farming.</div>
+            <div class="idea-meta">
+              <span><i class="fas fa-tag"></i> IoT / Hardware</span>
+              <span><i class="fas fa-user-tie"></i> Ms. Sana Malik</span>
+            </div>
+            <div style="margin-top:var(--space-4);">
+              <button class="btn btn-outline btn-sm">Select Idea</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+  <script src="../scripts/auth.js"></script>
+  <script>
+    AUTH.requireRole('Student');
+    function toggleDropdown(id) {
+      const content = document.getElementById('content-' + id);
+      const icon = document.getElementById('icon-' + id);
+      content.classList.toggle('open');
+      icon.className = content.classList.contains('open') ? 'fas fa-chevron-up text-muted' : 'fas fa-chevron-down text-muted';
+    }
+  </script>
+</body>
+</html>

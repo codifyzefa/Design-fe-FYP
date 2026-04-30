@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Review Logs — Supervisor Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../styles/tokens.css"/>
+  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  <style>
+    :root{--color-portal:#5b21b6;--color-portal-light:#7c3aed;}
+    .sidebar{background:var(--color-portal);}
+    .sidebar .nav-item.active{background:var(--color-portal-light);box-shadow:0 4px 16px rgba(124,58,237,.4);}
+    .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+    .page-header-title{font-size:1.5rem;font-weight:900;color:var(--color-text);margin-bottom:var(--space-1);}
+    .portal-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .6rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);border-radius:var(--radius-full);font-size:.6rem;font-weight:800;color:var(--color-portal);text-transform:uppercase;letter-spacing:.1em;}
+    .log-review-card{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);overflow:hidden;transition:border-color var(--transition-base),box-shadow var(--transition-base);}
+    .log-review-card:hover{border-color:var(--color-border-blue);box-shadow:var(--shadow-md);}
+    .lrc-header{padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--color-border-light);background:var(--color-surface-alt);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+    .lrc-group{display:flex;align-items:center;gap:var(--space-3);}
+    .lrc-avatar{width:40px;height:40px;background:rgba(91,33,182,.1);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:#5b21b6;flex-shrink:0;}
+    .lrc-name{font-size:var(--font-size-sm);font-weight:800;color:var(--color-text);}
+    .lrc-meta{font-size:.65rem;color:var(--color-text-faint);font-weight:600;margin-top:2px;}
+    .lrc-body{padding:var(--space-6);}
+    .lrc-week{font-size:1rem;font-weight:800;color:var(--color-text);margin-bottom:.25rem;}
+    .lrc-period{font-size:var(--font-size-xs);color:var(--color-text-faint);font-weight:600;margin-bottom:var(--space-4);}
+    .lrc-activity{font-size:var(--font-size-sm);color:var(--color-text-secondary);line-height:1.75;font-weight:500;margin-bottom:var(--space-4);padding:var(--space-4);background:var(--color-surface-alt);border-radius:var(--radius-xl);border-left:3px solid var(--color-secondary);}
+    .lrc-info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-5);}
+    .lrc-info-item{background:var(--color-lightbg);padding:var(--space-3) var(--space-4);border-radius:var(--radius-xl);}
+    .lrc-info-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-faint);margin-bottom:2px;}
+    .lrc-info-val{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);}
+    .feedback-area-wrap{margin-top:var(--space-2);}
+    .feedback-area-label{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text-secondary);margin-bottom:.4rem;display:block;}
+    .feedback-area{width:100%;padding:.75rem 1rem;border:1.5px solid var(--color-border);border-radius:var(--radius-xl);font-family:var(--font-family);font-size:var(--font-size-sm);color:var(--color-text);resize:vertical;min-height:90px;outline:none;transition:border-color var(--transition-fast);}
+    .feedback-area:focus{border-color:#5b21b6;box-shadow:0 0 0 3px rgba(91,33,182,.12);}
+    .lrc-actions{display:flex;gap:var(--space-3);margin-top:var(--space-4);justify-content:flex-end;flex-wrap:wrap;}
+    .btn-approve{background:#059669;color:white;border:none;border-radius:var(--radius-xl);padding:.55rem 1.25rem;font-family:var(--font-family);font-size:var(--font-size-sm);font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:all var(--transition-fast);}
+    .btn-approve:hover{background:#047857;transform:translateY(-1px);}
+    .btn-reject{background:#fef2f2;color:var(--color-danger);border:1.5px solid #fecaca;border-radius:var(--radius-xl);padding:.55rem 1.25rem;font-family:var(--font-family);font-size:var(--font-size-sm);font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:all var(--transition-fast);}
+    .btn-reject:hover{background:#fee2e2;}
+    .done-state{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:var(--space-6);background:#ecfdf5;border-radius:var(--radius-xl);color:#059669;font-size:var(--font-size-sm);font-weight:700;}
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="../scripts/auth.js"></script>
+<script>const user=AUTH.requireRole('supervisor');if(user)initTopbar(user);</script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Supervisor Portal</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">My Projects</div>
+      <a href="projects.html" class="nav-item"><i class="fas fa-project-diagram nav-item-icon"></i><span class="nav-item-label">Assigned Projects</span></a>
+      <a href="logs.html" class="nav-item active"><i class="fas fa-list-check nav-item-icon"></i><span class="nav-item-label">Review Logs</span></a>
+      <a href="feedback.html" class="nav-item"><i class="fas fa-comment-alt nav-item-icon"></i><span class="nav-item-label">Give Feedback</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluate.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluate Groups</span></a>
+      <a href="meetings.html" class="nav-item"><i class="fas fa-calendar-alt nav-item-icon"></i><span class="nav-item-label">Meeting Requests</span></a>
+    </div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Review Progress Logs</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="portal-badge"><i class="fas fa-chalkboard-teacher"></i> Supervisor</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">--</div><div class="user-info hidden-sm"><div class="user-name">Loading</div><div class="user-role">Supervisor</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">Progress Log Review</div><div style="font-size:var(--font-size-sm);color:var(--color-text-muted);">Review and approve or request revision for submitted weekly logs</div></div>
+      <span class="chip chip-danger"><span class="chip-dot"></span>3 Pending Review</span>
+    </div>
+
+    <!-- Log 1: Pending -->
+    <div class="log-review-card animate-fade-in-delay-1" id="log1">
+      <div class="lrc-header">
+        <div class="lrc-group">
+          <div class="lrc-avatar">AF</div>
+          <div><div class="lrc-name">Ahmed Farooq — Group G-042</div><div class="lrc-meta">AI-Powered Traffic Management System</div></div>
+        </div>
+        <span class="chip chip-warning"><span class="chip-dot"></span>Pending Review</span>
+      </div>
+      <div class="lrc-body">
+        <div class="lrc-week">Week 13 Progress Log</div>
+        <div class="lrc-period">Apr 27 – May 3, 2026 · Submitted: May 3, 2026</div>
+        <div class="lrc-activity">Started development of the adaptive signal control algorithm. Working on integration between the detection module and the signal controller. Encountered issues with real-time latency — investigating optimization techniques using TensorRT for GPU inference. Also began working on the React dashboard layout.</div>
+        <div class="lrc-info-grid">
+          <div class="lrc-info-item"><div class="lrc-info-label">Hours Worked</div><div class="lrc-info-val">22 hrs</div></div>
+          <div class="lrc-info-item"><div class="lrc-info-label">Meeting</div><div class="lrc-info-val">Not held</div></div>
+          <div class="lrc-info-item"><div class="lrc-info-label">Next Plan</div><div class="lrc-info-val">TensorRT optimization</div></div>
+        </div>
+        <div class="feedback-area-wrap">
+          <label class="feedback-area-label">Your Feedback (Optional)</label>
+          <textarea class="feedback-area" id="fb1" placeholder="Add feedback or revision comments for the student…"></textarea>
+        </div>
+        <div class="lrc-actions">
+          <button class="btn-reject" onclick="rejectLog('log1','G-042 Week 13')"><i class="fas fa-redo"></i> Request Revision</button>
+          <button class="btn-approve" onclick="approveLog('log1','G-042 Week 13')"><i class="fas fa-check"></i> Approve Log</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log 2: Pending -->
+    <div class="log-review-card animate-fade-in-delay-2" id="log2">
+      <div class="lrc-header">
+        <div class="lrc-group">
+          <div class="lrc-avatar">ZA</div>
+          <div><div class="lrc-name">Zara Ahmad — Group G-038</div><div class="lrc-meta">Smart Healthcare Monitoring System</div></div>
+        </div>
+        <span class="chip chip-warning"><span class="chip-dot"></span>Pending Review</span>
+      </div>
+      <div class="lrc-body">
+        <div class="lrc-week">Week 12 Progress Log</div>
+        <div class="lrc-period">Apr 20 – Apr 26, 2026 · Submitted: May 2, 2026</div>
+        <div class="lrc-activity">Completed the Arduino sensor integration for heart rate and SpO2 monitoring. Tested BLE connectivity with the Flutter mobile app. Data is successfully logging to Firebase Realtime Database. Working on alert notification system for abnormal readings.</div>
+        <div class="lrc-info-grid">
+          <div class="lrc-info-item"><div class="lrc-info-label">Hours Worked</div><div class="lrc-info-val">28 hrs</div></div>
+          <div class="lrc-info-item"><div class="lrc-info-label">Meeting</div><div class="lrc-info-val">Virtual · Apr 24</div></div>
+          <div class="lrc-info-item"><div class="lrc-info-label">Next Plan</div><div class="lrc-info-val">Alert system</div></div>
+        </div>
+        <div class="feedback-area-wrap">
+          <label class="feedback-area-label">Your Feedback (Optional)</label>
+          <textarea class="feedback-area" id="fb2" placeholder="Add feedback for the group…"></textarea>
+        </div>
+        <div class="lrc-actions">
+          <button class="btn-reject" onclick="rejectLog('log2','G-038 Week 12')"><i class="fas fa-redo"></i> Request Revision</button>
+          <button class="btn-approve" onclick="approveLog('log2','G-038 Week 12')"><i class="fas fa-check"></i> Approve Log</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log 3: Pending -->
+    <div class="log-review-card animate-fade-in-delay-3" id="log3">
+      <div class="lrc-header">
+        <div class="lrc-group">
+          <div class="lrc-avatar">HK</div>
+          <div><div class="lrc-name">Hassan Khan — Group G-055</div><div class="lrc-meta">E-Learning Platform with Adaptive Content</div></div>
+        </div>
+        <span class="chip chip-warning"><span class="chip-dot"></span>Pending Review</span>
+      </div>
+      <div class="lrc-body">
+        <div class="lrc-week">Week 11 Progress Log</div>
+        <div class="lrc-period">Apr 13 – Apr 19, 2026 · Submitted: Apr 30, 2026</div>
+        <div class="lrc-activity">Implemented the quiz recommendation engine using collaborative filtering. Built the student dashboard showing progress analytics. Fixed several UI bugs in the course player. Content management module is 80% complete.</div>
+        <div class="lrc-info-grid">
+          <div class="lrc-info-item"><div class="lrc-info-label">Hours Worked</div><div class="lrc-info-val">18 hrs</div></div>
+          <div class="lrc-info-item"><div class="lrc-info-label">Meeting</div><div class="lrc-info-val">Campus · Apr 15</div></div>
+          <div class="lrc-info-item"><div class="lrc-info-label">Next Plan</div><div class="lrc-info-val">CMS completion</div></div>
+        </div>
+        <div class="feedback-area-wrap">
+          <label class="feedback-area-label">Your Feedback (Optional)</label>
+          <textarea class="feedback-area" id="fb3" placeholder="Add feedback for the group…"></textarea>
+        </div>
+        <div class="lrc-actions">
+          <button class="btn-reject" onclick="rejectLog('log3','G-055 Week 11')"><i class="fas fa-redo"></i> Request Revision</button>
+          <button class="btn-approve" onclick="approveLog('log3','G-055 Week 11')"><i class="fas fa-check"></i> Approve Log</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let _collapsed=false;
+window.toggleSidebar=function(){_collapsed=!_collapsed;document.getElementById('sidebar')?.classList.toggle('collapsed',_collapsed);document.getElementById('mainWrap')?.classList.toggle('expanded',_collapsed);const ico=document.getElementById('collapseIcon');if(ico)ico.className=_collapsed?'fas fa-chevron-right':'fas fa-chevron-left';const lt=document.getElementById('sidebarLogoText');if(lt)lt.style.display=_collapsed?'none':'';};
+window.openMobileSidebar=function(){document.getElementById('sidebar')?.classList.add('mobile-open');document.getElementById('sidebarOverlay')?.classList.add('show');document.body.style.overflow='hidden';};
+window.closeMobileSidebar=function(){document.getElementById('sidebar')?.classList.remove('mobile-open');document.getElementById('sidebarOverlay')?.classList.remove('show');document.body.style.overflow='';};
+window.toggleNotifications=function(){document.getElementById('notifDropdown')?.classList.toggle('open');};
+window.toggleUserMenu=function(){document.getElementById('userDropdown')?.classList.toggle('open');};
+document.addEventListener('click',e=>{if(!document.getElementById('notifWrap')?.contains(e.target))document.getElementById('notifDropdown')?.classList.remove('open');if(!document.getElementById('userWrap')?.contains(e.target))document.getElementById('userDropdown')?.classList.remove('open');});
+const _d=document.getElementById('currentDate');if(_d)_d.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
+
+function approveLog(id, label) {
+  const card = document.getElementById(id);
+  card.querySelector('.lrc-body').innerHTML = `<div class="done-state"><i class="fas fa-check-circle" style="font-size:1.4rem"></i><span>Log Approved — Notification sent to ${label} student group.</span></div>`;
+  card.querySelector('.lrc-header').querySelector('.chip').outerHTML = '<span class="chip chip-success"><span class="chip-dot"></span>Approved</span>';
+}
+
+function rejectLog(id, label) {
+  const fb = document.getElementById('fb' + id.slice(-1)).value || 'Please revise and resubmit the log with more specific details.';
+  const card = document.getElementById(id);
+  card.querySelector('.lrc-body').innerHTML = `<div class="done-state" style="background:#fef2f2;color:#991b1b"><i class="fas fa-redo" style="font-size:1.4rem"></i><span>Revision Requested — Feedback sent to ${label} group: "${fb}"</span></div>`;
+}
+</script>
+</body>
+</html>

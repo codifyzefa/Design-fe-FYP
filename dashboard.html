@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — FYP Portal | CUI Abbottabad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/dashboard.css" />
+</head>
+<body class="dashboard-body">
+  <!-- ══════════════════ SIDEBAR ══════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="sidebar-logo-text" id="sidebarLogoText">
+          <div class="sidebar-title">CUI DFYP</div>
+          <div class="sidebar-role">Student</div>
+        </div>
+      </div>
+      <button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <i class="fas fa-chevron-left" id="collapseIcon"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebarNav">
+      <div class="nav-group">
+        <div class="nav-group-label" id="navGroupOverview">Overview</div>
+        <a href="dashboard.html" class="nav-item active" data-label="Dashboard">
+          <i class="fas fa-home nav-item-icon"></i>
+          <span class="nav-item-label">Dashboard</span>
+        </a>
+        <a href="proposal.html" class="nav-item" data-label="My Project">
+          <i class="fas fa-file-alt nav-item-icon"></i>
+          <span class="nav-item-label">My Project</span>
+          <span class="nav-badge nav-badge-warning">Pending</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label" id="navGroupMgmt">Management</div>
+        <a href="supervisor.html" class="nav-item" data-label="Supervisor">
+          <i class="fas fa-user-tie nav-item-icon"></i>
+          <span class="nav-item-label">Supervisor</span>
+        </a>
+        <a href="progress.html" class="nav-item" data-label="Progress Logs">
+          <i class="fas fa-chart-line nav-item-icon"></i>
+          <span class="nav-item-label">Progress Logs</span>
+        </a>
+        <a href="milestones.html" class="nav-item" data-label="Milestones">
+          <i class="fas fa-flag nav-item-icon"></i>
+          <span class="nav-item-label">Milestones</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label" id="navGroupEval">Evaluation</div>
+        <a href="evaluation.html" class="nav-item" data-label="Evaluations">
+          <i class="fas fa-star nav-item-icon"></i>
+          <span class="nav-item-label">Evaluations</span>
+        </a>
+        <a href="submissions.html" class="nav-item" data-label="Submissions">
+          <i class="fas fa-upload nav-item-icon"></i>
+          <span class="nav-item-label">Submissions</span>
+        </a>
+        <a href="reports.html" class="nav-item" data-label="Reports">
+          <i class="fas fa-file-download nav-item-icon"></i>
+          <span class="nav-item-label">Reports</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" class="nav-item nav-item-logout" onclick="confirmLogout(event)">
+        <i class="fas fa-right-from-bracket nav-item-icon"></i>
+        <span class="nav-item-label">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Sidebar Overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- ══════════════════ MAIN ══════════════════ -->
+  <div class="main-wrap" id="mainWrap">
+    <!-- ── Topbar ──────────────────────────── -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-menu-btn" id="mobileMenuBtn" onclick="openMobileSidebar()" aria-label="Open menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div>
+          <div class="topbar-page-title" id="topbarPageTitle">Dashboard</div>
+          <div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <!-- Phase Chip -->
+        <div class="phase-chip">
+          <span class="phase-chip-dot"></span>
+          Proposal Phase
+          <span class="phase-chip-time">· 12d 4h left</span>
+        </div>
+
+        <!-- Notifications -->
+        <div class="topbar-icon-btn-wrap" id="notifWrap">
+          <button class="topbar-icon-btn" id="notifBtn" onclick="toggleNotifications()" aria-label="Notifications">
+            <i class="fas fa-bell"></i>
+            <span class="notif-dot"></span>
+          </button>
+          <div class="notifications-dropdown" id="notifDropdown">
+            <div class="dropdown-header">
+              <span class="dropdown-header-title">Notifications</span>
+              <button class="dropdown-action-btn">Mark all read</button>
+            </div>
+            <div class="notif-list">
+              <div class="notif-item notif-unread">
+                <div class="notif-icon notif-icon-info"><i class="fas fa-user-tie"></i></div>
+                <div class="notif-body">
+                  <div class="notif-title">Supervisor Assigned</div>
+                  <div class="notif-msg">Dr. Ali Hassan has been assigned as your FYP supervisor.</div>
+                  <div class="notif-time">Today · 10:32 AM</div>
+                </div>
+              </div>
+              <div class="notif-item notif-unread">
+                <div class="notif-icon notif-icon-warning"><i class="fas fa-clock"></i></div>
+                <div class="notif-body">
+                  <div class="notif-title">Proposal Deadline Approaching</div>
+                  <div class="notif-msg">Your FYP proposal must be submitted by May 5, 2026.</div>
+                  <div class="notif-time">Yesterday · 02:15 PM</div>
+                </div>
+              </div>
+              <div class="notif-item">
+                <div class="notif-icon notif-icon-success"><i class="fas fa-check"></i></div>
+                <div class="notif-body">
+                  <div class="notif-title">Registration Confirmed</div>
+                  <div class="notif-msg">Your FYP group has been successfully registered.</div>
+                  <div class="notif-time">Apr 20 · 11:00 AM</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Menu -->
+        <div class="topbar-icon-btn-wrap" id="userWrap">
+          <button class="user-btn" id="userBtn" onclick="toggleUserMenu()">
+            <div class="user-avatar">AF</div>
+            <div class="user-info hidden-sm">
+              <div class="user-name">Ahmed Farooq</div>
+              <div class="user-role">Student</div>
+            </div>
+            <i class="fas fa-chevron-down user-chevron hidden-sm"></i>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <div class="user-dropdown-name">Ahmed Farooq</div>
+              <div class="user-dropdown-role">Student · SP21-BCS-001</div>
+            </div>
+            <hr class="dropdown-divider" />
+            <a href="#" class="user-dropdown-item">
+              <i class="fas fa-user-circle"></i> My Profile
+            </a>
+            <a href="#" class="user-dropdown-item">
+              <i class="fas fa-cog"></i> Settings
+            </a>
+            <hr class="dropdown-divider" />
+            <a href="#" onclick="confirmLogout(event)" class="user-dropdown-item user-dropdown-item-danger">
+              <i class="fas fa-power-off"></i> Sign Out
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Content Area ────────────────────── -->
+    <main class="content-area" id="contentArea">
+
+      <!-- ── Welcome Banner ───────────────── -->
+      <div class="welcome-banner animate-fade-in">
+        <div class="welcome-banner-info">
+          <div class="welcome-banner-title">Good morning, Ahmed! 👋</div>
+          <div class="welcome-banner-subtitle">Your FYP proposal is pending submission. The deadline is May 5, 2026.</div>
+        </div>
+        <a href="proposal.html" class="btn btn-primary btn-sm welcome-banner-cta">
+          Submit Proposal <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- ── Stats Row ─────────────────────── -->
+      <div class="stats-row animate-fade-in-delay-1">
+        <div class="stat-card">
+          <div class="stat-card-icon stat-card-icon-blue"><i class="fas fa-file-alt"></i></div>
+          <div class="stat-card-body">
+            <div class="stat-card-label">Project Status</div>
+            <div class="stat-card-value">Proposal</div>
+            <div class="stat-card-sub"><span class="chip chip-warning"><span class="chip-dot"></span>Pending Review</span></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon stat-card-icon-purple"><i class="fas fa-user-tie"></i></div>
+          <div class="stat-card-body">
+            <div class="stat-card-label">Supervisor</div>
+            <div class="stat-card-value">Dr. Ali Hassan</div>
+            <div class="stat-card-sub"><span class="chip chip-success"><span class="chip-dot"></span>Assigned</span></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon stat-card-icon-amber"><i class="fas fa-flag"></i></div>
+          <div class="stat-card-body">
+            <div class="stat-card-label">Milestones</div>
+            <div class="stat-card-value">2 / 8</div>
+            <div class="stat-card-sub"><span class="chip chip-info"><span class="chip-dot"></span>25% Complete</span></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon stat-card-icon-green"><i class="fas fa-star"></i></div>
+          <div class="stat-card-body">
+            <div class="stat-card-label">Evaluation Score</div>
+            <div class="stat-card-value">—</div>
+            <div class="stat-card-sub"><span class="chip chip-gray"><span class="chip-dot"></span>Not Yet</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Main Grid ─────────────────────── -->
+      <div class="dashboard-grid animate-fade-in-delay-2">
+
+        <!-- Project Info Card -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">My FYP Project</div>
+              <div class="card-subtitle">Spring 2026</div>
+            </div>
+            <span class="chip chip-warning"><span class="chip-dot"></span>Proposal Review</span>
+          </div>
+          <div class="project-info">
+            <div class="project-title">AI-Powered Traffic Management System Using Computer Vision</div>
+            <div class="project-meta">
+              <div class="project-meta-item">
+                <i class="fas fa-users"></i>
+                <span>3 Members</span>
+              </div>
+              <div class="project-meta-item">
+                <i class="fas fa-tag"></i>
+                <span>Artificial Intelligence</span>
+              </div>
+              <div class="project-meta-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Feb 2026 – Dec 2026</span>
+              </div>
+            </div>
+            <div class="progress-section">
+              <div class="progress-header">
+                <span>Overall Progress</span>
+                <span class="progress-pct">25%</span>
+              </div>
+              <div class="progress-bar-wrap">
+                <div class="progress-bar" style="width:25%"></div>
+              </div>
+            </div>
+            <div class="project-actions">
+              <a href="proposal.html" class="btn btn-primary btn-sm">View Proposal</a>
+              <a href="progress.html" class="btn btn-outline btn-sm">Log Progress</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="dashboard-right-col">
+          <!-- Timeline Card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">FYP Timeline</div>
+            </div>
+            <div class="timeline">
+              <div class="timeline-item timeline-done">
+                <div class="timeline-dot timeline-dot-done"><i class="fas fa-check"></i></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">Group Registration</div>
+                  <div class="timeline-date">Feb 10, 2026</div>
+                </div>
+              </div>
+              <div class="timeline-item timeline-done">
+                <div class="timeline-dot timeline-dot-done"><i class="fas fa-check"></i></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">Supervisor Assignment</div>
+                  <div class="timeline-date">Mar 5, 2026</div>
+                </div>
+              </div>
+              <div class="timeline-item timeline-active">
+                <div class="timeline-dot timeline-dot-active"><i class="fas fa-clock"></i></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">Proposal Submission</div>
+                  <div class="timeline-date">Due May 5, 2026 <span class="chip chip-warning" style="font-size:0.55rem; padding: 0.1rem 0.4rem;">12 days</span></div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"><i class="fas fa-circle-dot"></i></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">Mid-Term Review</div>
+                  <div class="timeline-date">Jul 15, 2026</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"><i class="fas fa-circle-dot"></i></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">Final Submission</div>
+                  <div class="timeline-date">Nov 20, 2026</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"><i class="fas fa-circle-dot"></i></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">Final Defense (Viva)</div>
+                  <div class="timeline-date">Dec 5, 2026</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Supervisor Card -->
+          <div class="card" style="margin-top: var(--space-5);">
+            <div class="card-header">
+              <div class="card-title">My Supervisor</div>
+              <a href="supervisor.html" class="btn btn-outline btn-sm">View Details</a>
+            </div>
+            <div class="supervisor-profile">
+              <div class="supervisor-avatar">AH</div>
+              <div class="supervisor-info">
+                <div class="supervisor-name">Dr. Ali Hassan</div>
+                <div class="supervisor-domain">Department of Computer Science</div>
+                <div class="supervisor-email"><i class="fas fa-envelope"></i> ali.hassan@cuiatd.edu.pk</div>
+                <div class="supervisor-slot">Office Hours: Mon-Wed 10:00–12:00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Recent Activity ───────────────── -->
+      <div class="card animate-fade-in-delay-3" style="margin-top: var(--space-5);">
+        <div class="card-header">
+          <div class="card-title">Recent Activity</div>
+          <a href="#" class="btn btn-outline btn-sm">View All</a>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Activity</th>
+                <th>User</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="td-primary">Supervisor Assigned</div>
+                  <div class="td-muted">Dr. Ali Hassan assigned to FYP Group</div>
+                </td>
+                <td>FYP Coordinator</td>
+                <td>Apr 22, 2026</td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span>Completed</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="td-primary">Proposal Draft Saved</div>
+                  <div class="td-muted">Initial proposal document uploaded</div>
+                </td>
+                <td>Ahmed Farooq</td>
+                <td>Apr 18, 2026</td>
+                <td><span class="chip chip-info"><span class="chip-dot"></span>Draft</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="td-primary">Group Registration</div>
+                  <div class="td-muted">FYP Group #42 registered with 3 members</div>
+                </td>
+                <td>Ahmed Farooq</td>
+                <td>Feb 10, 2026</td>
+                <td><span class="chip chip-success"><span class="chip-dot"></span>Approved</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="scripts/auth.js"></script>
+  <script src="scripts/dashboard.js"></script>
+</body>
+</html>

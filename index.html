@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FYP Portal — COMSATS Abbottabad | CS-DFYP</title>
+  <meta name="description" content="Final Year Project Portal for COMSATS University Islamabad, Abbottabad Campus. Manage FYP proposals, supervisor assignments, progress tracking, and evaluations." />
+  <meta name="theme-color" content="#1E3A8A" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/landing.css" />
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand" aria-label="FYP Portal Home">
+        <img src="../public/logocui.png" alt="CUI Logo" class="nav-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="nav-logo-fallback" style="display:none">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="nav-brand-text">
+          <span class="nav-title">CUI Abbottabad</span>
+          <span class="nav-subtitle">FYP Portal</span>
+        </div>
+      </a>
+
+      <div class="nav-links" id="desktopNav">
+        <a href="about-program.html" class="nav-link">About</a>
+        <a href="eligibility.html" class="nav-link">Eligibility</a>
+        <a href="process.html" class="nav-link">Process</a>
+        <a href="guidelines.html" class="nav-link">Guidelines</a>
+        <a href="developers.html" class="nav-link">Team</a>
+        <a href="faq.html" class="nav-link">FAQ</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-primary btn-sm nav-cta">
+          Portal Login <i class="fas fa-arrow-right"></i>
+        </a>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+          <i class="fas fa-bars" id="navIcon"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-menu-inner">
+        <a href="about-program.html" class="mobile-link">About Program</a>
+        <a href="eligibility.html" class="mobile-link">Eligibility Criteria</a>
+        <a href="process.html" class="mobile-link">Process</a>
+        <a href="guidelines.html" class="mobile-link">Guidelines</a>
+        <a href="developers.html" class="mobile-link">Our Developers</a>
+        <a href="features.html" class="mobile-link">Features</a>
+        <a href="faq.html" class="mobile-link">FAQ</a>
+        <a href="#announcements" class="mobile-link">Announcements</a>
+        <a href="contact.html" class="mobile-link">Contact</a>
+        <a href="login.html" class="btn btn-primary w-full mt-2">Portal Login <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-bg">
+        <div class="hero-bg-overlay"></div>
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+      </div>
+      <div class="container hero-content">
+        <div class="hero-badge animate-fade-in">
+          <span class="badge-dot"></span>
+          <i class="fas fa-graduation-cap"></i>
+          Empowering Research &amp; Innovation
+        </div>
+        <h1 class="hero-title animate-fade-in-delay-1">
+          Professionalizing Your<br />
+          <span class="text-highlight">FYP Experience</span>
+        </h1>
+        <p class="hero-subtitle animate-fade-in-delay-2">
+          Welcome to COMSATS University Islamabad, Abbottabad Campus's Digital Final Year Project
+          Management System. Streamlining academic oversight, supervisor coordination, and evaluation workflows.
+        </p>
+        <div class="hero-actions animate-fade-in-delay-3">
+          <a href="login.html" class="btn btn-primary btn-lg">
+            Access Portal <i class="fas fa-arrow-right"></i>
+          </a>
+          <a href="about-program.html" class="btn btn-outline btn-lg">
+            Learn More About Program
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="container stats-grid">
+        <div class="stat-item">
+          <div class="stat-icon stat-icon-indigo"><i class="fas fa-book-open"></i></div>
+          <div><div class="stat-value text-primary">300+</div><div class="stat-label">Active Projects</div></div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon stat-icon-emerald"><i class="fas fa-users"></i></div>
+          <div><div class="stat-value text-emerald">80+</div><div class="stat-label">Supervisors</div></div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon stat-icon-amber"><i class="fas fa-file-alt"></i></div>
+          <div><div class="stat-value text-amber">100%</div><div class="stat-label">Digital Reports</div></div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon stat-icon-rose"><i class="fas fa-award"></i></div>
+          <div><div class="stat-value text-rose">Top</div><div class="stat-label">Accreditations</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="section bg-white border-y-light">
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-text">
+            <p class="section-label">The Program Purpose</p>
+            <h2 class="section-title">Empowering Students Through Applied Research</h2>
+            <p class="section-desc">
+              The Final Year Project program is the cornerstone of our CS curriculum, providing students with
+              the opportunity to apply theoretical knowledge to real-world problems, guided by experienced faculty supervisors.
+            </p>
+            <div class="about-features">
+              <div class="about-feature">
+                <div class="feature-dot-icon"><div class="feature-dot"></div></div>
+                <div>
+                  <h4>Research Excellence</h4>
+                  <p>Fostering innovation through structured research methodologies and academic rigor.</p>
+                </div>
+              </div>
+              <div class="about-feature">
+                <div class="feature-dot-icon"><div class="feature-dot"></div></div>
+                <div>
+                  <h4>Expert Supervision</h4>
+                  <p>Dedicated faculty mentorship bridging theoretical knowledge and practical implementation.</p>
+                </div>
+              </div>
+              <div class="about-feature">
+                <div class="feature-dot-icon"><div class="feature-dot"></div></div>
+                <div>
+                  <h4>Structured Evaluation</h4>
+                  <p>Comprehensive multi-stage evaluation ensuring academic integrity and project quality.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="about-cards-wrap">
+            <div class="about-orb about-orb-1"></div>
+            <div class="about-orb about-orb-2"></div>
+            <div class="about-cards-grid">
+              <div class="about-card about-card-hover">
+                <i class="fas fa-book-open about-card-icon" style="color:#6366f1"></i>
+                <div class="about-card-val text-primary">300+</div>
+                <div class="about-card-lbl">Active Projects</div>
+              </div>
+              <div class="about-card about-card-hover mt-8">
+                <i class="fas fa-users about-card-icon" style="color:#10b981"></i>
+                <div class="about-card-val text-emerald">80+</div>
+                <div class="about-card-lbl">Supervisors</div>
+              </div>
+              <div class="about-card about-card-hover">
+                <i class="fas fa-tasks about-card-icon" style="color:#f59e0b"></i>
+                <div class="about-card-val text-amber">100%</div>
+                <div class="about-card-lbl">Digital Tracking</div>
+              </div>
+              <div class="about-card about-card-hover mt-8">
+                <i class="fas fa-star about-card-icon" style="color:#f43f5e"></i>
+                <div class="about-card-val text-rose">Top</div>
+                <div class="about-card-lbl">Accreditations</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="section">
+      <div class="container">
+        <div class="text-center mb-16">
+          <p class="section-label">FYP Lifecycle</p>
+          <h2 class="section-title">Understanding the FYP Process</h2>
+        </div>
+        <div class="process-grid">
+          <div class="process-card">
+            <div class="process-step">01</div>
+            <div class="process-icon-wrap"><i class="fas fa-file-alt"></i></div>
+            <h3>Proposal Submission</h3>
+            <p>Students submit project proposals with title, abstract, objectives, and methodology for review.</p>
+          </div>
+          <div class="process-card">
+            <div class="process-step">02</div>
+            <div class="process-icon-wrap"><i class="fas fa-user-tie"></i></div>
+            <h3>Supervisor Assignment</h3>
+            <p>FYP coordinator assigns qualified supervisors based on domain expertise and availability.</p>
+          </div>
+          <div class="process-card">
+            <div class="process-step">03</div>
+            <div class="process-icon-wrap"><i class="fas fa-chart-line"></i></div>
+            <h3>Progress Tracking</h3>
+            <p>Regular progress updates, milestone submissions, and supervisor feedback cycles throughout the year.</p>
+          </div>
+          <div class="process-card">
+            <div class="process-step">04</div>
+            <div class="process-icon-wrap"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Final Evaluation</h3>
+            <p>Comprehensive evaluation panel review, viva voce, and final grading by faculty committee.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Announcements Section -->
+    <section id="announcements" class="section section-dark">
+      <div class="section-dark-orb"></div>
+      <div class="container">
+        <div class="announcements-header">
+          <div>
+            <p class="section-label-light">Latest Updates</p>
+            <h2 class="section-title-light">FYP Announcements<br />&amp; News</h2>
+          </div>
+          <button class="btn btn-ghost">View All <i class="fas fa-external-link-alt"></i></button>
+        </div>
+        <div class="announcements-grid">
+          <div class="announcement-card">
+            <div class="announcement-meta"><i class="fas fa-bell"></i> APRIL 20, 2026</div>
+            <h3>FYP Proposal Submission Deadline Extended</h3>
+            <p>The deadline for FYP proposal submissions for the Spring 2026 semester has been extended to May 5, 2026.</p>
+            <button class="announcement-link">Read Full Notice <i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="announcement-card">
+            <div class="announcement-meta"><i class="fas fa-bell"></i> APRIL 15, 2026</div>
+            <h3>Mid-Term Progress Review Schedule Released</h3>
+            <p>The schedule for mid-term FYP progress reviews has been published. Students must submit progress reports by April 30.</p>
+            <button class="announcement-link">Read Full Notice <i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="announcement-card">
+            <div class="announcement-meta"><i class="fas fa-bell"></i> APRIL 10, 2026</div>
+            <h3>Final Year Project Exhibition — Registration Open</h3>
+            <p>Registration for the Annual FYP Exhibition 2026 is now open. All groups completing their FYP must register before April 28.</p>
+            <button class="announcement-link">Read Full Notice <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section bg-white">
+      <div class="container">
+        <div class="contact-card">
+          <div class="contact-info">
+            <p class="section-label-light">Contact Us</p>
+            <h2 class="contact-title">Need Assistance?<br />We're here to help.</h2>
+            <div class="contact-items">
+              <div class="contact-item">
+                <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                <div>
+                  <h4>Email Us</h4>
+                  <p>csfyp@cuiatd.edu.pk</p>
+                </div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                <div>
+                  <h4>Call Us</h4>
+                  <p>+92-992-383591 Ext. 240</p>
+                </div>
+              </div>
+              <div class="contact-item" style="grid-column: span 2;">
+                <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div>
+                  <h4>Our Location</h4>
+                  <p>FYP Office, CS Department, COMSATS University Islamabad, Abbottabad Campus</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="contact-action-wrap">
+            <div class="contact-action-card">
+              <h3 class="contact-action-title">FYP Office</h3>
+              <p class="contact-action-sub">Monday – Friday: 08:30 AM – 04:30 PM</p>
+              <a href="mailto:csfyp@cuiatd.edu.pk" class="btn btn-primary w-full">Submit Query <i class="fas fa-arrow-right"></i></a>
+              <a href="https://www.cuiatd.edu.pk/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary-outline w-full mt-2">Official Website</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="../public/cuilogo.png" alt="CUI" class="footer-logo" onerror="this.style.display='none'" />
+        <span class="footer-brand-text">CUI FYP System</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Accessibility</a>
+      </div>
+      <div class="footer-copy">© 2026 CUI Abbottabad — Department of Computer Science. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const navToggle = document.getElementById('navToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const navIcon = document.getElementById('navIcon');
+    navToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+      navIcon.className = mobileMenu.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+    });
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); mobileMenu.classList.remove('open'); }
+      });
+    });
+
+    // Navbar scroll shadow
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Proposal — FYP Portal | CUI Abbottabad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/dashboard.css" />
+  <style>
+    /* ── Proposal Page Specific ─────────── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .page-header-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+
+    .page-header-sub {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+
+    .proposal-status-bar {
+      background: white;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-5) var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .proposal-status-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .status-step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .status-step-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .status-step-dot.done {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .status-step-dot.active {
+      background: var(--color-secondary);
+      color: white;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
+    }
+
+    .status-step-dot.pending {
+      background: var(--color-border-light);
+      color: var(--color-text-faint);
+      border: 1.5px solid var(--color-border);
+    }
+
+    .status-step-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+
+    .status-step-label.active { color: var(--color-secondary); }
+    .status-step-label.done { color: var(--color-success); }
+
+    .status-connector {
+      width: 40px;
+      height: 1.5px;
+      background: var(--color-border);
+      margin: 0 var(--space-2);
+    }
+
+    .status-connector.done { background: var(--color-success); }
+
+    /* Proposal form layout */
+    .proposal-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-5);
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .proposal-layout { grid-template-columns: 1fr; }
+    }
+
+    .form-section {
+      background: white;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+    }
+
+    .form-section-header {
+      padding: var(--space-5) var(--space-6);
+      border-bottom: 1.5px solid var(--color-border-light);
+      background: var(--color-surface-alt);
+    }
+
+    .form-section-title {
+      font-size: var(--font-size-base);
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .form-section-title i {
+      width: 28px;
+      height: 28px;
+      background: rgba(30,58,138,0.08);
+      color: var(--color-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    .form-section-body {
+      padding: var(--space-6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    @media (max-width: 768px) {
+      .form-row-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .form-row-3 { grid-template-columns: 1fr; }
+    }
+
+    /* Members table in form */
+    .members-table {
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+
+    .member-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 0;
+      border-bottom: 1px solid var(--color-border-light);
+      padding: var(--space-3) var(--space-4);
+      align-items: center;
+      transition: background var(--transition-fast);
+    }
+
+    .member-row:last-child { border-bottom: none; }
+    .member-row:hover { background: var(--color-surface-alt); }
+
+    .member-row-header {
+      background: var(--color-surface-alt);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-faint);
+    }
+
+    .member-remove-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-md);
+      background: #fef2f2;
+      color: var(--color-danger);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: all var(--transition-fast);
+    }
+
+    .member-remove-btn:hover { background: var(--color-danger); color: white; }
+
+    .add-member-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--color-secondary);
+      background: none;
+      border: 1.5px dashed var(--color-border-blue);
+      border-radius: var(--radius-xl);
+      padding: 0.65rem 1rem;
+      cursor: pointer;
+      width: 100%;
+      transition: all var(--transition-fast);
+      font-family: var(--font-family);
+    }
+
+    .add-member-btn:hover {
+      background: var(--color-lightbg);
+      border-color: var(--color-secondary);
+    }
+
+    /* File Upload */
+    .file-upload-area {
+      border: 2px dashed var(--color-border-blue);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-base);
+      background: var(--color-lightbg);
+    }
+
+    .file-upload-area:hover {
+      border-color: var(--color-secondary);
+      background: #eff6ff;
+    }
+
+    .file-upload-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(30,58,138,0.08);
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-3);
+      color: var(--color-primary);
+      font-size: 1.2rem;
+    }
+
+    .file-upload-title {
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+
+    .file-upload-sub {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-faint);
+      font-weight: 500;
+    }
+
+    /* Sidebar Info Cards */
+    .info-card {
+      background: white;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+    }
+
+    .info-card-header {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-border-light);
+      background: var(--color-surface-alt);
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .info-card-body {
+      padding: var(--space-5);
+    }
+
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .info-list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      font-size: var(--font-size-sm);
+    }
+
+    .info-list-item i {
+      color: var(--color-secondary);
+      font-size: 0.75rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .info-list-item-text {
+      font-weight: 500;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    .deadline-card {
+      background: linear-gradient(135deg, rgba(30,58,138,0.04), rgba(37,99,235,0.06));
+      border: 1.5px solid var(--color-border-blue);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-5);
+    }
+
+    .deadline-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-secondary);
+      margin-bottom: var(--space-2);
+    }
+
+    .deadline-date {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--color-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .deadline-remaining {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      border-radius: var(--radius-full);
+      padding: 0.2rem 0.6rem;
+    }
+
+    .form-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--space-3);
+      padding-top: var(--space-5);
+      border-top: 1.5px solid var(--color-border-light);
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body class="dashboard-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="sidebar-logo-text" id="sidebarLogoText">
+          <div class="sidebar-title">CUI DFYP</div>
+          <div class="sidebar-role">Student</div>
+        </div>
+      </div>
+      <button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()">
+        <i class="fas fa-chevron-left" id="collapseIcon"></i>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Overview</div>
+        <a href="dashboard.html" class="nav-item" data-label="Dashboard"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
+        <a href="proposal.html" class="nav-item active" data-label="My Project"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">My Project</span></a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Management</div>
+        <a href="supervisor.html" class="nav-item" data-label="Supervisor"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor</span></a>
+        <a href="progress.html" class="nav-item" data-label="Progress Logs"><i class="fas fa-chart-line nav-item-icon"></i><span class="nav-item-label">Progress Logs</span></a>
+        <a href="milestones.html" class="nav-item" data-label="Milestones"><i class="fas fa-flag nav-item-icon"></i><span class="nav-item-label">Milestones</span></a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Evaluation</div>
+        <a href="evaluation.html" class="nav-item" data-label="Evaluations"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluations</span></a>
+        <a href="submissions.html" class="nav-item" data-label="Submissions"><i class="fas fa-upload nav-item-icon"></i><span class="nav-item-label">Submissions</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="#" class="nav-item nav-item-logout" onclick="confirmLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- MAIN -->
+  <div class="main-wrap" id="mainWrap">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button>
+        <div>
+          <div class="topbar-page-title">Project Proposal</div>
+          <div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="phase-chip"><span class="phase-chip-dot"></span> Proposal Phase <span class="phase-chip-time">· 12d left</span></div>
+        <div class="topbar-icon-btn-wrap" id="notifWrap">
+          <button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+          <div class="notifications-dropdown" id="notifDropdown">
+            <div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div>
+            <div class="notif-list"><div style="padding: 2rem; text-align:center; color: var(--color-text-faint); font-size:0.8rem;">No new notifications</div></div>
+          </div>
+        </div>
+        <div class="topbar-icon-btn-wrap" id="userWrap">
+          <button class="user-btn" onclick="toggleUserMenu()">
+            <div class="user-avatar">AF</div>
+            <div class="user-info hidden-sm"><div class="user-name">Ahmed Farooq</div><div class="user-role">Student</div></div>
+            <i class="fas fa-chevron-down user-chevron hidden-sm"></i>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header"><div class="user-dropdown-name">Ahmed Farooq</div><div class="user-dropdown-role">Student · SP21-BCS-001</div></div>
+            <hr class="dropdown-divider" />
+            <a href="#" class="user-dropdown-item"><i class="fas fa-user-circle"></i> My Profile</a>
+            <hr class="dropdown-divider" />
+            <a href="login.html" class="user-dropdown-item user-dropdown-item-danger"><i class="fas fa-power-off"></i> Sign Out</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-area" id="contentArea">
+      <!-- Page Header -->
+      <div class="page-header animate-fade-in">
+        <div>
+          <div class="page-header-title">Project Proposal Submission</div>
+          <div class="page-header-sub">Fill in all required fields and submit for coordinator review</div>
+        </div>
+        <div style="display:flex; gap: var(--space-3);">
+          <button class="btn btn-outline btn-sm" onclick="saveDraft()"><i class="fas fa-save"></i> Save Draft</button>
+        </div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="proposal-status-bar animate-fade-in-delay-1">
+        <div class="proposal-status-steps">
+          <div class="status-step">
+            <div class="status-step-dot done"><i class="fas fa-check"></i></div>
+            <div class="status-step-label done">Group Setup</div>
+          </div>
+          <div class="status-connector done"></div>
+          <div class="status-step">
+            <div class="status-step-dot active"><span>2</span></div>
+            <div class="status-step-label active">Proposal Draft</div>
+          </div>
+          <div class="status-connector"></div>
+          <div class="status-step">
+            <div class="status-step-dot pending"><span>3</span></div>
+            <div class="status-step-label">Coordinator Review</div>
+          </div>
+          <div class="status-connector"></div>
+          <div class="status-step">
+            <div class="status-step-dot pending"><span>4</span></div>
+            <div class="status-step-label">Approved</div>
+          </div>
+        </div>
+        <span class="chip chip-warning"><span class="chip-dot"></span>Draft — Not Yet Submitted</span>
+      </div>
+
+      <!-- Layout -->
+      <div class="proposal-layout animate-fade-in-delay-2">
+        <div style="display:flex; flex-direction:column; gap: var(--space-5);">
+
+          <!-- Section 1: Basic Info -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div class="form-section-title">
+                <i class="fas fa-info-circle"></i>
+                Project Information
+              </div>
+            </div>
+            <div class="form-section-body">
+              <div class="form-group">
+                <label class="form-label" for="projectTitle">Project Title <span style="color: var(--color-danger)">*</span></label>
+                <input type="text" id="projectTitle" class="form-input" placeholder="e.g. AI-Powered Traffic Management System Using Computer Vision" value="AI-Powered Traffic Management System Using Computer Vision" />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="category">Project Category <span style="color: var(--color-danger)">*</span></label>
+                  <select id="category" class="form-select">
+                    <option>Select category…</option>
+                    <option selected>Artificial Intelligence / ML</option>
+                    <option>Web Development</option>
+                    <option>Mobile Development</option>
+                    <option>Cybersecurity</option>
+                    <option>Data Science / Analytics</option>
+                    <option>IoT / Embedded Systems</option>
+                    <option>Blockchain</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="techStack">Technology Stack <span style="color: var(--color-danger)">*</span></label>
+                  <input type="text" id="techStack" class="form-input" placeholder="e.g. Python, TensorFlow, OpenCV, React" value="Python, TensorFlow, OpenCV, React" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="abstract">Abstract / Problem Statement <span style="color: var(--color-danger)">*</span></label>
+                <textarea id="abstract" class="form-textarea" style="min-height:130px;" placeholder="Briefly describe the problem your project solves and the proposed solution…">Traffic congestion is a growing challenge in urban areas. This project proposes an AI-powered traffic management system using computer vision to analyze real-time traffic patterns and optimize signal timing dynamically.</textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="objectives">Objectives <span style="color: var(--color-danger)">*</span></label>
+                <textarea id="objectives" class="form-textarea" placeholder="List your project objectives (one per line)…">1. Develop a computer vision module to detect and count vehicles in real-time
+2. Build an adaptive signal control algorithm using ML
+3. Create a web dashboard for traffic operators
+4. Deploy and test in a simulated environment</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Group Members -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div class="form-section-title">
+                <i class="fas fa-users"></i>
+                Group Members
+              </div>
+            </div>
+            <div class="form-section-body">
+              <div class="members-table">
+                <div class="member-row member-row-header">
+                  <div>Student Name</div>
+                  <div>Registration No.</div>
+                  <div></div>
+                </div>
+                <div class="member-row">
+                  <div style="font-weight:700; color: var(--color-text); font-size: var(--font-size-sm);">Ahmed Farooq <span style="color:#10b981; font-size:0.6rem; font-weight:800;">(Leader)</span></div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">SP21-BCS-001</div>
+                  <div></div>
+                </div>
+                <div class="member-row">
+                  <div style="font-weight:600; color: var(--color-text); font-size: var(--font-size-sm);">Sara Khan</div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">SP21-BCS-047</div>
+                  <div><button class="member-remove-btn"><i class="fas fa-times"></i></button></div>
+                </div>
+                <div class="member-row">
+                  <div style="font-weight:600; color: var(--color-text); font-size: var(--font-size-sm);">Bilal Ahmad</div>
+                  <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">SP21-BCS-092</div>
+                  <div><button class="member-remove-btn"><i class="fas fa-times"></i></button></div>
+                </div>
+              </div>
+              <button class="add-member-btn">
+                <i class="fas fa-plus-circle"></i> Add Group Member (Max. 4 per group)
+              </button>
+              <p class="form-hint">Enter registration numbers of enrolled CS students. Each student can only be in one FYP group.</p>
+            </div>
+          </div>
+
+          <!-- Section 3: Methodology & Timeline -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div class="form-section-title">
+                <i class="fas fa-project-diagram"></i>
+                Methodology &amp; Timeline
+              </div>
+            </div>
+            <div class="form-section-body">
+              <div class="form-group">
+                <label class="form-label" for="methodology">Research Methodology <span style="color: var(--color-danger)">*</span></label>
+                <select id="methodology" class="form-select">
+                  <option>Select methodology…</option>
+                  <option selected>Agile / Iterative Development</option>
+                  <option>Waterfall</option>
+                  <option>Experimental Research</option>
+                  <option>Case Study</option>
+                  <option>Design Science Research</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="startDate">Expected Start Date</label>
+                  <input type="date" id="startDate" class="form-input" value="2026-02-01" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="endDate">Expected Completion Date</label>
+                  <input type="date" id="endDate" class="form-input" value="2026-12-15" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="deliverables">Expected Deliverables</label>
+                <textarea id="deliverables" class="form-textarea" placeholder="List what you will deliver at the end of the project…">1. Fully functional traffic management web application
+2. Trained ML model for vehicle detection
+3. Technical report and documentation
+4. Presentation and demo video</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: Document Upload -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div class="form-section-title">
+                <i class="fas fa-paperclip"></i>
+                Documents
+              </div>
+            </div>
+            <div class="form-section-body">
+              <div class="form-group">
+                <label class="form-label">Proposal Document (PDF) <span style="color: var(--color-danger)">*</span></label>
+                <div class="file-upload-area" onclick="document.getElementById('proposalFile').click()">
+                  <div class="file-upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                  <div class="file-upload-title">Drop your PDF here or click to browse</div>
+                  <div class="file-upload-sub">Accepted: .pdf — Maximum size: 10MB</div>
+                  <input type="file" id="proposalFile" accept=".pdf" style="display:none;" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Support Documents (Optional)</label>
+                <div class="file-upload-area" style="padding: var(--space-5);">
+                  <div class="file-upload-title" style="font-size:0.85rem;">Browse additional files</div>
+                  <div class="file-upload-sub">Literature review, diagrams, mockups, etc. — Max 3 files, 5MB each</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button class="btn btn-outline" onclick="saveDraft()"><i class="fas fa-save"></i> Save as Draft</button>
+            <button class="btn btn-primary" onclick="submitProposal()"><i class="fas fa-paper-plane"></i> Submit Proposal</button>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div style="display:flex; flex-direction:column; gap: var(--space-4);">
+
+          <!-- Deadline Card -->
+          <div class="deadline-card">
+            <div class="deadline-label">Submission Deadline</div>
+            <div class="deadline-date">May 5, 2026</div>
+            <div class="deadline-remaining"><i class="fas fa-clock"></i> 12 days remaining</div>
+          </div>
+
+          <!-- Guidelines -->
+          <div class="info-card">
+            <div class="info-card-header">📋 Submission Guidelines</div>
+            <div class="info-card-body">
+              <div class="info-list">
+                <div class="info-list-item">
+                  <i class="fas fa-check-circle"></i>
+                  <div class="info-list-item-text">Group must have 2–4 enrolled CS students</div>
+                </div>
+                <div class="info-list-item">
+                  <i class="fas fa-check-circle"></i>
+                  <div class="info-list-item-text">Project title must be unique and not duplicate an existing approved project</div>
+                </div>
+                <div class="info-list-item">
+                  <i class="fas fa-check-circle"></i>
+                  <div class="info-list-item-text">Abstract should be 150–300 words</div>
+                </div>
+                <div class="info-list-item">
+                  <i class="fas fa-check-circle"></i>
+                  <div class="info-list-item-text">PDF proposal document is mandatory</div>
+                </div>
+                <div class="info-list-item">
+                  <i class="fas fa-check-circle"></i>
+                  <div class="info-list-item-text">Supervisor is assigned automatically after approval</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Supervisor Preference -->
+          <div class="info-card">
+            <div class="info-card-header">👨‍🏫 Supervisor Preference (Optional)</div>
+            <div class="info-card-body">
+              <div class="form-group">
+                <label class="form-label" for="prefSupervisor">Preferred Supervisor</label>
+                <select id="prefSupervisor" class="form-select">
+                  <option value="">No preference (auto-assign)</option>
+                  <option>Dr. Ali Hassan (AI/ML)</option>
+                  <option>Dr. Sara Malik (Web Systems)</option>
+                  <option>Dr. Usman Qureshi (Data Science)</option>
+                  <option>Dr. Fatima Noor (Cybersecurity)</option>
+                  <option>Dr. Kamran Raza (IoT)</option>
+                </select>
+                <p class="form-hint" style="margin-top: var(--space-2);">Supervisor assignment is at coordinator's discretion. Your preference will be considered if the supervisor has capacity.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Checklist -->
+          <div class="info-card">
+            <div class="info-card-header">✅ Pre-submission Checklist</div>
+            <div class="info-card-body">
+              <div class="info-list">
+                <div class="info-list-item" style="align-items:center;">
+                  <i class="fas fa-check-square" style="color: var(--color-success);"></i>
+                  <div class="info-list-item-text" style="font-weight:600; color: var(--color-text);">Project title added</div>
+                </div>
+                <div class="info-list-item" style="align-items:center;">
+                  <i class="fas fa-check-square" style="color: var(--color-success);"></i>
+                  <div class="info-list-item-text" style="font-weight:600; color: var(--color-text);">Category selected</div>
+                </div>
+                <div class="info-list-item" style="align-items:center;">
+                  <i class="fas fa-check-square" style="color: var(--color-success);"></i>
+                  <div class="info-list-item-text" style="font-weight:600; color: var(--color-text);">Abstract written</div>
+                </div>
+                <div class="info-list-item" style="align-items:center;">
+                  <i class="fas fa-square" style="color: var(--color-border);"></i>
+                  <div class="info-list-item-text">PDF document uploaded</div>
+                </div>
+                <div class="info-list-item" style="align-items:center;">
+                  <i class="fas fa-check-square" style="color: var(--color-success);"></i>
+                  <div class="info-list-item-text" style="font-weight:600; color: var(--color-text);">3 group members added</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="scripts/dashboard.js"></script>
+  <script>
+    function saveDraft() {
+      const btn = event.target;
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+        btn.style.color = 'var(--color-success)';
+        setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; btn.style.color = ''; }, 2000);
+      }, 800);
+    }
+
+    function submitProposal() {
+      const confirmed = confirm('Submit this proposal for coordinator review? You cannot edit after submission.');
+      if (confirmed) {
+        alert('✅ Proposal submitted successfully! You will be notified once the coordinator reviews it.');
+      }
+    }
+  </script>
+</body>
+</html>

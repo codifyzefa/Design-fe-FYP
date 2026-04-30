@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Announcements — Coordinator | FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../styles/tokens.css"/>
+  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  <link rel="stylesheet" href="../styles/coordinator.css"/>
+</head>
+<body class="dashboard-body">
+<script src="../scripts/auth.js"></script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-user-cog"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Coordinator Portal</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Management</div>
+      <a href="groups.html" class="nav-item"><i class="fas fa-layer-group nav-item-icon"></i><span class="nav-item-label">All FYP Groups</span></a>
+      <a href="proposals.html" class="nav-item"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">Review Proposals</span></a>
+      <a href="assignments.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Assignments</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Communication</div>
+      <a href="messages.html" class="nav-item"><i class="fas fa-comments nav-item-icon"></i><span class="nav-item-label">Messages</span></a>
+      <a href="announcements.html" class="nav-item active"><i class="fas fa-bullhorn nav-item-icon"></i><span class="nav-item-label">Announcements</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluations.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Manage Evaluations</span></a>
+      <a href="reports.html" class="nav-item"><i class="fas fa-chart-bar nav-item-icon"></i><span class="nav-item-label">Reports</span></a>
+    </div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Announcements</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="portal-badge"><i class="fas fa-user-cog"></i> Coordinator</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">SM</div><div class="user-info hidden-sm"><div class="user-name">Dr. Sara Malik</div><div class="user-role">Coordinator</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">Announcements</div><div class="page-header-sub">Post important notices and updates to students, supervisors, or all users</div></div>
+      <button class="btn-coord" onclick="openModal('newAnnModal')"><i class="fas fa-plus"></i> New Announcement</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="mini-stats animate-fade-in-delay-1">
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-bullhorn"></i></div><div><div class="mini-stat-val">8</div><div class="mini-stat-lbl">Total Posted</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#fffbeb;color:#d97706"><i class="fas fa-thumbtack"></i></div><div><div class="mini-stat-val">2</div><div class="mini-stat-lbl">Pinned</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#eff6ff;color:var(--color-primary)"><i class="fas fa-users"></i></div><div><div class="mini-stat-val">24</div><div class="mini-stat-lbl">Target Groups</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#fef2f2;color:var(--color-danger)"><i class="fas fa-eye"></i></div><div><div class="mini-stat-val">89%</div><div class="mini-stat-lbl">Avg Read Rate</div></div></div>
+    </div>
+
+    <!-- Announcements list -->
+    <div id="annList" style="display:flex;flex-direction:column;gap:var(--space-4);" class="animate-fade-in-delay-2"></div>
+  </main>
+</div>
+
+<!-- New Announcement Modal -->
+<div class="modal-overlay" id="newAnnModal">
+  <div class="modal modal-md">
+    <div class="modal-header"><div class="modal-title" id="annModalTitle">Post New Announcement</div><button class="modal-close" onclick="closeModal('newAnnModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Announcement Title *</label><input type="text" class="form-input" id="annTitle" placeholder="e.g. Proposal Submission Deadline Reminder"/></div>
+      <div class="form-group"><label class="form-label">Category</label>
+        <select class="form-select" id="annCategory">
+          <option>📢 General Announcement</option>
+          <option>⏰ Deadline Reminder</option>
+          <option>📅 Event / Schedule</option>
+          <option>⚠️ Urgent Notice</option>
+          <option>✅ Good News</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Message *</label>
+        <textarea class="form-textarea" style="min-height:150px" id="annContent" placeholder="Type the announcement body here. Be clear and concise…"></textarea>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group"><label class="form-label">Target Audience</label>
+          <select class="form-select" id="annAudience">
+            <option>🌐 All Users (Students + Supervisors)</option>
+            <option>👨‍🎓 Students Only</option>
+            <option>👨‍🏫 Supervisors Only</option>
+            <option>📋 Specific Group</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Priority</label>
+          <select class="form-select" id="annPriority">
+            <option>Normal</option>
+            <option>High</option>
+            <option>Urgent</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group"><div style="display:flex;align-items:center;gap:.6rem;font-size:var(--font-size-sm);font-weight:600;cursor:pointer;padding:.4rem 0"><input type="checkbox" id="pinAnn" style="accent-color:var(--coord-light);width:15px;height:15px"/> <label for="pinAnn" style="cursor:pointer">📌 Pin this announcement</label></div></div>
+        <div class="form-group"><div style="display:flex;align-items:center;gap:.6rem;font-size:var(--font-size-sm);font-weight:600;cursor:pointer;padding:.4rem 0"><input type="checkbox" id="sendEmail" checked style="accent-color:var(--coord-light);width:15px;height:15px"/> <label for="sendEmail" style="cursor:pointer">📧 Also send via Email</label></div></div>
+      </div>
+      <div class="form-group"><label class="form-label">Attachment (optional)</label><input type="file" class="form-input" style="padding:.4rem"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('newAnnModal')">Cancel</button>
+      <button class="btn btn-outline" onclick="saveDraft()"><i class="fas fa-save"></i> Save Draft</button>
+      <button class="btn-coord" onclick="postAnnouncement()"><i class="fas fa-bullhorn"></i> Post Announcement</button>
+    </div>
+  </div>
+</div>
+
+<script src="../scripts/auth.js"></script>
+<script src="../scripts/coordinator.js"></script>
+<script>
+const ANNOUNCEMENTS = [
+  { id:1, title:'FYP Proposal Submission Deadline — May 5, 2026', category:'⏰ Deadline Reminder', content:'This is a reminder that the Final Year Project (FYP) proposal submission deadline is <strong>May 5, 2026 at 11:59 PM</strong>. All groups must submit their proposal PDF via the FYP Portal under "Submissions → FYP Proposal Document". Late submissions will not be accepted. Please ensure your supervisor has reviewed and approved the proposal draft before final submission.', posted:'Apr 24, 2026', audience:['👨‍🎓 Students'], priority:'Urgent', pinned:true, views:186, reads:162 },
+  { id:2, title:'Mid-Term Evaluation Schedule — July 10–25, 2026', category:'📅 Event / Schedule', content:'The Mid-Term FYP Evaluations are scheduled to take place from <strong>July 10 to July 25, 2026</strong>. All groups must submit their mid-term progress reports by <strong>July 8, 2026</strong>. Group-wise evaluation time slots and venue assignments will be communicated in June. Evaluators will be assigned to each group by the coordinator.', posted:'Apr 20, 2026', audience:['🌐 All Users'], priority:'High', pinned:true, views:210, reads:198 },
+  { id:3, title:'Important: Supervisor Meeting Log Compliance', category:'⚠️ Urgent Notice', content:'It has been observed that several groups have not been logging their weekly supervisor meetings in the FYP Portal. This is a <strong>mandatory requirement</strong>. All groups must log a minimum of one supervisor meeting per two weeks. Failure to comply may result in a grade deduction during evaluation. Please ensure your progress logs are updated regularly.', posted:'Apr 15, 2026', audience:['👨‍🎓 Students'], priority:'High', pinned:false, views:142, reads:130 },
+  { id:4, title:'New Submission Template Available — Mid-Term Report', category:'📢 General Announcement', content:'The official template for the <strong>FYP Mid-Term Progress Report</strong> has been uploaded to the portal. You can download it from <em>Submissions → Templates → Mid-Term Report Template.docx</em>. Please follow the template strictly. Reports not following the format will be returned for revision.', posted:'Apr 10, 2026', audience:['👨‍🎓 Students'], priority:'Normal', pinned:false, views:98, reads:87 },
+  { id:5, title:'FYP Supervisor Meeting — All Supervisors Required', category:'📅 Event / Schedule', content:'A mandatory meeting for all FYP supervisors has been scheduled for <strong>May 2, 2026 at 10:00 AM in Room CS-201</strong>. Agenda: (1) Proposal review process, (2) Mid-term evaluation schedule, (3) Student progress concerns, (4) Any other business. Please confirm your attendance by replying to this announcement or contacting the coordinator directly.', posted:'Apr 8, 2026', audience:['👨‍🏫 Supervisors'], priority:'High', pinned:false, views:32, reads:32 },
+  { id:6, title:'Congratulations! Top Performing Groups — Semester Awards', category:'✅ Good News', content:'We are pleased to announce the top performing FYP groups based on proposal evaluation scores: <br/><strong>1st Place:</strong> G-038 — Smart Healthcare Monitoring (85/100)<br/><strong>2nd Place:</strong> G-023 — Sign Language Recognition (82/100)<br/><strong>3rd Place:</strong> G-042 — AI Traffic Management (78/100)<br/>Keep up the excellent work!', posted:'Apr 5, 2026', audience:['🌐 All Users'], priority:'Normal', pinned:false, views:245, reads:230 },
+];
+
+const PRIORITY_COLORS = { Urgent:'#dc2626', High:'#d97706', Normal:var => 'var(--coord-primary)' };
+const PRIORITY_BG = { Urgent:'#fef2f2', High:'#fffbeb', Normal:'var(--color-lightbg)' };
+
+function renderAnnouncements(data) {
+  document.getElementById('annList').innerHTML = data.map(a => {
+    const pColor = a.priority === 'Urgent' ? '#dc2626' : a.priority === 'High' ? '#d97706' : 'var(--coord-primary)';
+    const readRate = Math.round((a.reads / a.views) * 100);
+    return `<div class="ann-card">
+      <div class="ann-card-header">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;flex-wrap:wrap">
+            ${a.pinned ? '<span class="ann-pin-badge"><i class="fas fa-thumbtack"></i> Pinned</span>' : ''}
+            <span class="chip ${a.priority==='Urgent'?'chip-danger':a.priority==='High'?'chip-warning':'chip-info'}" style="font-size:.55rem"><span class="chip-dot"></span>${a.priority}</span>
+            <span style="font-size:.65rem;font-weight:600;color:var(--color-text-faint)">${a.category}</span>
+          </div>
+          <div style="font-size:var(--font-size-base);font-weight:800;color:var(--color-text)">${a.title}</div>
+          <div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600;margin-top:2px">Posted: ${a.posted} · Dr. Sara Malik (Coordinator)</div>
+        </div>
+        <div style="display:flex;gap:.4rem;flex-shrink:0">
+          <button class="action-btn" title="Edit" onclick="editAnn(${a.id})"><i class="fas fa-edit"></i></button>
+          <button class="action-btn" title="${a.pinned?'Unpin':'Pin'}" onclick="togglePin(${a.id})"><i class="fas fa-thumbtack"></i></button>
+          <button class="action-btn action-btn-danger" title="Delete" onclick="deleteAnn(${a.id})"><i class="fas fa-trash-alt"></i></button>
+        </div>
+      </div>
+      <div class="ann-card-body">
+        <div class="ann-content">${a.content}</div>
+      </div>
+      <div class="ann-card-footer">
+        <div class="ann-audience">${a.audience.map(au => `<span class="chip chip-gray" style="font-size:.6rem"><span class="chip-dot"></span>${au}</span>`).join('')}</div>
+        <div style="display:flex;align-items:center;gap:var(--space-5)">
+          <div style="font-size:.65rem;font-weight:600;color:var(--color-text-faint);display:flex;align-items:center;gap:.3rem"><i class="fas fa-eye" style="color:var(--coord-primary)"></i> ${a.views} views</div>
+          <div style="font-size:.65rem;font-weight:600;color:var(--color-text-faint);display:flex;align-items:center;gap:.3rem"><i class="fas fa-check" style="color:#059669"></i> ${a.reads} read (${readRate}%)</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function postAnnouncement() {
+  const title = document.getElementById('annTitle').value.trim();
+  const content = document.getElementById('annContent').value.trim();
+  if (!title || !content) { showToast('Please fill in title and content.', 'error'); return; }
+  const newAnn = {
+    id: ANNOUNCEMENTS.length + 1,
+    title, content, category: document.getElementById('annCategory').value,
+    posted: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }),
+    audience: ['🌐 All Users'], priority: document.getElementById('annPriority').value,
+    pinned: document.getElementById('pinAnn').checked, views: 0, reads: 0
+  };
+  ANNOUNCEMENTS.unshift(newAnn);
+  renderAnnouncements(ANNOUNCEMENTS);
+  closeModal('newAnnModal');
+  showToast(`✅ Announcement posted! ${document.getElementById('sendEmail').checked ? 'Emails sent to all recipients.' : ''}`, 'success');
+}
+
+function saveDraft() { closeModal('newAnnModal'); showToast('💾 Draft saved. You can post it later.', 'info'); }
+
+function editAnn(id) { openModal('newAnnModal'); showToast('Edit mode — modify the fields and re-post.', 'info'); }
+
+function togglePin(id) {
+  const a = ANNOUNCEMENTS.find(x => x.id === id);
+  if (a) { a.pinned = !a.pinned; renderAnnouncements(ANNOUNCEMENTS); showToast(a.pinned ? 'Announcement pinned.' : 'Announcement unpinned.', 'info'); }
+}
+
+function deleteAnn(id) {
+  confirmAction('Delete this announcement? This cannot be undone.', () => {
+    const idx = ANNOUNCEMENTS.findIndex(x => x.id === id);
+    if (idx > -1) { ANNOUNCEMENTS.splice(idx, 1); renderAnnouncements(ANNOUNCEMENTS); showToast('Announcement deleted.', 'info'); }
+  });
+}
+
+renderAnnouncements(ANNOUNCEMENTS);
+</script>
+</body>
+</html>

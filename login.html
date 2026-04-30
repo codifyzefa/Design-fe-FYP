@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — FYP Portal | CUI Abbottabad</title>
+  <meta name="description" content="Sign in to the Final Year Project Portal — COMSATS University Islamabad Abbottabad Campus."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <!-- Using Font Awesome for icons as requested -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles/tokens.css"/>
+  <style>
+    body { 
+      background: var(--color-primary); 
+      min-height: 100vh; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding: var(--space-6);
+      font-family: var(--font-family);
+    }
+    
+    .auth-card {
+      background: var(--color-surface);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-8);
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      color: var(--color-text-faint);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+      margin-bottom: var(--space-6);
+    }
+
+    .back-link:hover {
+      color: var(--color-primary);
+    }
+
+    .brand-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: var(--space-8);
+    }
+
+    .brand-logo-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-4);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .brand-logo-wrap img {
+      width: 85%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-size: var(--font-size-xl);
+      font-weight: 800;
+      color: var(--color-primary);
+      line-height: 1.2;
+      margin-bottom: 0.25rem;
+    }
+
+    .brand-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: var(--space-5);
+    }
+
+    .form-label {
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      color: var(--color-text-secondary);
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-icon-left {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-faint);
+      font-size: 0.875rem;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.8rem;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      background: white;
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      appearance: none;
+    }
+
+    .form-select {
+      cursor: pointer;
+      padding-right: 2.5rem;
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-faint);
+      pointer-events: none;
+      font-size: 0.75rem;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    .pw-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-faint);
+      font-size: 0.875rem;
+      padding: 4px;
+      transition: color var(--transition-fast);
+      z-index: 2;
+    }
+
+    .pw-toggle:hover {
+      color: var(--color-secondary);
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-6);
+    }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .remember-row input {
+      accent-color: var(--color-primary);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .remember-row label {
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      color: var(--color-text-muted);
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 0.9rem;
+      font-size: var(--font-size-base);
+      font-weight: 700;
+      border-radius: var(--radius-lg);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all var(--transition-base);
+      font-family: var(--font-family);
+    }
+
+    .submit-btn:hover {
+      background: var(--color-primary-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-primary);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .error-box {
+      display: none;
+      background: #fef2f2;
+      border: 1.5px solid #fecaca;
+      border-radius: var(--radius-lg);
+      padding: 0.75rem 1rem;
+      font-size: var(--font-size-sm);
+      color: #991b1b;
+      font-weight: 600;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: var(--space-5);
+    }
+    .error-box.show {
+      display: flex;
+    }
+
+    @media (max-width: 640px) {
+      .auth-card {
+        padding: var(--space-6);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-card animate-fade-in">
+  <a href="index.html" class="back-link">
+    <i class="fas fa-arrow-left"></i> Back to Home
+  </a>
+
+  <div class="brand-header">
+    <div class="brand-logo-wrap">
+      <img src="../public/logocui.png" alt="CUI Logo" onerror="this.src='https://via.placeholder.com/72x72/1E3A8A/ffffff?text=CUI'"/>
+    </div>
+    <h1 class="brand-title">CUI Abbottabad</h1>
+    <div class="brand-subtitle">FYP Management System</div>
+  </div>
+
+  <div class="error-box" id="errBox">
+    <i class="fas fa-exclamation-circle"></i>
+    <span id="errMsg">Invalid credentials. Please try again.</span>
+  </div>
+
+  <form onsubmit="handleLogin(event)">
+    <div class="form-group">
+      <label class="form-label">Select Role</label>
+      <div class="input-wrap">
+        <i class="fas fa-user-circle input-icon-left"></i>
+        <select class="form-select" id="roleSelect" required>
+          <option value="Student">Student</option>
+          <option value="HOD">HOD</option>
+          <option value="FYP Office">FYP Office</option>
+          <option value="System Administrator">System Administrator</option>
+          <option value="Faculty Supervisor">Faculty Supervisor</option>
+          <option value="Industry Supervisor">Industry Supervisor</option>
+        </select>
+        <i class="fas fa-chevron-down select-arrow"></i>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <div class="input-wrap">
+        <i class="fas fa-envelope input-icon-left"></i>
+        <input type="email" id="emailIn" class="form-input" placeholder="Enter your email" required/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="input-wrap">
+        <i class="fas fa-lock input-icon-left"></i>
+        <input type="password" id="pwIn" class="form-input" placeholder="Enter your password" required/>
+        <button type="button" class="pw-toggle" onclick="togglePw()" aria-label="Toggle password visibility">
+          <i class="fas fa-eye" id="eyeIcon"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-options">
+      <div class="remember-row">
+        <input type="checkbox" id="remMe"/>
+        <label for="remMe">Remember me</label>
+      </div>
+      <a href="#" class="forgot-link">Forgot Password?</a>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">
+      <span id="btnTxt">Sign In</span>
+      <i class="fas fa-arrow-right" id="btnIco"></i>
+    </button>
+  </form>
+</div>
+
+<script src="scripts/auth.js"></script>
+<script>
+  function togglePw() {
+    const inp = document.getElementById('pwIn');
+    const ico = document.getElementById('eyeIcon');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      ico.className = 'fas fa-eye-slash';
+    } else {
+      inp.type = 'password';
+      ico.className = 'fas fa-eye';
+    }
+  }
+
+  function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const errBox = document.getElementById('errBox');
+    
+    btn.disabled = true;
+    btn.style.opacity = '0.8';
+    document.getElementById('btnTxt').textContent = 'Signing In...';
+    document.getElementById('btnIco').className = 'fas fa-spinner fa-spin';
+    errBox.classList.remove('show');
+
+    // Simulate login attempt
+    setTimeout(() => {
+      const email = document.getElementById('emailIn').value.trim();
+      const role = document.getElementById('roleSelect').value;
+      const pw = document.getElementById('pwIn').value;
+
+      // Use auth system if available, else simulate
+      if (typeof AUTH !== 'undefined' && AUTH.login) {
+        const user = AUTH.login(email, pw);
+        if (!user) {
+          showError('Invalid email or password.');
+          return;
+        }
+        
+        if (user.role === 'Student' && !user.profileCompleted) {
+            window.location.href = 'student/profile.html';
+        } else {
+            window.location.href = ROLE_HOME ? ROLE_HOME[user.role] || 'dashboard.html' : 'dashboard.html';
+        }
+      } else {
+        // Fallback for demo
+        if (email.includes('@')) {
+          document.getElementById('btnTxt').textContent = 'Redirecting...';
+          window.location.href = 'dashboard.html';
+        } else {
+          showError('Please enter a valid email address.');
+        }
+      }
+    }, 1000);
+
+    function showError(msg) {
+      errBox.classList.add('show');
+      document.getElementById('errMsg').textContent = msg;
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      document.getElementById('btnTxt').textContent = 'Sign In';
+      document.getElementById('btnIco').className = 'fas fa-arrow-right';
+    }
+  }
+</script>
+
+</body>
+</html>

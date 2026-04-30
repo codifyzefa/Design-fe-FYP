@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Supervisor Assignments — Coordinator | FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../styles/tokens.css"/>
+  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  <link rel="stylesheet" href="../styles/coordinator.css"/>
+  <style>
+    .assign-grid{display:grid;grid-template-columns:1fr 360px;gap:var(--space-5);align-items:start;}
+    @media(max-width:1100px){.assign-grid{grid-template-columns:1fr;}}
+    .sup-capacity-card{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);padding:var(--space-5) var(--space-6);}
+    .sup-cap-row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) 0;border-bottom:1px solid var(--color-border-light);}
+    .sup-cap-row:last-child{border-bottom:none;}
+    .sup-cap-avatar{width:36px;height:36px;background:rgba(6,95,70,.1);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:var(--coord-primary);flex-shrink:0;}
+    .sup-cap-name{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);}
+    .sup-cap-meta{font-size:.65rem;color:var(--color-text-faint);font-weight:600;}
+    .cap-bar{flex:1;height:6px;background:var(--color-border-light);border-radius:var(--radius-full);overflow:hidden;margin:0 var(--space-3);}
+    .cap-fill{height:100%;border-radius:var(--radius-full);}
+    .unassigned-card{background:white;border:1.5px solid #fca5a5;border-radius:var(--radius-2xl);padding:var(--space-4) var(--space-5);display:flex;align-items:center;gap:var(--space-4);margin-bottom:var(--space-3);transition:all var(--transition-base);}
+    .unassigned-card:hover{border-color:var(--color-danger);box-shadow:var(--shadow-sm);}
+    .assigned-group-row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--color-border-light);transition:background var(--transition-fast);}
+    .assigned-group-row:last-child{border-bottom:none;}
+    .assigned-group-row:hover{background:var(--color-lightbg);}
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="../scripts/auth.js"></script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-user-cog"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Coordinator Portal</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Management</div>
+      <a href="groups.html" class="nav-item"><i class="fas fa-layer-group nav-item-icon"></i><span class="nav-item-label">All FYP Groups</span></a>
+      <a href="proposals.html" class="nav-item"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">Review Proposals</span></a>
+      <a href="assignments.html" class="nav-item active"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Assignments</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Communication</div>
+      <a href="messages.html" class="nav-item"><i class="fas fa-comments nav-item-icon"></i><span class="nav-item-label">Messages</span></a>
+      <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn nav-item-icon"></i><span class="nav-item-label">Announcements</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluations.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Manage Evaluations</span></a>
+      <a href="reports.html" class="nav-item"><i class="fas fa-chart-bar nav-item-icon"></i><span class="nav-item-label">Reports</span></a>
+    </div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Supervisor Assignments</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="portal-badge"><i class="fas fa-user-cog"></i> Coordinator</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">SM</div><div class="user-info hidden-sm"><div class="user-name">Dr. Sara Malik</div><div class="user-role">Coordinator</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">Supervisor Assignments</div><div class="page-header-sub">Manage supervisor workloads and assign groups to faculty supervisors</div></div>
+      <div style="display:flex;gap:var(--space-3)">
+        <button class="btn btn-outline btn-sm" onclick="autoAssign()"><i class="fas fa-magic"></i> Auto-Assign</button>
+        <button class="btn-coord" onclick="openModal('assignModal')"><i class="fas fa-plus"></i> Manual Assign</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="mini-stats animate-fade-in-delay-1">
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-user-tie"></i></div><div><div class="mini-stat-val">8</div><div class="mini-stat-lbl">Total Supervisors</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#eff6ff;color:var(--color-primary)"><i class="fas fa-layer-group"></i></div><div><div class="mini-stat-val">21</div><div class="mini-stat-lbl">Groups Assigned</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#fef2f2;color:var(--color-danger)"><i class="fas fa-exclamation-triangle"></i></div><div><div class="mini-stat-val">3</div><div class="mini-stat-lbl">Unassigned Groups</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#fffbeb;color:#d97706"><i class="fas fa-ban"></i></div><div><div class="mini-stat-val">1</div><div class="mini-stat-lbl">At Full Capacity</div></div></div>
+    </div>
+
+    <div class="assign-grid animate-fade-in-delay-2">
+      <!-- Left: Unassigned Groups + all supervisors -->
+      <div style="display:flex;flex-direction:column;gap:var(--space-5);">
+
+        <!-- Unassigned Alert -->
+        <div class="card" style="border-color:#fca5a5;background:#fff5f5;">
+          <div class="card-header" style="border-bottom-color:#fecaca">
+            <div><div class="card-title" style="color:#991b1b"><i class="fas fa-exclamation-triangle"></i> Unassigned Groups <span class="chip chip-danger" style="margin-left:.4rem"><span class="chip-dot"></span>3</span></div><div class="card-subtitle">These groups need supervisor assignment immediately</div></div>
+          </div>
+          <div id="unassignedList">
+            <div class="unassigned-card">
+              <div style="width:44px;height:44px;background:#fef2f2;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:#dc2626;flex-shrink:0">G-08</div>
+              <div style="flex:1;min-width:0"><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Smart Agriculture System Using IoT Sensors</div><div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600">G-008 · Hira Zaman · 2 Members · Proposal Phase</div></div>
+              <button class="btn-coord" style="padding:.4rem .9rem;font-size:.7rem;border-radius:var(--radius-lg)" onclick="openAssignFor('G-008')">Assign</button>
+            </div>
+            <div class="unassigned-card">
+              <div style="width:44px;height:44px;background:#fef2f2;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:#dc2626;flex-shrink:0">G-49</div>
+              <div style="flex:1;min-width:0"><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Predictive Analytics for Student Performance Monitoring</div><div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600">G-049 · Ayesha Farooq · 3 Members · Proposal Phase</div></div>
+              <button class="btn-coord" style="padding:.4rem .9rem;font-size:.7rem;border-radius:var(--radius-lg)" onclick="openAssignFor('G-049')">Assign</button>
+            </div>
+            <div class="unassigned-card">
+              <div style="width:44px;height:44px;background:#fef2f2;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:#dc2626;flex-shrink:0">G-27</div>
+              <div style="flex:1;min-width:0"><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">AR-Based Interior Design Visualization Mobile App</div><div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600">G-027 · Nimra Tahir · 3 Members · Proposal Phase</div></div>
+              <button class="btn-coord" style="padding:.4rem .9rem;font-size:.7rem;border-radius:var(--radius-lg)" onclick="openAssignFor('G-027')">Assign</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supervisor details cards -->
+        <div id="supCards"></div>
+      </div>
+
+      <!-- Right: Capacity sidebar -->
+      <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Supervisor Workload</div><span class="chip chip-info" style="font-size:.6rem"><span class="chip-dot"></span>Max 4 groups/supervisor</span></div>
+          <div id="capList"></div>
+        </div>
+        <div class="card" style="background:linear-gradient(135deg,var(--coord-primary),var(--coord-light));border:none;color:white;">
+          <div style="font-size:1rem;font-weight:800;margin-bottom:.4rem"><i class="fas fa-magic"></i> Auto-Assignment</div>
+          <div style="font-size:.8rem;color:rgba(255,255,255,.75);line-height:1.6;margin-bottom:var(--space-4)">Automatically assign unassigned groups to supervisors with remaining capacity, matching by research domain.</div>
+          <button onclick="autoAssign()" style="background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:white;border-radius:var(--radius-xl);padding:.55rem 1.25rem;font-family:var(--font-family);font-size:var(--font-size-sm);font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:.5rem"><i class="fas fa-magic"></i> Run Auto-Assignment</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Assign Modal -->
+<div class="modal-overlay" id="assignModal">
+  <div class="modal modal-md">
+    <div class="modal-header"><div class="modal-title" id="assignModalTitle">Assign Supervisor</div><button class="modal-close" onclick="closeModal('assignModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Select Group</label><select class="form-select" id="assignGroupSelect">
+        <option value="">-- Select Group --</option>
+        <option value="G-008">G-008 — Smart Agriculture System (Hira Zaman)</option>
+        <option value="G-049">G-049 — Predictive Analytics (Ayesha Farooq)</option>
+        <option value="G-027">G-027 — AR Interior Design (Nimra Tahir)</option>
+      </select></div>
+      <div class="form-group"><label class="form-label">Assign to Supervisor</label>
+        <select class="form-select" id="assignSupSelect">
+          <option value="">-- Select Supervisor --</option>
+          <option value="Dr. Ali Hassan" data-capacity="4/4" disabled>Dr. Ali Hassan — Full (4/4)</option>
+          <option value="Dr. Sara Malik">Dr. Sara Malik — Available (3/4)</option>
+          <option value="Dr. Usman Qureshi">Dr. Usman Qureshi — Available (3/4)</option>
+          <option value="Dr. Fatima Noor">Dr. Fatima Noor — Available (3/4)</option>
+          <option value="Dr. Kamran Raza">Dr. Kamran Raza — Available (3/4)</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Assignment Type</label>
+        <select class="form-select"><option>Primary Supervisor</option><option>Co-Supervisor</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Note to Supervisor (optional)</label>
+        <textarea class="form-textarea" placeholder="Add any context or special instructions for the supervisor…" style="min-height:80px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('assignModal')">Cancel</button>
+      <button class="btn-coord" onclick="confirmAssign()"><i class="fas fa-user-check"></i> Confirm Assignment</button>
+    </div>
+  </div>
+</div>
+
+<script src="../scripts/auth.js"></script>
+<script src="../scripts/coordinator.js"></script>
+<script>
+const SUPERVISORS = [
+  { name:'Dr. Ali Hassan',    initials:'AH', capacity:4, assigned:4, domain:'AI · Machine Learning · Computer Vision',  groups:['G-042','G-038','G-055','G-012','G-023','G-039'] },
+  { name:'Dr. Sara Malik',    initials:'SM', capacity:4, assigned:3, domain:'Data Science · NLP · Cloud Computing',      groups:['G-006','G-021'] },
+  { name:'Dr. Usman Qureshi', initials:'UQ', capacity:4, assigned:3, domain:'Blockchain · Security · Web Development',   groups:['G-061','G-031','G-036','G-015'] },
+  { name:'Dr. Fatima Noor',   initials:'FN', capacity:4, assigned:3, domain:'Healthcare AI · IoT · Cybersecurity',       groups:['G-019','G-017','G-048','G-011'] },
+  { name:'Dr. Kamran Raza',   initials:'KR', capacity:4, assigned:3, domain:'Embedded Systems · Robotics · AR/VR',       groups:['G-007','G-044','G-003','G-033'] },
+];
+
+function renderCapacityList() {
+  document.getElementById('capList').innerHTML = SUPERVISORS.map(s => {
+    const pct = (s.assigned / s.capacity) * 100;
+    const color = pct >= 100 ? '#dc2626' : pct >= 75 ? '#d97706' : '#059669';
+    const chipCls = pct >= 100 ? 'chip-danger' : pct >= 75 ? 'chip-warning' : 'chip-success';
+    return `<div class="sup-cap-row">
+      <div class="sup-cap-avatar">${s.initials}</div>
+      <div style="flex:1;min-width:0">
+        <div class="sup-cap-name">${s.name}</div>
+        <div class="cap-bar"><div class="cap-fill" style="width:${pct}%;background:${color}"></div></div>
+      </div>
+      <span class="chip ${chipCls}" style="font-size:.55rem;flex-shrink:0"><span class="chip-dot"></span>${s.assigned}/${s.capacity}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderSupCards() {
+  document.getElementById('supCards').innerHTML = `<div style="display:flex;flex-direction:column;gap:var(--space-4)">` + SUPERVISORS.map(s => {
+    const pct = (s.assigned / s.capacity) * 100;
+    const chipCls = pct >= 100 ? 'chip-danger' : pct >= 75 ? 'chip-warning' : 'chip-success';
+    const groupRows = s.groups.map(g => `<div class="assigned-group-row"><span style="font-size:.65rem;font-weight:800;color:var(--coord-primary);width:44px">${g}</span><span style="font-size:var(--font-size-sm);font-weight:600;color:var(--color-text);flex:1">Sample Project Title</span><button class="action-btn action-btn-danger" title="Remove" onclick="removeAssignment('${g}','${s.name}')"><i class="fas fa-times"></i></button></div>`).join('');
+    return `<div class="assign-card">
+      <div class="assign-header">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:var(--space-3)"><div style="width:44px;height:44px;background:rgba(6,95,70,.1);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:var(--coord-primary)">${s.initials}</div><div><div style="font-size:var(--font-size-base);font-weight:800;color:var(--color-text)">${s.name}</div><div style="font-size:.7rem;color:var(--color-text-faint);font-weight:600">${s.domain}</div></div></div>
+          <span class="chip ${chipCls}" style="font-size:.65rem"><span class="chip-dot"></span>${s.assigned}/${s.capacity} Groups</span>
+        </div>
+      </div>
+      <div>${groupRows}</div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function openAssignFor(groupId) {
+  document.getElementById('assignGroupSelect').value = groupId;
+  openModal('assignModal');
+}
+
+function confirmAssign() {
+  const group = document.getElementById('assignGroupSelect').value;
+  const sup   = document.getElementById('assignSupSelect').value;
+  if (!group || !sup) { showToast('Please select both a group and supervisor.', 'error'); return; }
+  closeModal('assignModal');
+  showToast(`✅ ${sup} assigned to ${group}. Notification sent to supervisor and student group.`, 'success');
+}
+
+function removeAssignment(group, supervisor) {
+  confirmAction(`Remove ${supervisor}'s assignment from ${group}?`, () => {
+    showToast(`Assignment removed. ${group} is now unassigned.`, 'info');
+  });
+}
+
+function autoAssign() {
+  confirmAction('Automatically assign all 3 unassigned groups to available supervisors based on domain matching?', () => {
+    setTimeout(() => { showToast('✅ Auto-assignment complete! G-008 → Dr. Sara Malik · G-049 → Dr. Kamran Raza · G-027 → Dr. Fatima Noor. All supervisors notified.', 'success'); }, 600);
+  });
+}
+
+renderCapacityList();
+renderSupCards();
+</script>
+</body>
+</html>

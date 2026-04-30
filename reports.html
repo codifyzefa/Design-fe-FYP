@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Reports — FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles/tokens.css"/>
+  <link rel="stylesheet" href="styles/dashboard.css"/>
+  <style>
+    .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+    .page-header-title{font-size:1.5rem;font-weight:900;color:var(--color-text);margin-bottom:var(--space-1);}
+    .page-header-sub{font-size:var(--font-size-sm);color:var(--color-text-muted);}
+    .report-list{display:flex;flex-direction:column;gap:var(--space-3);}
+    .report-item{display:flex;align-items:center;gap:var(--space-4);padding:var(--space-5) var(--space-6);background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);transition:all var(--transition-base);}
+    .report-item:hover{border-color:var(--color-border-blue);box-shadow:var(--shadow-md);}
+    .report-icon{width:48px;height:48px;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+    .report-title{font-size:var(--font-size-base);font-weight:800;color:var(--color-text);margin-bottom:2px;}
+    .report-meta{font-size:.7rem;color:var(--color-text-faint);font-weight:600;}
+    .report-size{font-size:var(--font-size-xs);color:var(--color-text-faint);font-weight:600;margin:0 auto;}
+    .report-actions{display:flex;gap:var(--space-2);flex-shrink:0;}
+    .btn-icon{width:34px;height:34px;border-radius:var(--radius-lg);background:var(--color-surface-alt);border:1.5px solid var(--color-border);cursor:pointer;color:var(--color-text-muted);display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;transition:all var(--transition-fast);text-decoration:none;}
+    .btn-icon:hover{background:var(--color-lightbg);color:var(--color-secondary);border-color:var(--color-border-blue);}
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="scripts/auth.js"></script>
+<script>AUTH.requireRole('student');</script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Student</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a><a href="proposal.html" class="nav-item"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">My Project</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Management</div><a href="supervisor.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor</span></a><a href="progress.html" class="nav-item"><i class="fas fa-chart-line nav-item-icon"></i><span class="nav-item-label">Progress Logs</span></a><a href="milestones.html" class="nav-item"><i class="fas fa-flag nav-item-icon"></i><span class="nav-item-label">Milestones</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div><a href="evaluation.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluations</span></a><a href="submissions.html" class="nav-item"><i class="fas fa-upload nav-item-icon"></i><span class="nav-item-label">Submissions</span></a><a href="reports.html" class="nav-item active"><i class="fas fa-file-download nav-item-icon"></i><span class="nav-item-label">Reports</span></a></div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="confirmLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Reports</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="phase-chip"><span class="phase-chip-dot"></span> Proposal Phase</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">AF</div><div class="user-info hidden-sm"><div class="user-name">Ahmed Farooq</div><div class="user-role">Student</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="confirmLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">FYP Reports &amp; Documents</div><div class="page-header-sub">Download all available reports, evaluations, and official documents</div></div>
+    </div>
+
+    <div class="card animate-fade-in-delay-1" style="margin-bottom:0">
+      <div class="card-header"><div class="card-title">My Documents</div><div class="card-subtitle">3 documents available</div></div>
+    </div>
+
+    <div class="report-list animate-fade-in-delay-2">
+      <div class="report-item">
+        <div class="report-icon" style="background:#fef2f2;color:#dc2626;"><i class="fas fa-file-pdf"></i></div>
+        <div style="flex:1;min-width:0">
+          <div class="report-title">FYP Proposal Draft — G042</div>
+          <div class="report-meta">Draft Proposal · Saved Apr 18, 2026 · PDF</div>
+        </div>
+        <div class="report-size">2.4 MB</div>
+        <span class="chip chip-warning"><span class="chip-dot"></span>Draft</span>
+        <div class="report-actions">
+          <a href="#" class="btn-icon" title="Preview"><i class="fas fa-eye"></i></a>
+          <a href="#" class="btn-icon" title="Download" onclick="event.preventDefault();alert('⬇️ Downloading: FYP_Proposal_Draft_G042.pdf')"><i class="fas fa-download"></i></a>
+        </div>
+      </div>
+
+      <div class="report-item">
+        <div class="report-icon" style="background:#ecfdf5;color:#059669;"><i class="fas fa-file-alt"></i></div>
+        <div style="flex:1;min-width:0">
+          <div class="report-title">FYP Registration Certificate</div>
+          <div class="report-meta">Official Certificate · Issued Feb 12, 2026 · PDF</div>
+        </div>
+        <div class="report-size">180 KB</div>
+        <span class="chip chip-success"><span class="chip-dot"></span>Official</span>
+        <div class="report-actions">
+          <a href="#" class="btn-icon" title="Preview"><i class="fas fa-eye"></i></a>
+          <a href="#" class="btn-icon" title="Download" onclick="event.preventDefault();alert('⬇️ Downloading: FYP_Registration_Certificate_G042.pdf')"><i class="fas fa-download"></i></a>
+        </div>
+      </div>
+
+      <div class="report-item">
+        <div class="report-icon" style="background:#fffbeb;color:#d97706;"><i class="fas fa-star"></i></div>
+        <div style="flex:1;min-width:0">
+          <div class="report-title">Proposal Evaluation Report</div>
+          <div class="report-meta">Evaluation Summary · Dr. Sara Malik · Apr 8, 2026 · PDF</div>
+        </div>
+        <div class="report-size">320 KB</div>
+        <span class="chip chip-success"><span class="chip-dot"></span>Available</span>
+        <div class="report-actions">
+          <a href="#" class="btn-icon" title="Preview"><i class="fas fa-eye"></i></a>
+          <a href="#" class="btn-icon" title="Download" onclick="event.preventDefault();alert('⬇️ Downloading: Proposal_Evaluation_G042.pdf')"><i class="fas fa-download"></i></a>
+        </div>
+      </div>
+
+      <!-- Locked -->
+      <div class="report-item" style="opacity:.55;pointer-events:none;">
+        <div class="report-icon" style="background:var(--color-surface-alt);color:var(--color-text-faint);"><i class="fas fa-lock"></i></div>
+        <div style="flex:1;min-width:0">
+          <div class="report-title">Mid-Term Progress Report</div>
+          <div class="report-meta">Available after mid-term evaluation — Jul 20, 2026</div>
+        </div>
+        <span class="chip chip-gray"><span class="chip-dot"></span>Locked</span>
+        <div class="report-actions"><a href="#" class="btn-icon"><i class="fas fa-lock"></i></a></div>
+      </div>
+
+      <div class="report-item" style="opacity:.55;pointer-events:none;">
+        <div class="report-icon" style="background:var(--color-surface-alt);color:var(--color-text-faint);"><i class="fas fa-lock"></i></div>
+        <div style="flex:1;min-width:0">
+          <div class="report-title">Final FYP Thesis</div>
+          <div class="report-meta">Available after final submission — Nov 25, 2026</div>
+        </div>
+        <span class="chip chip-gray"><span class="chip-dot"></span>Locked</span>
+        <div class="report-actions"><a href="#" class="btn-icon"><i class="fas fa-lock"></i></a></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="scripts/auth.js"></script>
+<script src="scripts/dashboard.js"></script>
+</body>
+</html>

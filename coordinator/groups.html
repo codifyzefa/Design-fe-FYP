@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>All FYP Groups — Coordinator | FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../styles/tokens.css"/>
+  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  <link rel="stylesheet" href="../styles/coordinator.css"/>
+</head>
+<body class="dashboard-body">
+<script src="../scripts/auth.js"></script>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><i class="fas fa-user-cog"></i></div>
+      <div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Coordinator Portal</div></div>
+    </div>
+    <button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div>
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Management</div>
+      <a href="groups.html" class="nav-item active"><i class="fas fa-layer-group nav-item-icon"></i><span class="nav-item-label">All FYP Groups</span></a>
+      <a href="proposals.html" class="nav-item"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">Review Proposals</span><span class="nav-badge nav-badge-warning">7</span></a>
+      <a href="assignments.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Assignments</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Communication</div>
+      <a href="messages.html" class="nav-item"><i class="fas fa-comments nav-item-icon"></i><span class="nav-item-label">Messages</span><span class="nav-badge nav-badge-info">3</span></a>
+      <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn nav-item-icon"></i><span class="nav-item-label">Announcements</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluations.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Manage Evaluations</span></a>
+      <a href="reports.html" class="nav-item"><i class="fas fa-chart-bar nav-item-icon"></i><span class="nav-item-label">Reports</span></a>
+    </div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<!-- MAIN -->
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-page-title">All FYP Groups</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div>
+    </div>
+    <div class="topbar-right">
+      <div class="portal-badge"><i class="fas fa-user-cog"></i> Coordinator</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap">
+        <button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="notifications-dropdown" id="notifDropdown">
+          <div class="dropdown-header"><span class="dropdown-header-title">Notifications</span><button class="dropdown-action-btn">Mark all read</button></div>
+          <div class="notif-list">
+            <div class="notif-item notif-unread"><div class="notif-icon notif-icon-warning"><i class="fas fa-file-alt"></i></div><div class="notif-body"><div class="notif-title">7 Proposals Pending Review</div><div class="notif-msg">Deadline: May 5, 2026</div><div class="notif-time">Today</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="topbar-icon-btn-wrap" id="userWrap">
+        <button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">--</div><div class="user-info hidden-sm"><div class="user-name">Loading</div><div class="user-role">Coordinator</div></div><i class="fas fa-chevron-down user-chevron hidden-sm"></i></button>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header"><div class="user-dropdown-name">Dr. Sara Malik</div><div class="user-dropdown-role">FYP Coordinator</div></div>
+          <hr class="dropdown-divider"/>
+          <a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <!-- Header -->
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">FYP Groups — Spring 2026</div><div class="page-header-sub">Manage and monitor all registered FYP groups</div></div>
+      <div style="display:flex;gap:var(--space-3);">
+        <button class="btn btn-outline btn-sm" onclick="exportGroups()"><i class="fas fa-file-excel"></i> Export</button>
+        <button class="btn-coord" onclick="openModal('addGroupModal')"><i class="fas fa-plus"></i> Register Group</button>
+      </div>
+    </div>
+
+    <!-- Mini Stats -->
+    <div class="mini-stats animate-fade-in-delay-1">
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-layer-group"></i></div><div><div class="mini-stat-val">24</div><div class="mini-stat-lbl">Total Groups</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#eff6ff;color:var(--color-primary)"><i class="fas fa-user-tie"></i></div><div><div class="mini-stat-val">21</div><div class="mini-stat-lbl">Assigned Supervisor</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#fffbeb;color:#d97706"><i class="fas fa-file-alt"></i></div><div><div class="mini-stat-val">17</div><div class="mini-stat-lbl">Proposals Submitted</div></div></div>
+      <div class="mini-stat"><div class="mini-stat-icon" style="background:#fef2f2;color:var(--color-danger)"><i class="fas fa-exclamation-triangle"></i></div><div><div class="mini-stat-val">3</div><div class="mini-stat-lbl">No Supervisor</div></div></div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar animate-fade-in-delay-2">
+      <div class="search-input-wrap"><i class="fas fa-search"></i><input type="text" class="search-input" id="groupSearch" placeholder="Search group, title, student name…" oninput="filterGroups()"/></div>
+      <select class="filter-select" id="filterStatus" onchange="filterGroups()">
+        <option value="">All Statuses</option>
+        <option value="proposal">Proposal Phase</option>
+        <option value="midterm">Mid-Term</option>
+        <option value="final">Final Phase</option>
+        <option value="completed">Completed</option>
+      </select>
+      <select class="filter-select" id="filterSupervisor" onchange="filterGroups()">
+        <option value="">All Supervisors</option>
+        <option>Dr. Ali Hassan</option>
+        <option>Dr. Sara Malik</option>
+        <option>Dr. Usman Qureshi</option>
+        <option>Dr. Fatima Noor</option>
+        <option>Dr. Kamran Raza</option>
+        <option>Unassigned</option>
+      </select>
+      <span id="filterCount" style="font-size:var(--font-size-xs);font-weight:700;color:var(--color-text-faint);margin-left:auto;">Showing 24 groups</span>
+    </div>
+
+    <!-- Table -->
+    <div class="data-table-wrap animate-fade-in-delay-3">
+      <table class="data-table" id="groupTable">
+        <thead>
+          <tr>
+            <th style="width:60px;">ID</th>
+            <th>Project Title</th>
+            <th>Group Leader</th>
+            <th>Members</th>
+            <th>Supervisor</th>
+            <th>Progress</th>
+            <th>Status</th>
+            <th style="width:120px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="groupTbody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+      <div class="pagination">
+        <div class="pagination-info">Showing <strong>1–10</strong> of <strong>24</strong> groups</div>
+        <div class="pagination-btns">
+          <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- VIEW GROUP MODAL -->
+<div class="modal-overlay" id="viewGroupModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><div class="modal-title" id="vgTitle">Group Details</div><button class="modal-close" onclick="closeModal('viewGroupModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body" id="vgBody"><!-- Populated by JS --></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('viewGroupModal')">Close</button>
+      <button class="btn-coord" onclick="closeModal('viewGroupModal');showToast('Details saved.','success')"><i class="fas fa-check"></i> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD GROUP MODAL -->
+<div class="modal-overlay" id="addGroupModal">
+  <div class="modal modal-md">
+    <div class="modal-header"><div class="modal-title">Register New FYP Group</div><button class="modal-close" onclick="closeModal('addGroupModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-row-2">
+        <div class="form-group"><label class="form-label">Group ID</label><input class="form-input" placeholder="e.g. G-025" type="text"/></div>
+        <div class="form-group"><label class="form-label">Semester</label><select class="form-select"><option>Spring 2026</option><option>Fall 2026</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Project Title *</label><input class="form-input" type="text" placeholder="Enter full project title"/></div>
+      <div class="form-group"><label class="form-label">Project Domain</label>
+        <select class="form-select"><option>AI / Machine Learning</option><option>Web Development</option><option>Mobile Development</option><option>Cybersecurity</option><option>Data Science</option><option>IoT / Embedded</option><option>Blockchain</option><option>Other</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Leader Registration No. *</label><input class="form-input" type="text" placeholder="SP21-BCS-001"/></div>
+      <div class="form-group"><label class="form-label">Member 2 Reg No.</label><input class="form-input" type="text" placeholder="SP21-BCS-002"/></div>
+      <div class="form-group"><label class="form-label">Member 3 Reg No.</label><input class="form-input" type="text" placeholder="SP21-BCS-003 (optional)"/></div>
+      <div class="form-group"><label class="form-label">Member 4 Reg No.</label><input class="form-input" type="text" placeholder="SP21-BCS-004 (optional)"/></div>
+      <div class="form-group"><label class="form-label">Assign Supervisor</label>
+        <select class="form-select"><option value="">-- Auto Assign Later --</option><option>Dr. Ali Hassan</option><option>Dr. Sara Malik</option><option>Dr. Usman Qureshi</option><option>Dr. Fatima Noor</option><option>Dr. Kamran Raza</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('addGroupModal')">Cancel</button>
+      <button class="btn-coord" onclick="addGroup()"><i class="fas fa-plus"></i> Register Group</button>
+    </div>
+  </div>
+</div>
+
+<script src="../scripts/auth.js"></script>
+<script src="../scripts/coordinator.js"></script>
+<script>
+const GROUPS_DATA = [
+  { id:'G-042', title:'AI-Powered Traffic Management System Using Computer Vision',       leader:'Ahmed Farooq',   members:3, supervisor:'Dr. Ali Hassan',    progress:25, status:'proposal' },
+  { id:'G-038', title:'Smart Healthcare Monitoring System Using IoT & ML',                 leader:'Zara Ahmad',     members:4, supervisor:'Dr. Ali Hassan',    progress:60, status:'midterm' },
+  { id:'G-055', title:'E-Learning Platform with Adaptive Content Delivery',                leader:'Hassan Khan',    members:2, supervisor:'Dr. Ali Hassan',    progress:45, status:'midterm' },
+  { id:'G-061', title:'Blockchain-Based Student Credential Management System',             leader:'Maria Rashid',   members:3, supervisor:'Dr. Usman Qureshi', progress:80, status:'final' },
+  { id:'G-019', title:'Federated Learning for Privacy-Preserving Medical Diagnosis',       leader:'Aima Khalid',    members:4, supervisor:'Dr. Fatima Noor',   progress:30, status:'proposal' },
+  { id:'G-031', title:'Smart Energy Management System Using Reinforcement Learning',       leader:'Faizan Ali',     members:3, supervisor:'Dr. Usman Qureshi', progress:20, status:'proposal' },
+  { id:'G-007', title:'NLP-Based Legal Document Summarization Platform',                  leader:'Sana Mehmood',   members:2, supervisor:'Dr. Kamran Raza',   progress:15, status:'proposal' },
+  { id:'G-012', title:'Emotion Recognition System Using Deep Learning & Facial Analysis', leader:'Bilal Shah',     members:3, supervisor:'Dr. Ali Hassan',    progress:70, status:'midterm' },
+  { id:'G-044', title:'Autonomous Drone Navigation Using SLAM Algorithm',                  leader:'Raza Ul Haq',    members:4, supervisor:'Dr. Kamran Raza',   progress:55, status:'midterm' },
+  { id:'G-017', title:'Cybersecurity Intrusion Detection with ML',                        leader:'Nida Baig',      members:3, supervisor:'Dr. Fatima Noor',   progress:40, status:'proposal' },
+  { id:'G-023', title:'Sign Language Recognition Using Computer Vision',                   leader:'Usama Tariq',    members:3, supervisor:'Dr. Ali Hassan',    progress:90, status:'final' },
+  { id:'G-008', title:'Smart Agriculture System Using IoT Sensors',                        leader:'Hira Zaman',     members:2, supervisor:'',                  progress:10, status:'proposal' },
+  { id:'G-036', title:'Real-Time Object Detection for Autonomous Vehicles',                leader:'Adnan Malik',    members:4, supervisor:'Dr. Usman Qureshi', progress:65, status:'midterm' },
+  { id:'G-049', title:'Predictive Analytics for Student Performance Monitoring',           leader:'Ayesha Farooq',  members:3, supervisor:'',                  progress:5,  status:'proposal' },
+  { id:'G-003', title:'Multi-Modal Chatbot for University Admission Queries',              leader:'Zain Abbas',     members:2, supervisor:'Dr. Kamran Raza',   progress:35, status:'proposal' },
+  { id:'G-058', title:'Sentiment Analysis Dashboard for Social Media Trends',              leader:'Maira Iqbal',    members:3, supervisor:'Dr. Usman Qureshi', progress:85, status:'final' },
+  { id:'G-011', title:'Secure Voting System Using Blockchain',                             leader:'Hamza Awan',     members:4, supervisor:'Dr. Fatima Noor',   progress:50, status:'midterm' },
+  { id:'G-027', title:'AR-Based Interior Design Visualization Mobile App',                 leader:'Nimra Tahir',    members:3, supervisor:'',                  progress:8,  status:'proposal' },
+  { id:'G-015', title:'Fraud Detection in Banking Using Anomaly Detection',                leader:'Saad Rauf',      members:2, supervisor:'Dr. Usman Qureshi', progress:75, status:'final' },
+  { id:'G-033', title:'Smart Library Management with RFID & Face Recognition',             leader:'Neha Nisar',     members:3, supervisor:'Dr. Kamran Raza',   progress:45, status:'midterm' },
+  { id:'G-006', title:'Online FYP Evaluation System (Meta-FYP)',                           leader:'Talha Anwar',    members:4, supervisor:'Dr. Sara Malik',    progress:95, status:'final' },
+  { id:'G-048', title:'Mental Health Monitoring App with AI Mood Prediction',              leader:'Amna Javed',     members:3, supervisor:'Dr. Fatima Noor',   progress:20, status:'proposal' },
+  { id:'G-021', title:'Automated Timetable Generation Using Genetic Algorithm',            leader:'Usman Shah',     members:2, supervisor:'Dr. Sara Malik',    progress:60, status:'midterm' },
+  { id:'G-039', title:'Deep Fake Detection System Using CNN Ensemble',                     leader:'Rabia Arif',     members:3, supervisor:'Dr. Ali Hassan',    progress:30, status:'proposal' },
+];
+
+const STATUS_STYLES = {
+  proposal:  { label:'Proposal',  cls:'chip-warning' },
+  midterm:   { label:'Mid-Term',  cls:'chip-info' },
+  final:     { label:'Final Phase',cls:'chip-success' },
+  completed: { label:'Completed', cls:'chip-success' },
+};
+
+function renderTable(data) {
+  const tbody = document.getElementById('groupTbody');
+  if (!data.length) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--color-text-faint);font-size:.9rem;"><i class="fas fa-layer-group" style="font-size:2rem;display:block;margin-bottom:.5rem"></i>No groups found.</td></tr>`; return; }
+  tbody.innerHTML = data.map(g => {
+    const s = STATUS_STYLES[g.status] || STATUS_STYLES.proposal;
+    const supHtml = g.supervisor
+      ? `<span style="font-weight:600">${g.supervisor}</span>`
+      : `<span style="color:var(--color-danger);font-weight:700;font-size:.7rem"><i class="fas fa-exclamation-triangle"></i> Unassigned</span>`;
+    return `<tr data-id="${g.id}" data-status="${g.status}" data-supervisor="${g.supervisor}">
+      <td><span style="font-weight:800;color:var(--coord-primary)">${g.id}</span></td>
+      <td>
+        <div class="td-primary" style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${g.title}">${g.title}</div>
+        <div class="td-muted"><i class="fas fa-calendar-alt"></i> Spring 2026</div>
+      </td>
+      <td><div class="td-primary">${g.leader}</div></td>
+      <td style="text-align:center"><span class="chip chip-info" style="font-size:.6rem">${g.members} Members</span></td>
+      <td>${supHtml}</td>
+      <td style="min-width:100px">
+        <div class="mini-progress-wrap" style="margin-bottom:3px"><div class="mini-progress-fill" style="width:${g.progress}%"></div></div>
+        <span style="font-size:.65rem;font-weight:800;color:var(--coord-primary)">${g.progress}%</span>
+      </td>
+      <td><span class="chip ${s.cls}"><span class="chip-dot"></span>${s.label}</span></td>
+      <td>
+        <div style="display:flex;gap:.3rem">
+          <button class="action-btn action-btn-success" title="View Details" onclick="viewGroup('${g.id}')"><i class="fas fa-eye"></i></button>
+          <button class="action-btn" title="Assign Supervisor" onclick="quickAssign('${g.id}','${g.supervisor}')"><i class="fas fa-user-tie"></i></button>
+          <button class="action-btn" title="Message Leader" onclick="window.location.href='messages.html'"><i class="fas fa-comment"></i></button>
+          <button class="action-btn action-btn-danger" title="Archive" onclick="archiveGroup('${g.id}')"><i class="fas fa-archive"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterGroups() {
+  const q  = document.getElementById('groupSearch').value.toLowerCase();
+  const st = document.getElementById('filterStatus').value;
+  const sv = document.getElementById('filterSupervisor').value;
+  const filtered = GROUPS_DATA.filter(g => {
+    const matchQ  = !q || g.id.toLowerCase().includes(q) || g.title.toLowerCase().includes(q) || g.leader.toLowerCase().includes(q);
+    const matchSt = !st || g.status === st;
+    const matchSv = !sv || (sv === 'Unassigned' ? !g.supervisor : g.supervisor.includes(sv));
+    return matchQ && matchSt && matchSv;
+  });
+  document.getElementById('filterCount').textContent = `Showing ${filtered.length} group${filtered.length!==1?'s':''}`;
+  renderTable(filtered);
+}
+
+function viewGroup(id) {
+  const g = GROUPS_DATA.find(x => x.id === id);
+  if (!g) return;
+  const s = STATUS_STYLES[g.status];
+  document.getElementById('vgTitle').textContent = `${g.id} — Group Details`;
+  document.getElementById('vgBody').innerHTML = `
+    <div style="background:linear-gradient(135deg,var(--coord-primary),var(--coord-light));border-radius:var(--radius-2xl);padding:var(--space-6) var(--space-7);color:white;margin-bottom:var(--space-4);">
+      <div style="font-size:1.1rem;font-weight:900;margin-bottom:.25rem">${g.title}</div>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.75);font-weight:500">Group ${g.id} · ${g.members} Members · Spring 2026</div>
+      <div style="display:flex;gap:var(--space-6);margin-top:var(--space-4)">
+        <div style="text-align:center"><div style="font-size:1.4rem;font-weight:900">${g.progress}%</div><div style="font-size:.6rem;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase">Progress</div></div>
+        <div style="text-align:center"><div style="font-size:1.4rem;font-weight:900">${g.members}</div><div style="font-size:.6rem;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase">Members</div></div>
+        <div style="text-align:center"><div style="font-size:1.1rem;font-weight:900">${s.label}</div><div style="font-size:.6rem;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase">Phase</div></div>
+      </div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-group"><label class="form-label">Group Leader</label><input class="form-input" value="${g.leader}" /></div>
+      <div class="form-group"><label class="form-label">Status</label><select class="form-select"><option ${g.status==='proposal'?'selected':''}>proposal</option><option ${g.status==='midterm'?'selected':''}>midterm</option><option ${g.status==='final'?'selected':''}>final</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Assigned Supervisor</label>
+      <select class="form-select">
+        <option value="">-- Unassigned --</option>
+        ${['Dr. Ali Hassan','Dr. Sara Malik','Dr. Usman Qureshi','Dr. Fatima Noor','Dr. Kamran Raza'].map(s=>`<option ${g.supervisor===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Project Title</label><input class="form-input" value="${g.title}"/></div>
+    <div class="form-group"><label class="form-label">Coordinator Notes</label><textarea class="form-textarea" placeholder="Add internal notes about this group…"></textarea></div>
+  `;
+  openModal('viewGroupModal');
+}
+
+function quickAssign(id, current) {
+  const g = GROUPS_DATA.find(x => x.id === id);
+  const supervisors = ['Dr. Ali Hassan','Dr. Sara Malik','Dr. Usman Qureshi','Dr. Fatima Noor','Dr. Kamran Raza'];
+  const opts = supervisors.map(s => `<option ${current===s?'selected':''}>${s}</option>`).join('');
+  document.getElementById('vgTitle').textContent = `Assign Supervisor — ${id}`;
+  document.getElementById('vgBody').innerHTML = `
+    <div class="form-group" style="margin-bottom:0">
+      <label class="form-label">Select Supervisor for ${id}</label>
+      <select class="form-select" id="quickSupervisorSelect">${opts}</select>
+      <p class="form-hint" style="margin-top:.4rem">Current: <strong>${current || 'Unassigned'}</strong></p>
+    </div>
+  `;
+  document.querySelector('#viewGroupModal .modal-footer .btn-coord').onclick = () => {
+    const sv = document.getElementById('quickSupervisorSelect').value;
+    if (g) g.supervisor = sv;
+    renderTable(GROUPS_DATA);
+    closeModal('viewGroupModal');
+    showToast(`✅ ${sv} assigned to ${id}`, 'success');
+    document.querySelector('#viewGroupModal .modal-footer .btn-coord').onclick = () => closeModal('viewGroupModal');
+  };
+  openModal('viewGroupModal');
+}
+
+function archiveGroup(id) {
+  confirmAction(`Archive group ${id}? This action will mark the group as archived.`, () => {
+    showToast(`Group ${id} archived.`, 'info');
+  });
+}
+
+function exportGroups() {
+  showToast('📊 Exporting groups to Excel…', 'info');
+}
+
+function addGroup() {
+  closeModal('addGroupModal');
+  showToast('✅ New FYP group registered successfully!', 'success');
+}
+
+// Init
+renderTable(GROUPS_DATA);
+</script>
+</body>
+</html>

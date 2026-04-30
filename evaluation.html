@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evaluation Status — FYP Portal | CUI Abbottabad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/dashboard.css" />
+  <style>
+    .page-header { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-4); flex-wrap:wrap; }
+    .page-header-title { font-size:1.5rem; font-weight:900; color:var(--color-text); margin-bottom:var(--space-1); }
+    .page-header-sub { font-size:var(--font-size-sm); color:var(--color-text-muted); }
+
+    /* Overall Score Banner */
+    .score-banner {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-8) var(--space-8);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: var(--space-8);
+      align-items: center;
+      color: white;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: 3px solid rgba(255,255,255,0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-circle-val {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+    }
+
+    .score-circle-max {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      margin-top: 2px;
+    }
+
+    .score-banner-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      margin-bottom: var(--space-2);
+    }
+
+    .score-banner-sub {
+      font-size: var(--font-size-sm);
+      color: rgba(255,255,255,0.7);
+      margin-bottom: var(--space-4);
+    }
+
+    .score-breakdown {
+      display: flex;
+      gap: var(--space-5);
+      flex-wrap: wrap;
+    }
+
+    .score-mini {
+      text-align: center;
+    }
+
+    .score-mini-val {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: white;
+    }
+
+    .score-mini-lbl {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+    }
+
+    .score-grade {
+      width: 80px;
+      height: 80px;
+      background: rgba(255,255,255,0.15);
+      border-radius: var(--radius-2xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-grade-letter {
+      font-size: 2rem;
+      font-weight: 900;
+      color: white;
+    }
+
+    .score-grade-lbl {
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 768px) {
+      .score-banner { grid-template-columns: 1fr; }
+    }
+
+    /* Evaluation Cards Grid */
+    .eval-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+    }
+
+    @media (max-width: 1024px) {
+      .eval-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .eval-grid { grid-template-columns: 1fr; }
+    }
+
+    .eval-card {
+      background: white;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    }
+
+    .eval-card:hover {
+      border-color: var(--color-border-blue);
+      box-shadow: var(--shadow-md);
+    }
+
+    .eval-card-header {
+      padding: var(--space-5) var(--space-5) var(--space-4);
+      border-bottom: 1px solid var(--color-border-light);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+
+    .eval-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .eval-card-title {
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.3;
+    }
+
+    .eval-card-body {
+      padding: var(--space-5);
+    }
+
+    .eval-score-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+    }
+
+    .eval-score-val {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--color-text);
+    }
+
+    .eval-score-max {
+      font-size: 0.75rem;
+      color: var(--color-text-faint);
+      font-weight: 600;
+    }
+
+    .eval-pct-bar-wrap {
+      height: 6px;
+      background: var(--color-border-light);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-bottom: var(--space-3);
+    }
+
+    .eval-pct-bar {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 1s ease;
+    }
+
+    .bar-success { background: linear-gradient(90deg, #059669, #34d399); }
+    .bar-warning { background: linear-gradient(90deg, #d97706, #fbbf24); }
+    .bar-info { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+    .bar-purple { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+    .bar-rose { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+    .bar-gray { background: linear-gradient(90deg, #9ca3af, #d1d5db); }
+
+    .eval-meta {
+      font-size: 0.65rem;
+      color: var(--color-text-faint);
+      font-weight: 600;
+    }
+
+    .eval-evaluator {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: 0.7rem;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      margin-top: var(--space-3);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .eval-evaluator-dot {
+      width: 24px;
+      height: 24px;
+      background: rgba(30,58,138,0.08);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      font-size: 0.55rem;
+      font-weight: 800;
+    }
+
+    .eval-pending-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8) var(--space-5);
+      text-align: center;
+      gap: var(--space-3);
+    }
+
+    .eval-pending-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--color-border-light);
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-faint);
+      font-size: 1.3rem;
+    }
+
+    .eval-pending-title {
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--color-text-muted);
+    }
+
+    .eval-pending-sub {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-faint);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* Rubric Section */
+    .rubric-table-wrap {
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+
+    .rubric-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 0;
+      border-bottom: 1px solid var(--color-border-light);
+      padding: 0.75rem 1rem;
+      align-items: center;
+      transition: background var(--transition-fast);
+    }
+
+    .rubric-row:last-child { border-bottom: none; }
+    .rubric-row:hover:not(.rubric-row-header) { background: var(--color-lightbg); }
+
+    .rubric-row-header {
+      background: var(--color-surface-alt);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-faint);
+    }
+
+    .rubric-criterion {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .rubric-score {
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--color-text-muted);
+    }
+
+    .rubric-max {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-faint);
+    }
+
+    .rubric-mini-bar-wrap {
+      height: 4px;
+      background: var(--color-border-light);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .rubric-mini-bar {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--color-secondary);
+    }
+
+    /* Feedback Section */
+    .feedback-section {
+      background: white;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-2xl);
+    }
+
+    .feedback-header {
+      padding: var(--space-5) var(--space-6);
+      border-bottom: 1px solid var(--color-border-light);
+      background: var(--color-surface-alt);
+      font-size: var(--font-size-base);
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .feedback-item {
+      padding: var(--space-5) var(--space-6);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .feedback-item:last-child { border-bottom: none; }
+
+    .feedback-author {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .feedback-author-avatar {
+      width: 36px;
+      height: 36px;
+      background: rgba(30,58,138,0.1);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--color-primary);
+    }
+
+    .feedback-author-name {
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .feedback-author-role {
+      font-size: 0.65rem;
+      color: var(--color-text-faint);
+      font-weight: 600;
+    }
+
+    .feedback-date {
+      font-size: 0.65rem;
+      color: var(--color-text-faint);
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .feedback-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      line-height: 1.75;
+      font-weight: 500;
+    }
+
+    .feedback-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 0.18rem 0.55rem;
+      border-radius: var(--radius-full);
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: var(--space-2);
+    }
+
+    .feedback-tag-strength { background: #ecfdf5; color: #065f46; }
+    .feedback-tag-improvement { background: #fffbeb; color: #92400e; }
+  </style>
+</head>
+<body class="dashboard-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Student</div></div>
+      </div>
+      <button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Overview</div>
+        <a href="dashboard.html" class="nav-item" data-label="Dashboard"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
+        <a href="proposal.html" class="nav-item" data-label="My Project"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">My Project</span></a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Management</div>
+        <a href="supervisor.html" class="nav-item" data-label="Supervisor"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor</span></a>
+        <a href="progress.html" class="nav-item" data-label="Progress Logs"><i class="fas fa-chart-line nav-item-icon"></i><span class="nav-item-label">Progress Logs</span></a>
+        <a href="milestones.html" class="nav-item" data-label="Milestones"><i class="fas fa-flag nav-item-icon"></i><span class="nav-item-label">Milestones</span></a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Evaluation</div>
+        <a href="evaluation.html" class="nav-item active" data-label="Evaluations"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluations</span></a>
+        <a href="submissions.html" class="nav-item" data-label="Submissions"><i class="fas fa-upload nav-item-icon"></i><span class="nav-item-label">Submissions</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="#" class="nav-item nav-item-logout" onclick="confirmLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- MAIN -->
+  <div class="main-wrap" id="mainWrap">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button>
+        <div>
+          <div class="topbar-page-title">Evaluation Status</div>
+          <div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="phase-chip"><span class="phase-chip-dot"></span> Mid-Term Phase</div>
+        <div class="topbar-icon-btn-wrap" id="notifWrap">
+          <button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button>
+          <div class="notifications-dropdown" id="notifDropdown">
+            <div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div>
+            <div class="notif-list"><div style="padding:2rem;text-align:center;color:var(--color-text-faint);font-size:0.8rem;">No new notifications</div></div>
+          </div>
+        </div>
+        <div class="topbar-icon-btn-wrap" id="userWrap">
+          <button class="user-btn" onclick="toggleUserMenu()">
+            <div class="user-avatar">AF</div>
+            <div class="user-info hidden-sm"><div class="user-name">Ahmed Farooq</div><div class="user-role">Student</div></div>
+            <i class="fas fa-chevron-down user-chevron hidden-sm"></i>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header"><div class="user-dropdown-name">Ahmed Farooq</div><div class="user-dropdown-role">Student · SP21-BCS-001</div></div>
+            <hr class="dropdown-divider" />
+            <a href="login.html" class="user-dropdown-item user-dropdown-item-danger"><i class="fas fa-power-off"></i> Sign Out</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-area" id="contentArea">
+
+      <!-- Page Header -->
+      <div class="page-header animate-fade-in">
+        <div>
+          <div class="page-header-title">Evaluation Status</div>
+          <div class="page-header-sub">AI-Powered Traffic Management System Using Computer Vision</div>
+        </div>
+        <button class="btn btn-outline btn-sm"><i class="fas fa-download"></i> Download Report</button>
+      </div>
+
+      <!-- Score Banner -->
+      <div class="score-banner animate-fade-in-delay-1">
+        <div class="score-circle">
+          <div class="score-circle-val">76</div>
+          <div class="score-circle-max">/ 100</div>
+        </div>
+        <div>
+          <div class="score-banner-title">Overall FYP Score</div>
+          <div class="score-banner-sub">Average across all completed evaluations · Spring 2026</div>
+          <div class="score-breakdown">
+            <div class="score-mini"><div class="score-mini-val">82</div><div class="score-mini-lbl">Proposal</div></div>
+            <div class="score-mini"><div class="score-mini-val">74</div><div class="score-mini-lbl">Mid-Term</div></div>
+            <div class="score-mini"><div class="score-mini-val">—</div><div class="score-mini-lbl">Final</div></div>
+            <div class="score-mini"><div class="score-mini-val">72</div><div class="score-mini-lbl">Supervisor</div></div>
+          </div>
+        </div>
+        <div class="score-grade">
+          <div class="score-grade-letter">B+</div>
+          <div class="score-grade-lbl">Grade</div>
+        </div>
+      </div>
+
+      <!-- Eval Cards -->
+      <div class="eval-grid animate-fade-in-delay-2">
+
+        <!-- Proposal -->
+        <div class="eval-card">
+          <div class="eval-card-header">
+            <div>
+              <div class="eval-card-title">Proposal Evaluation</div>
+              <div style="font-size:0.65rem; color:var(--color-text-faint); font-weight:600; margin-top:2px;">Apr 8, 2026</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:var(--space-1);">
+              <div class="eval-card-icon" style="background:#eff6ff; color:var(--color-primary);"><i class="fas fa-file-alt"></i></div>
+              <span class="chip chip-success"><span class="chip-dot"></span>Completed</span>
+            </div>
+          </div>
+          <div class="eval-card-body">
+            <div class="eval-score-row">
+              <div class="eval-score-val">82</div>
+              <div class="eval-score-max">/ 100</div>
+            </div>
+            <div class="eval-pct-bar-wrap"><div class="eval-pct-bar bar-success" style="width:82%"></div></div>
+            <div class="eval-meta">Scored 82 marks — 82% — <strong style="color: var(--color-success)">Good</strong></div>
+            <div class="eval-evaluator">
+              <div class="eval-evaluator-dot">SM</div>
+              Evaluated by: Dr. Sara Malik (Coordinator)
+            </div>
+          </div>
+        </div>
+
+        <!-- Mid-Term -->
+        <div class="eval-card">
+          <div class="eval-card-header">
+            <div>
+              <div class="eval-card-title">Mid-Term Review</div>
+              <div style="font-size:0.65rem; color:var(--color-text-faint); font-weight:600; margin-top:2px;">Jul 15, 2026</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:var(--space-1);">
+              <div class="eval-card-icon" style="background:#fffbeb; color:var(--color-warning);"><i class="fas fa-tasks"></i></div>
+              <span class="chip chip-success"><span class="chip-dot"></span>Completed</span>
+            </div>
+          </div>
+          <div class="eval-card-body">
+            <div class="eval-score-row">
+              <div class="eval-score-val">74</div>
+              <div class="eval-score-max">/ 100</div>
+            </div>
+            <div class="eval-pct-bar-wrap"><div class="eval-pct-bar bar-warning" style="width:74%"></div></div>
+            <div class="eval-meta">Scored 74 marks — 74% — <strong style="color: var(--color-warning)">Satisfactory</strong></div>
+            <div class="eval-evaluator">
+              <div class="eval-evaluator-dot">AH</div>
+              Evaluated by: Dr. Ali Hassan (Supervisor)
+            </div>
+          </div>
+        </div>
+
+        <!-- Supervisor Continuous -->
+        <div class="eval-card">
+          <div class="eval-card-header">
+            <div>
+              <div class="eval-card-title">Supervisor Assessment</div>
+              <div style="font-size:0.65rem; color:var(--color-text-faint); font-weight:600; margin-top:2px;">Ongoing</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:var(--space-1);">
+              <div class="eval-card-icon" style="background:#f5f3ff; color:#7c3aed;"><i class="fas fa-user-tie"></i></div>
+              <span class="chip chip-info"><span class="chip-dot"></span>Ongoing</span>
+            </div>
+          </div>
+          <div class="eval-card-body">
+            <div class="eval-score-row">
+              <div class="eval-score-val">72</div>
+              <div class="eval-score-max">/ 100</div>
+            </div>
+            <div class="eval-pct-bar-wrap"><div class="eval-pct-bar bar-purple" style="width:72%"></div></div>
+            <div class="eval-meta">Current assessment — Updated monthly by supervisor</div>
+            <div class="eval-evaluator">
+              <div class="eval-evaluator-dot">AH</div>
+              Dr. Ali Hassan (Assigned Supervisor)
+            </div>
+          </div>
+        </div>
+
+        <!-- Viva / Final Defense -->
+        <div class="eval-card">
+          <div class="eval-card-header">
+            <div>
+              <div class="eval-card-title">Final Defense (Viva)</div>
+              <div style="font-size:0.65rem; color:var(--color-text-faint); font-weight:600; margin-top:2px;">Dec 5, 2026</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:var(--space-1);">
+              <div class="eval-card-icon" style="background:#fef2f2; color:var(--color-danger);"><i class="fas fa-graduation-cap"></i></div>
+              <span class="chip chip-gray"><span class="chip-dot"></span>Upcoming</span>
+            </div>
+          </div>
+          <div class="eval-pending-state">
+            <div class="eval-pending-icon"><i class="fas fa-hourglass-half"></i></div>
+            <div class="eval-pending-title">Not yet evaluated</div>
+            <div class="eval-pending-sub">Final defense is scheduled for December 5, 2026. Results will appear here once completed.</div>
+          </div>
+        </div>
+
+        <!-- Final Report -->
+        <div class="eval-card">
+          <div class="eval-card-header">
+            <div>
+              <div class="eval-card-title">Final Report Assessment</div>
+              <div style="font-size:0.65rem; color:var(--color-text-faint); font-weight:600; margin-top:2px;">Nov 25, 2026</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:var(--space-1);">
+              <div class="eval-card-icon" style="background:#ecfdf5; color:var(--color-success);"><i class="fas fa-file-download"></i></div>
+              <span class="chip chip-gray"><span class="chip-dot"></span>Upcoming</span>
+            </div>
+          </div>
+          <div class="eval-pending-state">
+            <div class="eval-pending-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="eval-pending-title">Final report not yet submitted</div>
+            <div class="eval-pending-sub">Submit your final project report by November 20, 2026.</div>
+          </div>
+        </div>
+
+        <!-- Exhibition -->
+        <div class="eval-card">
+          <div class="eval-card-header">
+            <div>
+              <div class="eval-card-title">FYP Exhibition Score</div>
+              <div style="font-size:0.65rem; color:var(--color-text-faint); font-weight:600; margin-top:2px;">Dec 10, 2026</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:var(--space-1);">
+              <div class="eval-card-icon" style="background:#fff7ed; color:#f97316;"><i class="fas fa-trophy"></i></div>
+              <span class="chip chip-gray"><span class="chip-dot"></span>Upcoming</span>
+            </div>
+          </div>
+          <div class="eval-pending-state">
+            <div class="eval-pending-icon"><i class="fas fa-trophy"></i></div>
+            <div class="eval-pending-title">Exhibition not yet conducted</div>
+            <div class="eval-pending-sub">Annual FYP Exhibition is scheduled for December 10, 2026. Registration is required.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Rubric -->
+      <div class="card animate-fade-in-delay-3">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Mid-Term Evaluation Rubric</div>
+            <div class="card-subtitle">Detailed criterion-wise breakdown</div>
+          </div>
+          <span class="chip chip-success"><span class="chip-dot"></span>74 / 100</span>
+        </div>
+        <div class="rubric-table-wrap">
+          <div class="rubric-row rubric-row-header">
+            <div>Criterion</div>
+            <div>Score</div>
+            <div>Max</div>
+            <div></div>
+          </div>
+          <div class="rubric-row">
+            <div class="rubric-criterion">Project Understanding &amp; Problem Definition</div>
+            <div class="rubric-score">17</div>
+            <div class="rubric-max">20</div>
+            <div><div class="rubric-mini-bar-wrap"><div class="rubric-mini-bar" style="width:85%; background: #059669;"></div></div></div>
+          </div>
+          <div class="rubric-row">
+            <div class="rubric-criterion">Technical Depth &amp; Implementation Progress</div>
+            <div class="rubric-score">14</div>
+            <div class="rubric-max">25</div>
+            <div><div class="rubric-mini-bar-wrap"><div class="rubric-mini-bar" style="width:56%; background: #d97706;"></div></div></div>
+          </div>
+          <div class="rubric-row">
+            <div class="rubric-criterion">Research &amp; Literature Review</div>
+            <div class="rubric-score">16</div>
+            <div class="rubric-max">20</div>
+            <div><div class="rubric-mini-bar-wrap"><div class="rubric-mini-bar" style="width:80%; background: #059669;"></div></div></div>
+          </div>
+          <div class="rubric-row">
+            <div class="rubric-criterion">Presentation &amp; Communication</div>
+            <div class="rubric-score">14</div>
+            <div class="rubric-max">20</div>
+            <div><div class="rubric-mini-bar-wrap"><div class="rubric-mini-bar" style="width:70%; background: #2563eb;"></div></div></div>
+          </div>
+          <div class="rubric-row">
+            <div class="rubric-criterion">Teamwork &amp; Progress Management</div>
+            <div class="rubric-score">13</div>
+            <div class="rubric-max">15</div>
+            <div><div class="rubric-mini-bar-wrap"><div class="rubric-mini-bar" style="width:87%; background: #059669;"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supervisor Feedback -->
+      <div class="feedback-section animate-fade-in-delay-3">
+        <div class="feedback-header">
+          <i class="fas fa-comment-alt" style="color: var(--color-secondary);"></i>
+          Evaluator Feedback
+        </div>
+        <div class="feedback-item">
+          <div class="feedback-author">
+            <div class="feedback-author-avatar">AH</div>
+            <div>
+              <div class="feedback-author-name">Dr. Ali Hassan</div>
+              <div class="feedback-author-role">Supervisor — Mid-Term Evaluation</div>
+            </div>
+            <div class="feedback-date">Jul 15, 2026</div>
+          </div>
+          <p class="feedback-text">
+            The team has demonstrated a solid understanding of the project scope and the problem being addressed.
+            The YOLOv8-based vehicle detection module shows promising results with approximately 87% accuracy.
+            However, the adaptive signal control algorithm requires more rigorous testing with diverse traffic scenarios.
+            I recommend scheduling a meeting to discuss the ML model optimization strategy before the final submission.
+          </p>
+          <div>
+            <span class="feedback-tag feedback-tag-strength">✅ Strength: Problem Understanding</span>
+            <span class="feedback-tag feedback-tag-improvement" style="margin-left:4px;">⚠️ Improve: Algorithm Testing</span>
+          </div>
+        </div>
+        <div class="feedback-item">
+          <div class="feedback-author">
+            <div class="feedback-author-avatar">SM</div>
+            <div>
+              <div class="feedback-author-name">Dr. Sara Malik</div>
+              <div class="feedback-author-role">FYP Coordinator — Proposal Review</div>
+            </div>
+            <div class="feedback-date">Apr 8, 2026</div>
+          </div>
+          <p class="feedback-text">
+            The proposal is well-structured with a clear problem statement and defined objectives. The chosen methodology
+            is appropriate. Literature review is comprehensive. Recommend including specific performance metrics in the
+            deliverables to make evaluation more objective. Proposal is approved with minor revision required.
+          </p>
+          <div>
+            <span class="feedback-tag feedback-tag-strength">✅ Approved with Minor Revisions</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="scripts/dashboard.js"></script>
+</body>
+</html>

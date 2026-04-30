@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Submitted Evaluations — Evaluator | FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../styles/tokens.css"/>
+  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  <style>
+    :root{--color-portal:#0c4a6e;--color-portal-light:#0284c7;}
+    .sidebar{background:var(--color-portal);}
+    .sidebar .nav-item.active{background:var(--color-portal-light);box-shadow:0 4px 16px rgba(2,132,199,.4);}
+    .portal-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.22rem .7rem;background:rgba(2,132,199,.1);border:1px solid rgba(2,132,199,.25);border-radius:var(--radius-full);font-size:.6rem;font-weight:800;color:var(--color-portal);text-transform:uppercase;letter-spacing:.1em;}
+    .eval-result-card{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);overflow:hidden;transition:all var(--transition-base);}
+    .eval-result-card:hover{border-color:#bae6fd;box-shadow:var(--shadow-md);}
+    .erc-header{padding:var(--space-5) var(--space-6);background:var(--color-surface-alt);border-bottom:1px solid var(--color-border-light);display:flex;align-items:flex-start;gap:var(--space-4);flex-wrap:wrap;}
+    .erc-body{padding:var(--space-5) var(--space-6);}
+    .erc-footer{padding:var(--space-4) var(--space-6);border-top:1px solid var(--color-border-light);display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;}
+    .score-big{font-size:3rem;font-weight:900;background:linear-gradient(135deg,var(--color-portal),var(--color-portal-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+    .rubric-result-row{display:flex;align-items:center;gap:var(--space-3);padding:.4rem 0;border-bottom:1px solid var(--color-border-light);}
+    .rubric-result-row:last-child{border-bottom:none;}
+    .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+    .page-header-title{font-size:1.5rem;font-weight:900;color:var(--color-text);}
+    .page-header-sub{font-size:var(--font-size-sm);color:var(--color-text-muted);}
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="../scripts/auth.js"></script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-clipboard-check"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Evaluator Portal</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluate.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluate Projects</span></a>
+      <a href="submitted.html" class="nav-item active"><i class="fas fa-check-double nav-item-icon"></i><span class="nav-item-label">Submitted Evals</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Documents</div><a href="reports.html" class="nav-item"><i class="fas fa-file-download nav-item-icon"></i><span class="nav-item-label">Submitted Reports</span></a></div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Submitted Evaluations</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="portal-badge"><i class="fas fa-clipboard-check"></i> Evaluator</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">UQ</div><div class="user-info hidden-sm"><div class="user-name">Dr. Usman Qureshi</div><div class="user-role">Evaluator</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">Submitted Evaluations</div><div class="page-header-sub">Your completed evaluation records — Spring 2026</div></div>
+      <button class="btn btn-outline btn-sm" onclick="showToast('📥 Exporting all submitted evaluations…','info')"><i class="fas fa-download"></i> Export All</button>
+    </div>
+
+    <!-- Summary Banner -->
+    <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);border-radius:var(--radius-2xl);padding:var(--space-6) var(--space-8);color:white;display:flex;align-items:center;gap:var(--space-8);flex-wrap:wrap;margin-bottom:var(--space-5);" class="animate-fade-in-delay-1">
+      <div style="text-align:center"><div style="font-size:2.5rem;font-weight:900">0</div><div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase">Submitted</div></div>
+      <div style="text-align:center"><div style="font-size:2.5rem;font-weight:900">3</div><div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase">Assigned</div></div>
+      <div style="text-align:center"><div style="font-size:2.5rem;font-weight:900">—</div><div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase">Avg Score</div></div>
+      <div style="margin-left:auto;text-align:right"><div style="font-size:var(--font-size-base);font-weight:700;color:rgba(255,255,255,.8);">Evaluation Deadline</div><div style="font-size:1.2rem;font-weight:900">July 25, 2026</div></div>
+    </div>
+
+    <!-- No submitted evals yet -->
+    <div id="submittedContainer" class="animate-fade-in-delay-2">
+      <div style="text-align:center;padding:5rem;background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);">
+        <i class="fas fa-clipboard-check" style="font-size:3rem;color:var(--color-text-faint);opacity:.3;display:block;margin-bottom:1rem"></i>
+        <div style="font-size:var(--font-size-base);font-weight:700;color:var(--color-text);margin-bottom:.5rem">No Evaluations Submitted Yet</div>
+        <div style="font-size:var(--font-size-sm);color:var(--color-text-muted);margin-bottom:1.5rem">Mid-Term evaluations are scheduled for July 10–25, 2026. Complete your evaluations and they will appear here.</div>
+        <a href="evaluate.html" class="btn btn-primary"><i class="fas fa-star"></i> Start Evaluating</a>
+      </div>
+
+      <!-- Demo: what a submitted eval looks like -->
+      <div style="margin-top:var(--space-4)">
+        <div style="font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--color-text-faint);margin-bottom:var(--space-3)">Preview — What submitted evaluations will look like:</div>
+        <div class="eval-result-card" style="opacity:.6;pointer-events:none">
+          <div class="erc-header">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:1rem;font-weight:900;color:#0c4a6e">G-042</div>
+              <div style="font-size:var(--font-size-base);font-weight:800;color:var(--color-text);margin-bottom:.2rem">AI-Powered Traffic Management System</div>
+              <div style="font-size:.7rem;color:var(--color-text-faint);font-weight:600">Ahmed Farooq · Supervisor: Dr. Ali Hassan · Evaluated: July 15, 2026</div>
+              <div style="display:flex;gap:.5rem;margin-top:.5rem"><span class="chip chip-success" style="font-size:.55rem"><span class="chip-dot"></span>Mid-Term</span><span class="chip chip-info" style="font-size:.55rem"><span class="chip-dot"></span>Submitted</span></div>
+            </div>
+            <div style="text-align:center">
+              <div class="score-big">78</div>
+              <div style="font-size:.7rem;color:var(--color-text-faint);font-weight:700">/ 100 · B+</div>
+            </div>
+          </div>
+          <div class="erc-body">
+            <div style="display:flex;flex-direction:column;gap:.2rem">
+              <div class="rubric-result-row"><span style="font-size:var(--font-size-sm);font-weight:600;flex:1;color:var(--color-text)">Problem Understanding</span><div style="width:120px;height:6px;background:var(--color-border-light);border-radius:var(--radius-full);overflow:hidden"><div style="width:75%;height:100%;background:#0284c7;border-radius:var(--radius-full)"></div></div><span style="font-weight:800;font-size:.8rem;color:#0c4a6e;width:40px;text-align:right">15/20</span></div>
+              <div class="rubric-result-row"><span style="font-size:var(--font-size-sm);font-weight:600;flex:1;color:var(--color-text)">Technical Implementation</span><div style="width:120px;height:6px;background:var(--color-border-light);border-radius:var(--radius-full);overflow:hidden"><div style="width:80%;height:100%;background:#0284c7;border-radius:var(--radius-full)"></div></div><span style="font-weight:800;font-size:.8rem;color:#0c4a6e;width:40px;text-align:right">20/25</span></div>
+            </div>
+          </div>
+          <div class="erc-footer"><div style="font-size:var(--font-size-xs);color:var(--color-text-faint)">Submitted by Dr. Usman Qureshi on July 15, 2026</div><div style="display:flex;gap:.4rem"><button class="btn btn-outline btn-sm">View Full Report</button><button class="btn btn-outline btn-sm"><i class="fas fa-download"></i> PDF</button></div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../scripts/evaluator.js"></script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Submissions — FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles/tokens.css"/>
+  <link rel="stylesheet" href="styles/dashboard.css"/>
+  <style>
+    .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+    .page-header-title{font-size:1.5rem;font-weight:900;color:var(--color-text);margin-bottom:var(--space-1);}
+    .page-header-sub{font-size:var(--font-size-sm);color:var(--color-text-muted);}
+    .sub-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-5);}
+    @media(max-width:768px){.sub-grid{grid-template-columns:1fr;}}
+    .sub-card{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);overflow:hidden;transition:all var(--transition-base);}
+    .sub-card:hover{border-color:var(--color-border-blue);box-shadow:var(--shadow-md);}
+    .sub-card.required{border-color:var(--color-secondary);}
+    .sub-card-header{padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--color-border-light);background:var(--color-surface-alt);display:flex;align-items:center;gap:var(--space-3);}
+    .sub-icon{width:40px;height:40px;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .sub-card-title{font-size:var(--font-size-base);font-weight:800;color:var(--color-text);}
+    .sub-card-sub{font-size:.7rem;color:var(--color-text-faint);font-weight:600;}
+    .sub-card-body{padding:var(--space-6);}
+    .sub-desc{font-size:var(--font-size-sm);color:var(--color-text-muted);font-weight:500;line-height:1.7;margin-bottom:var(--space-4);}
+    .sub-info-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
+    .sub-info-label{font-size:.7rem;font-weight:700;color:var(--color-text-faint);text-transform:uppercase;letter-spacing:.06em;}
+    .sub-info-val{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);}
+    .upload-zone{border:2px dashed var(--color-border-blue);border-radius:var(--radius-xl);padding:var(--space-6);text-align:center;cursor:pointer;transition:all var(--transition-base);background:var(--color-lightbg);margin-top:var(--space-4);}
+    .upload-zone:hover{border-color:var(--color-secondary);background:#eff6ff;}
+    .upload-zone-icon{width:44px;height:44px;background:rgba(30,58,138,.08);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-2);color:var(--color-primary);font-size:1.1rem;}
+    .uploaded-file{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--color-lightbg);border:1.5px solid var(--color-border-blue);border-radius:var(--radius-xl);margin-top:var(--space-3);}
+    .file-icon{width:36px;height:36px;background:#fef2f2;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--color-danger);font-size:.9rem;flex-shrink:0;}
+    .file-name{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);}
+    .file-meta{font-size:.65rem;color:var(--color-text-faint);font-weight:600;}
+    .file-actions{margin-left:auto;display:flex;gap:.4rem;}
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="scripts/auth.js"></script>
+<script>AUTH.requireRole('student');</script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Student</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a><a href="proposal.html" class="nav-item"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">My Project</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Management</div><a href="supervisor.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor</span></a><a href="progress.html" class="nav-item"><i class="fas fa-chart-line nav-item-icon"></i><span class="nav-item-label">Progress Logs</span></a><a href="milestones.html" class="nav-item"><i class="fas fa-flag nav-item-icon"></i><span class="nav-item-label">Milestones</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div><a href="evaluation.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluations</span></a><a href="submissions.html" class="nav-item active"><i class="fas fa-upload nav-item-icon"></i><span class="nav-item-label">Submissions</span></a><a href="reports.html" class="nav-item"><i class="fas fa-file-download nav-item-icon"></i><span class="nav-item-label">Reports</span></a></div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="confirmLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Submissions</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="phase-chip"><span class="phase-chip-dot"></span> Proposal Phase</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">AF</div><div class="user-info hidden-sm"><div class="user-name">Ahmed Farooq</div><div class="user-role">Student</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="confirmLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">Document Submissions</div><div class="page-header-sub">Upload required FYP deliverables and documents</div></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row animate-fade-in-delay-1">
+      <div class="stat-card"><div class="stat-card-icon stat-card-icon-blue"><i class="fas fa-upload"></i></div><div class="stat-card-body"><div class="stat-card-label">Total Submissions</div><div class="stat-card-value">3 / 7</div><div class="stat-card-sub"><span class="chip chip-info"><span class="chip-dot"></span>43% Submitted</span></div></div></div>
+      <div class="stat-card"><div class="stat-card-icon stat-card-icon-green"><i class="fas fa-check-circle"></i></div><div class="stat-card-body"><div class="stat-card-label">Approved</div><div class="stat-card-value">2</div><div class="stat-card-sub"><span class="chip chip-success"><span class="chip-dot"></span>Accepted</span></div></div></div>
+      <div class="stat-card"><div class="stat-card-icon stat-card-icon-amber"><i class="fas fa-clock"></i></div><div class="stat-card-body"><div class="stat-card-label">Pending Review</div><div class="stat-card-value">1</div><div class="stat-card-sub"><span class="chip chip-warning"><span class="chip-dot"></span>Awaiting</span></div></div></div>
+      <div class="stat-card"><div class="stat-card-icon" style="background:#fef2f2;color:var(--color-danger)"><i class="fas fa-exclamation"></i></div><div class="stat-card-body"><div class="stat-card-label">Overdue</div><div class="stat-card-value">0</div><div class="stat-card-sub"><span class="chip chip-success"><span class="chip-dot"></span>None</span></div></div></div>
+    </div>
+
+    <div class="sub-grid animate-fade-in-delay-2">
+
+      <!-- Proposal -->
+      <div class="sub-card required">
+        <div class="sub-card-header"><div class="sub-icon" style="background:#eff6ff;color:var(--color-primary)"><i class="fas fa-file-alt"></i></div><div><div class="sub-card-title">FYP Proposal Document</div><div class="sub-card-sub">Deadline: May 5, 2026 — <strong style="color:#d97706">12 days left</strong></div></div><span class="chip chip-warning" style="margin-left:auto"><span class="chip-dot"></span>Pending</span></div>
+        <div class="sub-card-body">
+          <p class="sub-desc">Submit your complete FYP proposal including problem statement, objectives, methodology, and timeline.</p>
+          <div class="sub-info-row"><span class="sub-info-label">Format</span><span class="sub-info-val">PDF only · Max 10MB</span></div>
+          <div class="sub-info-row"><span class="sub-info-label">Min Pages</span><span class="sub-info-val">15 pages</span></div>
+          <div class="uploaded-file">
+            <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
+            <div><div class="file-name">FYP_Proposal_Draft_G42.pdf</div><div class="file-meta">Draft · 2.4 MB · Saved Apr 18, 2026</div></div>
+            <div class="file-actions"><button class="btn-icon" title="Download"><i class="fas fa-download"></i></button><button class="btn btn-primary btn-sm" onclick="alert('✅ Proposal submitted for coordinator review!')">Submit</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Literature Review -->
+      <div class="sub-card">
+        <div class="sub-card-header"><div class="sub-icon" style="background:#f5f3ff;color:#7c3aed"><i class="fas fa-book"></i></div><div><div class="sub-card-title">Literature Review</div><div class="sub-card-sub">Deadline: Jun 15, 2026</div></div><span class="chip chip-gray" style="margin-left:auto"><span class="chip-dot"></span>Not Yet</span></div>
+        <div class="sub-card-body">
+          <p class="sub-desc">Comprehensive review of at least 20 peer-reviewed papers related to your project domain.</p>
+          <div class="sub-info-row"><span class="sub-info-label">Format</span><span class="sub-info-val">PDF · Max 15MB</span></div>
+          <div class="sub-info-row"><span class="sub-info-label">Min Papers</span><span class="sub-info-val">20 references</span></div>
+          <div class="upload-zone" onclick="alert('File upload dialog would open here')"><div class="upload-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Drop PDF or click to upload</div><div style="font-size:var(--font-size-xs);color:var(--color-text-faint)">Available after June 1, 2026</div></div>
+        </div>
+      </div>
+
+      <!-- Progress Report -->
+      <div class="sub-card">
+        <div class="sub-card-header"><div class="sub-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-chart-bar"></i></div><div><div class="sub-card-title">Mid-Term Progress Report</div><div class="sub-card-sub">Deadline: Jul 10, 2026</div></div><span class="chip chip-gray" style="margin-left:auto"><span class="chip-dot"></span>Not Yet</span></div>
+        <div class="sub-card-body">
+          <p class="sub-desc">Detailed progress report covering work completed, challenges faced, and next steps.</p>
+          <div class="sub-info-row"><span class="sub-info-label">Format</span><span class="sub-info-val">PDF · Max 20MB</span></div>
+          <div class="upload-zone"><div class="upload-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Upload Progress Report</div><div style="font-size:var(--font-size-xs);color:var(--color-text-faint)">Available after July 1, 2026</div></div>
+        </div>
+      </div>
+
+      <!-- Source Code -->
+      <div class="sub-card">
+        <div class="sub-card-header"><div class="sub-icon" style="background:#fff7ed;color:#f97316"><i class="fas fa-code"></i></div><div><div class="sub-card-title">Source Code Repository</div><div class="sub-card-sub">Deadline: Nov 15, 2026</div></div><span class="chip chip-gray" style="margin-left:auto"><span class="chip-dot"></span>Not Yet</span></div>
+        <div class="sub-card-body">
+          <p class="sub-desc">GitHub repository link with README, code, and deployment instructions.</p>
+          <div class="sub-info-row"><span class="sub-info-label">Format</span><span class="sub-info-val">GitHub/GitLab link</span></div>
+          <div style="margin-top:var(--space-4)"><input type="url" class="form-input" placeholder="https://github.com/your-repo" disabled style="background:var(--color-surface-alt);cursor:not-allowed;padding:.65rem 1rem;border:1.5px solid var(--color-border);border-radius:var(--radius-lg);font-family:var(--font-family);font-size:var(--font-size-sm);color:var(--color-text);width:100%;outline:none;"/><p style="font-size:.65rem;color:var(--color-text-faint);margin-top:.3rem;font-weight:600;">Available after October 1, 2026</p></div>
+        </div>
+      </div>
+
+      <!-- Final Report -->
+      <div class="sub-card">
+        <div class="sub-card-header"><div class="sub-icon" style="background:#fef2f2;color:var(--color-danger)"><i class="fas fa-file-download"></i></div><div><div class="sub-card-title">Final Thesis Report</div><div class="sub-card-sub">Deadline: Nov 20, 2026</div></div><span class="chip chip-gray" style="margin-left:auto"><span class="chip-dot"></span>Not Yet</span></div>
+        <div class="sub-card-body"><p class="sub-desc">Complete FYP thesis document following CUI formatting guidelines. Must include abstract, chapters, references, and appendices.</p></div>
+      </div>
+
+      <!-- Presentation -->
+      <div class="sub-card">
+        <div class="sub-card-header"><div class="sub-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-tv"></i></div><div><div class="sub-card-title">Defense Presentation (PPT)</div><div class="sub-card-sub">Deadline: Dec 3, 2026</div></div><span class="chip chip-gray" style="margin-left:auto"><span class="chip-dot"></span>Not Yet</span></div>
+        <div class="sub-card-body"><p class="sub-desc">Upload your final defense presentation (PowerPoint/PDF) for evaluator review before the viva.</p></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="scripts/auth.js"></script>
+<script src="scripts/dashboard.js"></script>
+<style>.form-input{width:100%;padding:.65rem 1rem;border:1.5px solid var(--color-border);border-radius:var(--radius-lg);font-family:var(--font-family);font-size:var(--font-size-sm);color:var(--color-text);background:white;outline:none;}</style>
+</body>
+</html>

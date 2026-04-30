@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Review Proposals — Coordinator | FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../styles/tokens.css"/>
+  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  <link rel="stylesheet" href="../styles/coordinator.css"/>
+</head>
+<body class="dashboard-body">
+<script src="../scripts/auth.js"></script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-user-cog"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Coordinator Portal</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Management</div>
+      <a href="groups.html" class="nav-item"><i class="fas fa-layer-group nav-item-icon"></i><span class="nav-item-label">All FYP Groups</span></a>
+      <a href="proposals.html" class="nav-item active"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">Review Proposals</span><span class="nav-badge nav-badge-warning">7</span></a>
+      <a href="assignments.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Assignments</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Communication</div>
+      <a href="messages.html" class="nav-item"><i class="fas fa-comments nav-item-icon"></i><span class="nav-item-label">Messages</span><span class="nav-badge nav-badge-info">3</span></a>
+      <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn nav-item-icon"></i><span class="nav-item-label">Announcements</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluations.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Manage Evaluations</span></a>
+      <a href="reports.html" class="nav-item"><i class="fas fa-chart-bar nav-item-icon"></i><span class="nav-item-label">Reports</span></a>
+    </div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Proposal Review</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="portal-badge"><i class="fas fa-user-cog"></i> Coordinator</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i><span class="notif-dot"></span></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><div class="notif-item notif-unread"><div class="notif-icon notif-icon-warning"><i class="fas fa-file"></i></div><div class="notif-body"><div class="notif-title">7 Proposals Pending</div><div class="notif-time">Today</div></div></div></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">SM</div><div class="user-info hidden-sm"><div class="user-name">Dr. Sara Malik</div><div class="user-role">Coordinator</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">Proposal Review Queue</div><div class="page-header-sub">Deadline: May 5, 2026 · Review and approve/reject submitted FYP proposals</div></div>
+      <span class="chip chip-warning" style="font-size:.75rem;padding:.35rem .9rem;"><span class="chip-dot"></span> 7 Pending · 10 Approved · 2 Rejected</span>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:0;background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-xl);padding:.3rem;margin-bottom:var(--space-4);width:fit-content;" class="animate-fade-in-delay-1">
+      <button class="tab-btn active" onclick="filterProposals('pending',this)" id="tabPending">Pending (7)</button>
+      <button class="tab-btn" onclick="filterProposals('approved',this)" id="tabApproved">Approved (10)</button>
+      <button class="tab-btn" onclick="filterProposals('rejected',this)" id="tabRejected">Rejected (2)</button>
+      <button class="tab-btn" onclick="filterProposals('all',this)">All (19)</button>
+    </div>
+
+    <!-- Proposals list -->
+    <div id="proposalsList" style="display:flex;flex-direction:column;gap:var(--space-4);" class="animate-fade-in-delay-2"></div>
+  </main>
+</div>
+
+<!-- Full Proposal View Modal -->
+<div class="modal-overlay" id="proposalModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><div class="modal-title" id="pmTitle">View Proposal</div><button class="modal-close" onclick="closeModal('proposalModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body" id="pmBody"></div>
+    <div class="modal-footer" id="pmFooter"></div>
+  </div>
+</div>
+
+<!-- Revision Request Modal -->
+<div class="modal-overlay" id="revisionModal">
+  <div class="modal modal-md">
+    <div class="modal-header"><div class="modal-title">Request Revision</div><button class="modal-close" onclick="closeModal('revisionModal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Reasons for Revision (check all that apply)</label>
+        <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.3rem">
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:var(--font-size-sm);font-weight:500;cursor:pointer"><input type="checkbox" id="r1" style="accent-color:var(--coord-light);width:15px;height:15px"/> Problem statement is unclear</label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:var(--font-size-sm);font-weight:500;cursor:pointer"><input type="checkbox" id="r2" style="accent-color:var(--coord-light);width:15px;height:15px"/> Objectives are too vague</label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:var(--font-size-sm);font-weight:500;cursor:pointer"><input type="checkbox" id="r3" style="accent-color:var(--coord-light);width:15px;height:15px"/> Methodology needs more detail</label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:var(--font-size-sm);font-weight:500;cursor:pointer"><input type="checkbox" id="r4" style="accent-color:var(--coord-light);width:15px;height:15px"/> Timeline is unrealistic</label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:var(--font-size-sm);font-weight:500;cursor:pointer"><input type="checkbox" id="r5" style="accent-color:var(--coord-light);width:15px;height:15px"/> Literature review is insufficient</label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:var(--font-size-sm);font-weight:500;cursor:pointer"><input type="checkbox" id="r6" style="accent-color:var(--coord-light);width:15px;height:15px"/> Topic already taken by another group</label>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Additional Comments *</label><textarea class="form-textarea" id="revisionComments" placeholder="Explain in detail what the student group should improve…" style="min-height:110px"></textarea></div>
+      <div class="form-group"><label class="form-label">Revision Deadline</label><input type="date" class="form-input" id="revDeadline"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('revisionModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="submitRevision()" style="border-radius:var(--radius-xl);padding:.55rem 1.25rem;font-family:var(--font-family);font-size:var(--font-size-sm);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;"><i class="fas fa-redo"></i> Send Revision Request</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.tab-btn{padding:.45rem 1.1rem;border-radius:var(--radius-lg);border:none;background:transparent;font-family:var(--font-family);font-size:var(--font-size-sm);font-weight:700;color:var(--color-text-muted);cursor:pointer;transition:all var(--transition-fast);}
+.tab-btn.active{background:var(--coord-primary);color:white;box-shadow:0 4px 12px rgba(6,95,70,.25);}
+.tab-btn:hover:not(.active){background:var(--color-lightbg);}
+.proposal-card{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);overflow:hidden;transition:all var(--transition-base);}
+.proposal-card:hover{border-color:#a7f3d0;box-shadow:var(--shadow-md);}
+.pc-header{padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--color-border-light);background:var(--color-surface-alt);display:flex;align-items:flex-start;gap:var(--space-4);flex-wrap:wrap;}
+.pc-group-id{font-size:1rem;font-weight:900;color:var(--coord-primary);}
+.pc-title{font-size:var(--font-size-base);font-weight:800;color:var(--color-text);margin-bottom:.2rem;}
+.pc-meta{font-size:.7rem;color:var(--color-text-faint);font-weight:600;}
+.pc-body{padding:var(--space-5) var(--space-6);}
+.pc-abstract{font-size:var(--font-size-sm);color:var(--color-text-secondary);line-height:1.75;font-weight:500;padding:var(--space-4);background:var(--color-surface-alt);border-radius:var(--radius-xl);border-left:3px solid var(--coord-light);margin-bottom:var(--space-4);}
+.pc-footer{padding:var(--space-4) var(--space-6);border-top:1px solid var(--color-border-light);display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;}
+</style>
+
+<script src="../scripts/auth.js"></script>
+<script src="../scripts/coordinator.js"></script>
+<script>
+let currentRevGroupId = '';
+const PROPOSALS = [
+  { id:'G-042', title:'AI-Powered Traffic Management System Using Computer Vision',
+    leader:'Ahmed Farooq', members:'Ahmed Farooq, Sarah Khan, Ali Raza',
+    supervisor:'Dr. Ali Hassan', submitted:'Apr 18, 2026', status:'pending',
+    abstract:'This project proposes an AI-powered adaptive traffic management system using YOLOv8 for real-time vehicle detection and a reinforcement learning agent for signal optimization. The system will reduce average vehicle wait times by 35% through intelligent signal phase adjustment.',
+    objectives:'1. Real-time vehicle detection with >85% accuracy\n2. Develop adaptive signal algorithm\n3. Integrate with existing infrastructure\n4. Reduce average wait times by 30%',
+    methodology:'Computer Vision pipeline using YOLOv8, OpenCV, and TensorRT for GPU inference. Signal control using DQN RL agent trained in SUMO simulator. React dashboard for monitoring.',
+    timeline:'Feb–Mar: Research/Data Collection · Apr–May: Proposal & Architecture · Jun–Jul: Implementation · Aug–Sep: Testing · Oct–Nov: Integration · Dec: Defense',
+    domain:'Artificial Intelligence · Computer Vision',
+  },
+  { id:'G-019', title:'Federated Learning for Privacy-Preserving Medical Diagnosis',
+    leader:'Aima Khalid', members:'Aima Khalid, Omar Sheikh, Rida Fatima, Yasir Iqbal',
+    supervisor:'Dr. Fatima Noor', submitted:'Apr 20, 2026', status:'pending',
+    abstract:'A federated learning framework enabling multiple hospitals to collaboratively train diagnostic AI models without sharing patient data. Ensures HIPAA compliance while achieving accuracy comparable to centralized training.',
+    objectives:'1. Implement federated averaging protocol\n2. Achieve >90% diagnostic accuracy\n3. Ensure data privacy with differential privacy\n4. Deploy cross-hospital model federation',
+    methodology:'PyTorch Federated Learning using PySyft. Differential privacy with Gaussian noise injection. CNN-based image classification for X-ray analysis.',
+    timeline:'Feb–Mar: Literature Review · Apr–May: Architecture Design · Jun–Oct: Implementation · Nov: Testing · Dec: Defense',
+    domain:'Machine Learning · Healthcare AI',
+  },
+  { id:'G-031', title:'Smart Energy Management System Using Reinforcement Learning',
+    leader:'Faizan Ali', members:'Faizan Ali, Noor Ul Ain, Tariq Mahmood',
+    supervisor:'Dr. Usman Qureshi', submitted:'Apr 21, 2026', status:'pending',
+    abstract:'An IoT-integrated energy management system using DRL to optimize power consumption in smart buildings. A digital twin of the building will train the RL agent off-line before live deployment.',
+    objectives:'1. Build IoT sensor network\n2. Create building digital twin\n3. Train DRL agent for energy optimization\n4. Achieve 25% energy savings',
+    methodology:'ESP32 sensors + MQTT broker + Node-RED. Digital twin in EnergyPlus. DRL agent (PPO algorithm) trained in simulation, deployed on Raspberry Pi.',
+    timeline:'Feb–Mar: Hardware Setup · Apr: Proposal · May–Jul: RL Training · Aug–Oct: Deployment · Nov–Dec: Evaluation',
+    domain:'IoT · Reinforcement Learning',
+  },
+  { id:'G-007', title:'NLP-Based Legal Document Summarization Platform',
+    leader:'Sana Mehmood', members:'Sana Mehmood, Abdullah Shah',
+    supervisor:'Dr. Kamran Raza', submitted:'Apr 22, 2026', status:'pending',
+    abstract:'A web platform that uses fine-tuned LLMs (LegalBERT + GPT-4o API) to automatically summarize Pakistani legal documents, judgments, and contracts, reducing attorney review time by 60%.',
+    objectives:'1. Fine-tune LLM on Pakistani legal corpus\n2. Build summarization pipeline\n3. Develop web interface with multi-document comparison\n4. Achieve ROUGE-L > 0.45',
+    methodology:'LegalBERT fine-tuned on PLD corpus. Abstractive summarization using T5. FastAPI backend + React frontend. Redis caching.',
+    timeline:'Feb–Mar: Dataset Collection · Apr: Proposal · May–Jul: Model Training · Aug–Oct: Web Platform · Nov–Dec: Testing & Defense',
+    domain:'NLP · Legal Tech',
+  },
+  { id:'G-008', title:'Smart Agriculture System Using IoT Sensors',
+    leader:'Hira Zaman', members:'Hira Zaman, Waqar Ahmed',
+    supervisor:'', submitted:'Apr 23, 2026', status:'pending',
+    abstract:'Precision agriculture IoT system using soil moisture, NPK, and temperature sensors to automate irrigation and fertilization. ML model predicts crop yield based on environmental data.',
+    objectives:'1. Deploy 50+ field sensors\n2. Build ML crop yield predictor\n3. Automate irrigation system\n4. Mobile app for farmer monitoring',
+    methodology:'ESP32 + LoRa for field sensors. Firebase for real-time data. Random Forest crop yield prediction. React Native mobile app.',
+    timeline:'Feb–Mar: Hardware · Apr: Proposal · May–Jul: Software · Aug–Oct: Field Testing · Nov–Dec: Defense',
+    domain:'IoT · Agriculture Tech',
+  },
+  { id:'G-048', title:'Mental Health Monitoring App with AI Mood Prediction',
+    leader:'Amna Javed', members:'Amna Javed, Sobia Tariq, Kamran Ali',
+    supervisor:'Dr. Fatima Noor', submitted:'Apr 24, 2026', status:'pending',
+    abstract:'A mobile application that uses biometric data (HRV, sleep patterns), NLP-analyzed journal entries, and smartphone usage patterns to predict mental health states and recommend interventions.',
+    objectives:'1. Passive biometric monitoring\n2. NLP sentiment analysis of journal entries\n3. Mood prediction ML model\n4. Therapist alert system',
+    methodology:'React Native + wearable BLE integration. BERT sentiment analysis. LSTM mood prediction model. Twilio for therapist SMS alerts.',
+    timeline:'Feb–Mar: Research · Apr: Proposal · May–Jul: App Development · Aug–Oct: ML Integration · Nov–Dec: Clinical Testing & Defense',
+    domain:'Healthcare AI · Mobile Development',
+  },
+  { id:'G-039', title:'Deep Fake Detection System Using CNN Ensemble',
+    leader:'Rabia Arif', members:'Rabia Arif, Ahmed Zeb, Fatima Malik',
+    supervisor:'Dr. Ali Hassan', submitted:'Apr 24, 2026', status:'pending',
+    abstract:'A forensic tool combining multiple CNN architectures (EfficientNet-B7, Xception, ResNet-50) in an ensemble to detect AI-generated deepfake images and videos with explainability via Grad-CAM.',
+    objectives:'1. Build multi-architecture CNN ensemble\n2. Achieve >95% detection accuracy\n3. Real-time video stream analysis\n4. Explainability dashboard with Grad-CAM',
+    methodology:'PyTorch multi-model ensemble. FaceForensics++ + DFDC training dataset. Flask API. React detection dashboard.',
+    timeline:'Feb–Mar: Dataset Prep · Apr: Proposal · May–Jul: Model Training · Aug–Oct: API & Dashboard · Nov–Dec: Defense',
+    domain:'Computer Vision · Security',
+  },
+  { id:'G-061', title:'Blockchain-Based Student Credential Management System',
+    leader:'Maria Rashid', members:'Maria Rashid, Hassan Baig, Saifullah',
+    supervisor:'Dr. Usman Qureshi', submitted:'Apr 10, 2026', status:'approved',
+    abstract:'A blockchain-based system for issuing and verifying academic credentials using Ethereum smart contracts, eliminating diploma fraud and reducing verification time from days to seconds.',
+    objectives:'1. Deploy Ethereum smart contracts\n2. Digital credential issuance\n3. QR-code verification system\n4. Mobile verifier app',
+    methodology:'Solidity smart contracts on Ethereum Goerli testnet. IPFS for document storage. React + ethers.js frontend. React Native verifier app.',
+    timeline:'Feb–Apr: Smart Contract Dev · May–Jul: Frontend · Aug–Oct: Mobile App · Nov–Dec: Defense',
+    domain:'Blockchain · EdTech',
+  },
+  { id:'G-023', title:'Sign Language Recognition Using Computer Vision',
+    leader:'Usama Tariq', members:'Usama Tariq, Fatima Qureshi, Bilal Raza',
+    supervisor:'Dr. Ali Hassan', submitted:'Apr 5, 2026', status:'approved',
+    abstract:'A real-time ASL and PSL sign language recognition system using MediaPipe hand landmarks and a fine-tuned LSTM classifier, integrated into a web app for deaf-hearing communication.',
+    objectives:'1. Build PSL gesture dataset (50 signs)\n2. LSTM classifier with >92% accuracy\n3. Real-time browser inference\n4. Text-to-speech output',
+    methodology:'MediaPipe Hands + TensorFlow.js for browser inference. LSTM trained on custom PSL dataset. React frontend with WebRTC.',
+    timeline:'Feb–Mar: Dataset · Apr: Proposal · May–Jul: Model · Aug–Oct: Web App · Nov–Dec: Defense',
+    domain:'Computer Vision · Accessibility',
+  },
+];
+
+function renderProposals(filter = 'pending') {
+  const data = filter === 'all' ? PROPOSALS : PROPOSALS.filter(p => p.status === filter);
+  const el = document.getElementById('proposalsList');
+  if (!data.length) { el.innerHTML = `<div style="text-align:center;padding:4rem;color:var(--color-text-faint);"><i class="fas fa-file-alt" style="font-size:2rem;display:block;margin-bottom:.5rem"></i>No proposals in this category.</div>`; return; }
+  el.innerHTML = data.map(p => {
+    const statusMap = { pending:'chip-warning', approved:'chip-success', rejected:'chip-danger' };
+    const pendingActions = p.status === 'pending' ? `
+      <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="viewProposal('${p.id}')"><i class="fas fa-eye"></i> Full View</button>
+        <button class="btn btn-outline btn-sm" style="color:#d97706;border-color:#fde68a" onclick="currentRevGroupId='${p.id}';openModal('revisionModal')"><i class="fas fa-redo"></i> Request Revision</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectProposal('${p.id}')"><i class="fas fa-times"></i> Reject</button>
+        <button class="btn-coord" style="padding:.45rem 1rem;font-size:.75rem;border-radius:var(--radius-lg)" onclick="approveProposal('${p.id}')"><i class="fas fa-check"></i> Approve</button>
+      </div>` : `<button class="btn btn-outline btn-sm" onclick="viewProposal('${p.id}')"><i class="fas fa-eye"></i> View Full Proposal</button>`;
+    const supBadge = p.supervisor
+      ? `<span class="chip chip-info" style="font-size:.6rem"><span class="chip-dot"></span>${p.supervisor}</span>`
+      : `<span class="chip chip-danger" style="font-size:.6rem"><span class="chip-dot"></span>No Supervisor</span>`;
+    return `<div class="proposal-card" id="pc-${p.id}">
+      <div class="pc-header">
+        <div style="flex:1;min-width:0">
+          <div class="pc-group-id">${p.id}</div>
+          <div class="pc-title">${p.title}</div>
+          <div class="pc-meta">${p.leader} · ${p.members.split(',').length} Members · Submitted: ${p.submitted}</div>
+          <div style="display:flex;gap:.5rem;margin-top:.5rem;flex-wrap:wrap">${supBadge}<span class="chip chip-gray" style="font-size:.6rem"><span class="chip-dot"></span>${p.domain}</span></div>
+        </div>
+        <span class="chip ${statusMap[p.status]}" style="flex-shrink:0"><span class="chip-dot"></span>${p.status.charAt(0).toUpperCase()+p.status.slice(1)}</span>
+      </div>
+      <div class="pc-body">
+        <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-faint);margin-bottom:.4rem">Abstract</div>
+        <div class="pc-abstract">${p.abstract}</div>
+      </div>
+      <div class="pc-footer">${pendingActions}</div>
+    </div>`;
+  }).join('');
+}
+
+function viewProposal(id) {
+  const p = PROPOSALS.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('pmTitle').textContent = `${p.id} — ${p.title}`;
+  document.getElementById('pmBody').innerHTML = `
+    <div class="proposal-section"><div class="proposal-field-label">Project Abstract</div><div class="proposal-field-val">${p.abstract}</div></div>
+    <div class="proposal-section"><div class="proposal-field-label">Objectives</div><div class="proposal-field-val" style="white-space:pre-line">${p.objectives}</div></div>
+    <div class="proposal-section"><div class="proposal-field-label">Proposed Methodology</div><div class="proposal-field-val">${p.methodology}</div></div>
+    <div class="proposal-section"><div class="proposal-field-label">Timeline / Schedule</div><div class="proposal-field-val">${p.timeline}</div></div>
+    <div class="form-row-2">
+      <div><div class="proposal-field-label">Group Members</div><div class="proposal-field-val">${p.members}</div></div>
+      <div><div class="proposal-field-label">Assigned Supervisor</div><div class="proposal-field-val">${p.supervisor || '<span style="color:var(--color-danger);font-weight:700">Not Assigned</span>'}</div></div>
+    </div>
+    ${p.status==='pending'?`<div class="form-group"><label class="form-label">Coordinator Comments (optional)</label><textarea class="form-textarea" placeholder="Add any comments that will be visible to the student group…"></textarea></div>`:''}
+  `;
+  const statusMap = { pending: 'chip-warning', approved: 'chip-success', rejected: 'chip-danger' };
+  document.getElementById('pmFooter').innerHTML = p.status === 'pending' ? `
+    <button class="btn btn-outline" onclick="closeModal('proposalModal')">Close</button>
+    <button class="btn btn-outline" style="color:#d97706;border-color:#fde68a" onclick="closeModal('proposalModal');currentRevGroupId='${p.id}';openModal('revisionModal')"><i class="fas fa-redo"></i> Request Revision</button>
+    <button class="btn btn-danger" style="border-radius:var(--radius-xl);padding:.55rem 1.1rem;font-family:var(--font-family);font-size:var(--font-size-sm);font-weight:700;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:.5rem" onclick="closeModal('proposalModal');rejectProposal('${p.id}')"><i class="fas fa-times"></i> Reject</button>
+    <button class="btn-coord" onclick="closeModal('proposalModal');approveProposal('${p.id}')"><i class="fas fa-check"></i> Approve Proposal</button>
+  ` : `<button class="btn btn-outline" onclick="closeModal('proposalModal')">Close</button><span class="chip ${statusMap[p.status]}" style="font-size:.8rem;padding:.35rem .8rem"><span class="chip-dot"></span>${p.status.charAt(0).toUpperCase()+p.status.slice(1)}</span>`;
+  openModal('proposalModal');
+}
+
+function approveProposal(id) {
+  const p = PROPOSALS.find(x => x.id === id);
+  if (!p) return;
+  p.status = 'approved';
+  renderProposals(currentTab);
+  showToast(`✅ Proposal for ${id} approved! Student group has been notified.`, 'success');
+}
+
+function rejectProposal(id) {
+  confirmAction(`Reject proposal for ${id}? A notification will be sent to the student group.`, () => {
+    const p = PROPOSALS.find(x => x.id === id);
+    if (p) p.status = 'rejected';
+    renderProposals(currentTab);
+    showToast(`Proposal for ${id} rejected. Group notified.`, 'error');
+  });
+}
+
+function submitRevision() {
+  const comments = document.getElementById('revisionComments').value.trim();
+  if (!comments) { showToast('Please add revision comments.', 'error'); return; }
+  const reasons = ['r1','r2','r3','r4','r5','r6'].filter(r => document.getElementById(r)?.checked).length;
+  closeModal('revisionModal');
+  showToast(`✅ Revision requested for ${currentRevGroupId} with ${reasons} issue(s) noted. Student group notified.`, 'info');
+}
+
+function filterProposals(status, btn) {
+  currentTab = status;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn?.classList.add('active');
+  renderProposals(status);
+}
+
+let currentTab = 'pending';
+renderProposals('pending');
+</script>
+</body>
+</html>

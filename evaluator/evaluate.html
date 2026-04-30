@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Evaluate Project — FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../styles/tokens.css"/>
+  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  <style>
+    :root{--color-portal:#0c4a6e;--color-portal-light:#0284c7;}
+    .sidebar{background:var(--color-portal);}
+    .sidebar .nav-item.active{background:var(--color-portal-light);box-shadow:0 4px 16px rgba(2,132,199,.4);}
+    .portal-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .6rem;background:rgba(2,132,199,.1);border:1px solid rgba(2,132,199,.25);border-radius:var(--radius-full);font-size:.6rem;font-weight:800;color:var(--color-portal);text-transform:uppercase;letter-spacing:.1em;}
+    .eval-form-wrap{display:grid;grid-template-columns:1fr 320px;gap:var(--space-5);align-items:start;}
+    @media(max-width:1100px){.eval-form-wrap{grid-template-columns:1fr;}}
+    .project-info-banner{background:linear-gradient(135deg,#0c4a6e,#0284c7);border-radius:var(--radius-2xl);padding:var(--space-7) var(--space-8);color:white;margin-bottom:var(--space-5);}
+    .pib-title{font-size:1.2rem;font-weight:900;margin-bottom:.25rem;}
+    .pib-meta{font-size:var(--font-size-sm);color:rgba(255,255,255,.7);font-weight:500;margin-bottom:var(--space-5);}
+    .pib-group{display:flex;gap:var(--space-8);flex-wrap:wrap;}
+    .pib-stat{text-align:center;}
+    .pib-stat-val{font-size:1.1rem;font-weight:900;}
+    .pib-stat-lbl{font-size:.6rem;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;}
+    .rubric-card{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);overflow:hidden;}
+    .rc-header{padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--color-border-light);background:var(--color-surface-alt);}
+    .rc-title{font-size:var(--font-size-base);font-weight:800;color:var(--color-text);}
+    .rc-sub{font-size:.7rem;color:var(--color-text-faint);font-weight:600;margin-top:2px;}
+    .rc-body{padding:var(--space-6);}
+    .criterion-item{padding:var(--space-4) 0;border-bottom:1px solid var(--color-border-light);}
+    .criterion-item:last-child{border-bottom:none;}
+    .criterion-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--space-3);}
+    .criterion-name{font-size:var(--font-size-sm);font-weight:800;color:var(--color-text);}
+    .criterion-max{font-size:.7rem;font-weight:700;color:var(--color-text-faint);}
+    .criterion-desc{font-size:.7rem;color:var(--color-text-faint);font-weight:500;line-height:1.5;margin-bottom:var(--space-3);}
+    .score-slider-wrap{display:flex;align-items:center;gap:var(--space-4);}
+    .score-slider{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:var(--radius-full);background:var(--color-border-light);outline:none;cursor:pointer;}
+    .score-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:#0284c7;cursor:pointer;border:2px solid white;box-shadow:0 2px 6px rgba(2,132,199,.3);}
+    .score-display{width:52px;height:36px;border:1.5px solid var(--color-border);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:var(--font-size-sm);font-weight:800;color:var(--color-text);background:white;flex-shrink:0;}
+    .total-score-widget{background:linear-gradient(135deg,#0c4a6e,#0284c7);border-radius:var(--radius-2xl);padding:var(--space-6);color:white;text-align:center;margin-top:var(--space-5);}
+    .tsw-label{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.6);margin-bottom:var(--space-2);}
+    .tsw-score{font-size:3rem;font-weight:900;line-height:1;}
+    .tsw-max{font-size:.85rem;color:rgba(255,255,255,.6);font-weight:600;margin-top:.25rem;}
+    .tsw-grade{margin-top:var(--space-3);font-size:.85rem;font-weight:700;color:rgba(255,255,255,.85);}
+    .remarks-area{width:100%;padding:.75rem 1rem;border:1.5px solid var(--color-border);border-radius:var(--radius-xl);font-family:var(--font-family);font-size:var(--font-size-sm);color:var(--color-text);resize:vertical;min-height:100px;outline:none;transition:border-color var(--transition-fast);margin-top:var(--space-2);}
+    .remarks-area:focus{border-color:#0284c7;box-shadow:0 0 0 3px rgba(2,132,199,.12);}
+    .form-label{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text-secondary);display:block;}
+    .eval-submit-btn{width:100%;padding:.9rem;background:#0284c7;color:white;border:none;border-radius:var(--radius-xl);font-family:var(--font-family);font-size:var(--font-size-base);font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all var(--transition-base);margin-top:var(--space-5);}
+    .eval-submit-btn:hover{background:#0369a1;transform:translateY(-1px);}
+    .group-selector{display:flex;gap:var(--space-3);margin-bottom:var(--space-5);flex-wrap:wrap;}
+    .group-btn{padding:.5rem 1rem;border:1.5px solid var(--color-border);border-radius:var(--radius-xl);font-family:var(--font-family);font-size:var(--font-size-sm);font-weight:700;color:var(--color-text-muted);background:white;cursor:pointer;transition:all var(--transition-fast);}
+    .group-btn:hover{border-color:var(--color-border-blue);color:var(--color-secondary);}
+    .group-btn.active{background:#0284c7;color:white;border-color:#0284c7;}
+  </style>
+</head>
+<body class="dashboard-body">
+<script src="../scripts/auth.js"></script>
+<script>const user=AUTH.requireRole('evaluator');if(user)initTopbar(user);</script>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-clipboard-check"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Evaluator Portal</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div><a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a></div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluate.html" class="nav-item active"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluate Projects</span></a>
+      <a href="submitted.html" class="nav-item"><i class="fas fa-check-double nav-item-icon"></i><span class="nav-item-label">Submitted Evals</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Documents</div><a href="reports.html" class="nav-item"><i class="fas fa-file-download nav-item-icon"></i><span class="nav-item-label">Submitted Reports</span></a></div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Evaluate Project</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
+    <div class="topbar-right">
+      <div class="portal-badge"><i class="fas fa-clipboard-check"></i> Evaluator</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><p style="padding:1rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No notifications</p></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">--</div><div class="user-info hidden-sm"><div class="user-name">Loading</div><div class="user-role">Evaluator</div></div></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:var(--space-4);" class="animate-fade-in">
+      <div><div style="font-size:1.5rem;font-weight:900;color:var(--color-text);margin-bottom:var(--space-1);">Project Evaluation Form</div><div style="font-size:var(--font-size-sm);color:var(--color-text-muted);">Mid-Term Evaluation — Spring 2026</div></div>
+    </div>
+
+    <!-- Group Selector -->
+    <div class="animate-fade-in-delay-1">
+      <p style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);margin-bottom:var(--space-3);">Select Group to Evaluate:</p>
+      <div class="group-selector">
+        <button class="group-btn active" onclick="selectGroup(this,'G-042','AI-Powered Traffic Management System','Ahmed Farooq','Dr. Ali Hassan','3')">G-042</button>
+        <button class="group-btn" onclick="selectGroup(this,'G-038','Smart Healthcare Monitoring Using IoT','Zara Ahmad','Dr. Ali Hassan','4')">G-038</button>
+        <button class="group-btn" onclick="selectGroup(this,'G-055','E-Learning Platform with Adaptive Content','Hassan Khan','Dr. Ali Hassan','2')">G-055</button>
+      </div>
+    </div>
+
+    <!-- Project Banner -->
+    <div class="project-info-banner animate-fade-in-delay-1" id="projectBanner">
+      <div class="pib-title" id="bannerTitle">AI-Powered Traffic Management System Using Computer Vision</div>
+      <div class="pib-meta" id="bannerMeta">Group G-042 · Leader: Ahmed Farooq · Supervisor: Dr. Ali Hassan</div>
+      <div class="pib-group">
+        <div class="pib-stat"><div class="pib-stat-val">3</div><div class="pib-stat-lbl">Members</div></div>
+        <div class="pib-stat"><div class="pib-stat-val">Mid-Term</div><div class="pib-stat-lbl">Stage</div></div>
+        <div class="pib-stat"><div class="pib-stat-val">48%</div><div class="pib-stat-lbl">Progress</div></div>
+        <div class="pib-stat"><div class="pib-stat-val">Not Yet</div><div class="pib-stat-lbl">Previously Evaluated</div></div>
+      </div>
+    </div>
+
+    <!-- Evaluation Form -->
+    <div class="eval-form-wrap animate-fade-in-delay-2">
+      <div>
+        <!-- Rubric -->
+        <div class="rubric-card">
+          <div class="rc-header"><div class="rc-title">Evaluation Rubric</div><div class="rc-sub">Score each criterion out of its allocated marks</div></div>
+          <div class="rc-body">
+
+            <div class="criterion-item">
+              <div class="criterion-header"><div class="criterion-name">1. Problem Understanding &amp; Scope</div><div class="criterion-max">/ 20 marks</div></div>
+              <div class="criterion-desc">Evaluate clarity of problem definition, relevance, originality of approach, and depth of understanding of the domain.</div>
+              <div class="score-slider-wrap">
+                <span style="font-size:.65rem;font-weight:700;color:var(--color-text-faint);">0</span>
+                <input type="range" class="score-slider" id="s1" min="0" max="20" value="0" oninput="updateScore('s1','d1',20)"/>
+                <span style="font-size:.65rem;font-weight:700;color:var(--color-text-faint);">20</span>
+                <div class="score-display" id="d1">0</div>
+              </div>
+            </div>
+
+            <div class="criterion-item">
+              <div class="criterion-header"><div class="criterion-name">2. Technical Implementation &amp; Progress</div><div class="criterion-max">/ 25 marks</div></div>
+              <div class="criterion-desc">Assess the technical depth, quality of implementation, complexity, and progress relative to the project timeline.</div>
+              <div class="score-slider-wrap">
+                <span style="font-size:.65rem;font-weight:700;color:var(--color-text-faint);">0</span>
+                <input type="range" class="score-slider" id="s2" min="0" max="25" value="0" oninput="updateScore('s2','d2',25)"/>
+                <span style="font-size:.65rem;font-weight:700;color:var(--color-text-faint);">25</span>
+                <div class="score-display" id="d2">0</div>
+              </div>
+            </div>
+
+            <div class="criterion-item">
+              <div class="criterion-header"><div class="criterion-name">3. Research &amp; Literature Review</div><div class="criterion-max">/ 20 marks</div></div>
+              <div class="criterion-desc">Quality and breadth of literature review, application of research findings, and citation practices.</div>
+              <div class="score-slider-wrap">
+                <span style="font-size:.65rem;font-weight:700;color:var(--color-text-faint);">0</span>
+                <input type="range" class="score-slider" id="s3" min="0" max="20" value="0" oninput="updateScore('s3','d3',20)"/>
+                <span style="font-size:.65rem;font-weight:700;color:var(--color-text-faint);">20</span>
+                <div class="score-display" id="d3">0</div>
+              </div>
+            </div>
+
+            <div class="criterion-item">
+              <div class="criterion-header"><div class="criterion-name">4. Presentation &amp; Communication</div><div class="criterion-max">/ 20 marks</div></div>
+              <div class="criterion-desc">Clarity of presentation, ability to answer questions, visual quality of slides and demos.</div>
+              <div class="score-slider-wrap">
+                <span style="font-size:.65rem;font-weight:700;color:var(--color-text-faint);">0</span>
+                <input type="range" class="score-slider" id="s4" min="0" max="20" value="0" oninput="updateScore('s4','d4',20)"/>
+                <span style="font-size:.65rem;font-weight:700;color:var(--color-text-faint);">20</span>
+                <div class="score-display" id="d4">0</div>
+              </div>
+            </div>
+
+            <div class="criterion-item">
+              <div class="criterion-header"><div class="criterion-name">5. Teamwork &amp; Project Management</div><div class="criterion-max">/ 15 marks</div></div>
+              <div class="criterion-desc">Evidence of collaborative work, task distribution, adherence to schedule, and supervisor engagement.</div>
+              <div class="score-slider-wrap">
+                <span style="font-size:.65rem;font-weight:700;color:var(--color-text-faint);">0</span>
+                <input type="range" class="score-slider" id="s5" min="0" max="15" value="0" oninput="updateScore('s5','d5',15)"/>
+                <span style="font-size:.65rem;font-weight:700;color:var(--color-text-faint);">15</span>
+                <div class="score-display" id="d5">0</div>
+              </div>
+            </div>
+
+            <!-- Remarks -->
+            <div style="margin-top:var(--space-5);">
+              <label class="form-label">Evaluation Remarks <span style="color:var(--color-danger)">*</span></label>
+              <textarea class="remarks-area" id="remarks" placeholder="Provide detailed feedback including strengths, areas for improvement, and specific recommendations for the student group…"></textarea>
+            </div>
+
+            <div style="margin-top:var(--space-4);">
+              <label class="form-label" style="margin-bottom:.4rem;">Recommendation</label>
+              <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;">
+                <button class="group-btn" id="rec1" onclick="setRec('Pass — Good Progress')">✅ Pass</button>
+                <button class="group-btn" id="rec2" onclick="setRec('Conditional Pass — Improvements Required')">⚠️ Conditional Pass</button>
+                <button class="group-btn" id="rec3" onclick="setRec('Fail — Major Issues')">❌ Fail</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="eval-submit-btn" onclick="submitEvaluation()">
+          <i class="fas fa-paper-plane"></i> Submit Evaluation
+        </button>
+      </div>
+
+      <!-- Sidebar -->
+      <div>
+        <!-- Score Widget -->
+        <div class="total-score-widget">
+          <div class="tsw-label">Total Score</div>
+          <div class="tsw-score" id="totalScore">0</div>
+          <div class="tsw-max">/ 100 marks</div>
+          <div class="tsw-grade" id="gradeLabel">Grade: —</div>
+        </div>
+
+        <!-- Score Breakdown -->
+        <div class="card" style="margin-top:var(--space-4);">
+          <div class="card-header"><div class="card-title">Score Breakdown</div></div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-2);">
+            <div id="breakdown1" class="breakdown-row" style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--color-border-light);font-size:var(--font-size-sm);">
+              <span style="color:var(--color-text-muted);font-weight:600;">Problem Understanding</span><span id="bv1" style="font-weight:800;color:var(--color-primary);">0/20</span>
+            </div>
+            <div id="breakdown2" class="breakdown-row" style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--color-border-light);font-size:var(--font-size-sm);">
+              <span style="color:var(--color-text-muted);font-weight:600;">Technical Implementation</span><span id="bv2" style="font-weight:800;color:var(--color-primary);">0/25</span>
+            </div>
+            <div id="breakdown3" class="breakdown-row" style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--color-border-light);font-size:var(--font-size-sm);">
+              <span style="color:var(--color-text-muted);font-weight:600;">Research &amp; Literature</span><span id="bv3" style="font-weight:800;color:var(--color-primary);">0/20</span>
+            </div>
+            <div id="breakdown4" class="breakdown-row" style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--color-border-light);font-size:var(--font-size-sm);">
+              <span style="color:var(--color-text-muted);font-weight:600;">Presentation</span><span id="bv4" style="font-weight:800;color:var(--color-primary);">0/20</span>
+            </div>
+            <div id="breakdown5" class="breakdown-row" style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;font-size:var(--font-size-sm);">
+              <span style="color:var(--color-text-muted);font-weight:600;">Teamwork</span><span id="bv5" style="font-weight:800;color:var(--color-primary);">0/15</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guidelines -->
+        <div class="card" style="margin-top:var(--space-4);">
+          <div class="card-header"><div class="card-title">Grading Scale</div></div>
+          <div style="display:flex;flex-direction:column;gap:.3rem;font-size:var(--font-size-sm);">
+            <div style="display:flex;justify-content:space-between;padding:.3rem var(--space-3);background:#ecfdf5;border-radius:var(--radius-lg);"><span style="font-weight:700;color:#065f46">A / A+</span><span style="color:#059669;font-weight:700">85 – 100</span></div>
+            <div style="display:flex;justify-content:space-between;padding:.3rem var(--space-3);background:#eff6ff;border-radius:var(--radius-lg);"><span style="font-weight:700;color:var(--color-primary)">B / B+</span><span style="color:var(--color-secondary);font-weight:700">70 – 84</span></div>
+            <div style="display:flex;justify-content:space-between;padding:.3rem var(--space-3);background:#fffbeb;border-radius:var(--radius-lg);"><span style="font-weight:700;color:#92400e">C / C+</span><span style="color:#d97706;font-weight:700">60 – 69</span></div>
+            <div style="display:flex;justify-content:space-between;padding:.3rem var(--space-3);background:#fef2f2;border-radius:var(--radius-lg);"><span style="font-weight:700;color:#991b1b">F</span><span style="color:#dc2626;font-weight:700">Below 60</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let _collapsed=false;
+window.toggleSidebar=function(){_collapsed=!_collapsed;document.getElementById('sidebar')?.classList.toggle('collapsed',_collapsed);document.getElementById('mainWrap')?.classList.toggle('expanded',_collapsed);const ico=document.getElementById('collapseIcon');if(ico)ico.className=_collapsed?'fas fa-chevron-right':'fas fa-chevron-left';const lt=document.getElementById('sidebarLogoText');if(lt)lt.style.display=_collapsed?'none':'';};
+window.openMobileSidebar=function(){document.getElementById('sidebar')?.classList.add('mobile-open');document.getElementById('sidebarOverlay')?.classList.add('show');document.body.style.overflow='hidden';};
+window.closeMobileSidebar=function(){document.getElementById('sidebar')?.classList.remove('mobile-open');document.getElementById('sidebarOverlay')?.classList.remove('show');document.body.style.overflow='';};
+window.toggleNotifications=function(){document.getElementById('notifDropdown')?.classList.toggle('open');};
+window.toggleUserMenu=function(){document.getElementById('userDropdown')?.classList.toggle('open');};
+document.addEventListener('click',e=>{if(!document.getElementById('notifWrap')?.contains(e.target))document.getElementById('notifDropdown')?.classList.remove('open');if(!document.getElementById('userWrap')?.contains(e.target))document.getElementById('userDropdown')?.classList.remove('open');});
+const _d=document.getElementById('currentDate');if(_d)_d.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
+
+const maxScores = {s1:20, s2:25, s3:20, s4:20, s5:15};
+const bvIds = {s1:'bv1',s2:'bv2',s3:'bv3',s4:'bv4',s5:'bv5'};
+
+function updateScore(sliderId, displayId, max) {
+  const val = parseInt(document.getElementById(sliderId).value);
+  document.getElementById(displayId).textContent = val;
+  document.getElementById(bvIds[sliderId]).textContent = val + '/' + max;
+  recalcTotal();
+}
+
+function recalcTotal() {
+  let total = 0;
+  Object.keys(maxScores).forEach(id => { total += parseInt(document.getElementById(id)?.value || 0); });
+  document.getElementById('totalScore').textContent = total;
+  let grade = '—';
+  if (total >= 85) grade = 'A+';
+  else if (total >= 80) grade = 'A';
+  else if (total >= 75) grade = 'B+';
+  else if (total >= 70) grade = 'B';
+  else if (total >= 65) grade = 'C+';
+  else if (total >= 60) grade = 'C';
+  else if (total > 0) grade = 'F';
+  document.getElementById('gradeLabel').textContent = 'Grade: ' + grade;
+}
+
+let selectedRec = '';
+function setRec(val) {
+  selectedRec = val;
+  ['rec1','rec2','rec3'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function selectGroup(btn, id, title, leader, supervisor, members) {
+  document.querySelectorAll('.group-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('bannerTitle').textContent = title;
+  document.getElementById('bannerMeta').textContent = 'Group ' + id + ' · Leader: ' + leader + ' · Supervisor: ' + supervisor;
+  // Reset sliders
+  ['s1','s2','s3','s4','s5'].forEach((id,i) => { document.getElementById(id).value=0; document.getElementById('d'+(i+1)).textContent='0'; document.getElementById('bv'+(i+1)).textContent='0/'+[20,25,20,20,15][i]; });
+  recalcTotal();
+}
+
+function submitEvaluation() {
+  const total = parseInt(document.getElementById('totalScore').textContent);
+  const remarks = document.getElementById('remarks').value.trim();
+  if (total === 0) { alert('⚠️ Please score at least one criterion before submitting.'); return; }
+  if (!remarks) { alert('⚠️ Please add evaluation remarks before submitting.'); return; }
+  if (confirm(`Submit evaluation with score ${total}/100? This action cannot be undone.`)) {
+    alert(`✅ Evaluation submitted successfully!\n\nScore: ${total}/100\nRecommendation: ${selectedRec || 'Not specified'}\n\nThe student group and coordinator have been notified.`);
+    window.location.href = 'dashboard.html';
+  }
+}
+</script>
+</body>
+</html>

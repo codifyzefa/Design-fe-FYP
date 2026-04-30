@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Progress Logs — FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="styles/tokens.css"/>
+  <link rel="stylesheet" href="styles/dashboard.css"/>
+  <style>
+    .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+    .page-header-title{font-size:1.5rem;font-weight:900;color:var(--color-text);margin-bottom:var(--space-1);}
+    .page-header-sub{font-size:var(--font-size-sm);color:var(--color-text-muted);}
+    .filter-bar{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;}
+    .filter-select{padding:.45rem .9rem;border:1.5px solid var(--color-border);border-radius:var(--radius-lg);font-family:var(--font-family);font-size:var(--font-size-sm);color:var(--color-text);background:white;outline:none;cursor:pointer;}
+    .filter-select:focus{border-color:var(--color-secondary);}
+    .log-card{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);overflow:hidden;transition:border-color var(--transition-base),box-shadow var(--transition-base);}
+    .log-card:hover{border-color:var(--color-border-blue);box-shadow:var(--shadow-md);}
+    .log-card-header{padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--color-border-light);background:var(--color-surface-alt);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+    .log-week{font-size:var(--font-size-base);font-weight:800;color:var(--color-text);}
+    .log-date{font-size:var(--font-size-xs);color:var(--color-text-faint);font-weight:600;}
+    .log-body{padding:var(--space-6);}
+    .log-activity{font-size:var(--font-size-sm);color:var(--color-text-secondary);font-weight:500;line-height:1.75;margin-bottom:var(--space-4);}
+    .log-tags{display:flex;gap:var(--space-2);flex-wrap:wrap;margin-bottom:var(--space-4);}
+    .log-tag{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;background:var(--color-lightbg);border:1px solid var(--color-border-blue);border-radius:var(--radius-full);font-size:.65rem;font-weight:700;color:var(--color-secondary);}
+    .log-footer{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding-top:var(--space-4);border-top:1px solid var(--color-border-light);flex-wrap:wrap;}
+    .log-meta{font-size:.7rem;color:var(--color-text-faint);font-weight:600;display:flex;align-items:center;gap:.4rem;}
+    .log-actions{display:flex;gap:var(--space-2);}
+    /* Modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);z-index:300;align-items:center;justify-content:center;padding:var(--space-5);}
+    .modal-overlay.open{display:flex;}
+    .modal{background:white;border-radius:var(--radius-3xl);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl);animation:scaleIn .2s ease-out;}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--color-border-light);}
+    .modal-title{font-size:1.1rem;font-weight:800;color:var(--color-text);}
+    .modal-close{width:32px;height:32px;border-radius:var(--radius-md);background:var(--color-surface-alt);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);transition:all var(--transition-fast);}
+    .modal-close:hover{background:var(--color-danger);color:white;}
+    .modal-body{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4);}
+    .modal-footer{padding:var(--space-4) var(--space-6);border-top:1px solid var(--color-border-light);display:flex;justify-content:flex-end;gap:var(--space-3);}
+    .form-group{display:flex;flex-direction:column;gap:.4rem;}
+    .form-label{font-size:var(--font-size-sm);font-weight:600;color:var(--color-text-secondary);}
+    .form-input,.form-select,.form-textarea{width:100%;padding:.65rem 1rem;border:1.5px solid var(--color-border);border-radius:var(--radius-lg);font-family:var(--font-family);font-size:var(--font-size-sm);color:var(--color-text);background:white;outline:none;transition:border-color var(--transition-fast),box-shadow var(--transition-fast);}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--color-secondary);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+    .form-textarea{resize:vertical;min-height:100px;}
+    .summary-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4);}
+    @media(max-width:768px){.summary-cards{grid-template-columns:1fr 1fr;}}
+    .summary-card{background:white;border:1.5px solid var(--color-border);border-radius:var(--radius-2xl);padding:var(--space-5);display:flex;align-items:center;gap:var(--space-3);}
+    .sc-icon{width:40px;height:40px;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .sc-val{font-size:1.4rem;font-weight:900;color:var(--color-text);}
+    .sc-lbl{font-size:.65rem;font-weight:700;color:var(--color-text-faint);text-transform:uppercase;letter-spacing:.08em;}
+  </style>
+</head>
+<body class="dashboard-body">
+<div id="shellTarget"></div>
+
+<script src="scripts/auth.js"></script>
+<script>
+const user = AUTH.requireRole('student');
+</script>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Student</div></div></div>
+    <button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group"><div class="nav-group-label">Overview</div>
+      <a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
+      <a href="proposal.html" class="nav-item"><i class="fas fa-file-alt nav-item-icon"></i><span class="nav-item-label">My Project</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Management</div>
+      <a href="supervisor.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor</span></a>
+      <a href="progress.html" class="nav-item active"><i class="fas fa-chart-line nav-item-icon"></i><span class="nav-item-label">Progress Logs</span></a>
+      <a href="milestones.html" class="nav-item"><i class="fas fa-flag nav-item-icon"></i><span class="nav-item-label">Milestones</span></a>
+    </div>
+    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
+      <a href="evaluation.html" class="nav-item"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluations</span></a>
+      <a href="submissions.html" class="nav-item"><i class="fas fa-upload nav-item-icon"></i><span class="nav-item-label">Submissions</span></a>
+      <a href="reports.html" class="nav-item"><i class="fas fa-file-download nav-item-icon"></i><span class="nav-item-label">Reports</span></a>
+    </div>
+  </nav>
+  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="confirmLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+<div class="main-wrap" id="mainWrap">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-page-title">Progress Logs</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div>
+    </div>
+    <div class="topbar-right">
+      <div class="phase-chip"><span class="phase-chip-dot"></span> Proposal Phase</div>
+      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i><span class="notif-dot"></span></button><div class="notifications-dropdown" id="notifDropdown"><div class="dropdown-header"><span class="dropdown-header-title">Notifications</span></div><div class="notif-list"><div style="padding:2rem;text-align:center;color:var(--color-text-faint);font-size:.8rem;">No new notifications</div></div></div></div>
+      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">--</div><div class="user-info hidden-sm"><div class="user-name">Loading…</div><div class="user-role">Student</div></div><i class="fas fa-chevron-down user-chevron hidden-sm"></i></button><div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="confirmLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div></div>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <!-- Header -->
+    <div class="page-header animate-fade-in">
+      <div><div class="page-header-title">Weekly Progress Logs</div><div class="page-header-sub">Document your weekly activities and supervisor meetings</div></div>
+      <button class="btn btn-primary btn-sm" onclick="openModal()"><i class="fas fa-plus"></i> Log This Week</button>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-cards animate-fade-in-delay-1">
+      <div class="summary-card"><div class="sc-icon" style="background:#eff6ff;color:var(--color-primary)"><i class="fas fa-calendar-check"></i></div><div><div class="sc-val">12</div><div class="sc-lbl">Weeks Logged</div></div></div>
+      <div class="summary-card"><div class="sc-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-check-circle"></i></div><div><div class="sc-val">10</div><div class="sc-lbl">Approved</div></div></div>
+      <div class="summary-card"><div class="sc-icon" style="background:#fffbeb;color:#d97706"><i class="fas fa-clock"></i></div><div><div class="sc-val">2</div><div class="sc-lbl">Pending</div></div></div>
+      <div class="summary-card"><div class="sc-icon" style="background:#f5f3ff;color:#7c3aed"><i class="fas fa-hourglass-half"></i></div><div><div class="sc-val">8</div><div class="sc-lbl">Weeks Remaining</div></div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card animate-fade-in-delay-2" style="padding:var(--space-4) var(--space-6);">
+      <div class="filter-bar">
+        <span style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Filter:</span>
+        <select class="filter-select" onchange="filterLogs(this.value)">
+          <option value="all">All Logs</option>
+          <option value="approved">Approved</option>
+          <option value="pending">Pending Review</option>
+          <option value="rejected">Needs Revision</option>
+        </select>
+        <select class="filter-select">
+          <option>Spring 2026</option>
+          <option>Fall 2025</option>
+        </select>
+        <span style="margin-left:auto;font-size:var(--font-size-xs);font-weight:700;color:var(--color-text-faint);">Showing 12 logs</span>
+      </div>
+    </div>
+
+    <!-- Log Entries -->
+    <div id="logsList" style="display:flex;flex-direction:column;gap:var(--space-4);">
+
+      <div class="log-card animate-fade-in" data-status="approved">
+        <div class="log-card-header">
+          <div><div class="log-week">Week 12 — Progress Log</div><div class="log-date">Apr 20 – Apr 26, 2026</div></div>
+          <span class="chip chip-success"><span class="chip-dot"></span>Approved</span>
+        </div>
+        <div class="log-body">
+          <p class="log-activity">Completed the YOLOv8 fine-tuning on custom traffic dataset. Achieved 89.3% mAP on validation set. Integrated the detection module with the OpenCV video stream pipeline. Attended weekly supervisor meeting and presented results.</p>
+          <div class="log-tags">
+            <span class="log-tag"><i class="fas fa-code"></i> Implementation</span>
+            <span class="log-tag"><i class="fas fa-brain"></i> Model Training</span>
+            <span class="log-tag"><i class="fas fa-users"></i> Supervisor Meeting</span>
+          </div>
+          <div class="log-footer">
+            <div class="log-meta"><i class="fas fa-clock"></i> Submitted: Apr 27, 2026</div>
+            <div class="log-meta"><i class="fas fa-user-check"></i> Reviewed by: Dr. Ali Hassan</div>
+            <div class="log-actions"><button class="btn btn-outline btn-sm"><i class="fas fa-eye"></i> View</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="log-card" data-status="approved">
+        <div class="log-card-header">
+          <div><div class="log-week">Week 11 — Progress Log</div><div class="log-date">Apr 13 – Apr 19, 2026</div></div>
+          <span class="chip chip-success"><span class="chip-dot"></span>Approved</span>
+        </div>
+        <div class="log-body">
+          <p class="log-activity">Set up the data collection pipeline using OpenCV to capture real-time video from traffic cameras. Annotated 500 images using LabelImg for vehicle detection training. Reviewed literature on adaptive signal control algorithms.</p>
+          <div class="log-tags">
+            <span class="log-tag"><i class="fas fa-database"></i> Data Collection</span>
+            <span class="log-tag"><i class="fas fa-tag"></i> Annotation</span>
+            <span class="log-tag"><i class="fas fa-book"></i> Literature Review</span>
+          </div>
+          <div class="log-footer">
+            <div class="log-meta"><i class="fas fa-clock"></i> Submitted: Apr 20, 2026</div>
+            <div class="log-actions"><button class="btn btn-outline btn-sm"><i class="fas fa-eye"></i> View</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="log-card" data-status="pending">
+        <div class="log-card-header">
+          <div><div class="log-week">Week 13 — Progress Log</div><div class="log-date">Apr 27 – May 3, 2026</div></div>
+          <span class="chip chip-warning"><span class="chip-dot"></span>Pending Review</span>
+        </div>
+        <div class="log-body">
+          <p class="log-activity">Started development of the adaptive signal control algorithm. Working on integration between the detection module and the signal controller. Encountered issues with real-time latency — investigating optimization techniques.</p>
+          <div class="log-tags">
+            <span class="log-tag"><i class="fas fa-cogs"></i> Algorithm Dev</span>
+            <span class="log-tag"><i class="fas fa-bug"></i> Debugging</span>
+          </div>
+          <div class="log-footer">
+            <div class="log-meta"><i class="fas fa-clock"></i> Submitted: May 3, 2026 — Awaiting supervisor review</div>
+            <div class="log-actions">
+              <button class="btn btn-outline btn-sm"><i class="fas fa-edit"></i> Edit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Add Log Modal -->
+<div class="modal-overlay" id="logModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Log Weekly Progress</div>
+      <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Week Period</label>
+        <input type="text" class="form-input" value="Week 14: May 4 – May 10, 2026" readonly style="background:var(--color-surface-alt)"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Activities Completed <span style="color:var(--color-danger)">*</span></label>
+        <textarea class="form-textarea" style="min-height:130px" placeholder="Describe what you accomplished this week…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hours Worked</label>
+        <input type="number" class="form-input" placeholder="e.g. 20" min="1" max="80"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Supervisor Meeting?</label>
+        <select class="form-select">
+          <option>Yes — held on campus</option>
+          <option>Yes — virtual meeting</option>
+          <option>No — next week</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Next Week Plan</label>
+        <textarea class="form-textarea" style="min-height:80px" placeholder="What do you plan to do next week?"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Blockers / Issues (if any)</label>
+        <textarea class="form-textarea" style="min-height:70px" placeholder="Any problems or blockers this week?"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitLog()"><i class="fas fa-paper-plane"></i> Submit Log</button>
+    </div>
+  </div>
+</div>
+
+<script src="scripts/auth.js"></script>
+<script src="scripts/dashboard.js"></script>
+<script>
+function openModal() { document.getElementById('logModal').classList.add('open'); }
+function closeModal() { document.getElementById('logModal').classList.remove('open'); }
+function submitLog() {
+  closeModal();
+  alert('✅ Progress log submitted successfully! Dr. Ali Hassan will review it shortly.');
+}
+function filterLogs(status) {
+  document.querySelectorAll('.log-card').forEach(el => {
+    el.style.display = (status === 'all' || el.dataset.status === status) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

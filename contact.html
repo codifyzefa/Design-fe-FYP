@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | CUI Abbottabad FYP Portal</title>
+  <meta name="description" content="Contact the FYP administration and support team at CUI Abbottabad." />
+  <meta name="theme-color" content="#1E3A8A" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/landing.css" />
+  <link rel="stylesheet" href="styles/public-pages.css" />
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand" aria-label="FYP Portal Home"><img src="../public/cuilogo.png" alt="CUI Logo" class="nav-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" /><div class="nav-logo-fallback" style="display:none"><i class="fas fa-graduation-cap"></i></div><div class="nav-brand-text"><span class="nav-title">CUI Abbottabad</span><span class="nav-subtitle">FYP Portal</span></div></a>
+      <div class="nav-links"><a href="about-program.html" class="nav-link">About</a><a href="eligibility.html" class="nav-link">Eligibility</a><a href="process.html" class="nav-link">Process</a><a href="guidelines.html" class="nav-link">Guidelines</a><a href="developers.html" class="nav-link">Team</a><a href="faq.html" class="nav-link">FAQ</a><a href="contact.html" class="nav-link">Contact</a></div>
+      <div class="nav-actions"><a href="login.html" class="btn btn-primary btn-sm nav-cta">Portal Login <i class="fas fa-arrow-right"></i></a><button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><i class="fas fa-bars" id="navIcon"></i></button></div>
+    </div>
+    <div class="mobile-menu" id="mobileMenu"><div class="mobile-menu-inner"><a href="about-program.html" class="mobile-link">About Program</a><a href="eligibility.html" class="mobile-link">Eligibility Criteria</a><a href="process.html" class="mobile-link">Process</a><a href="guidelines.html" class="mobile-link">Guidelines</a><a href="developers.html" class="mobile-link">Our Developers</a><a href="features.html" class="mobile-link">Features</a><a href="faq.html" class="mobile-link">FAQ</a><a href="contact.html" class="mobile-link">Contact</a><a href="login.html" class="btn btn-primary w-full mt-2">Portal Login <i class="fas fa-arrow-right"></i></a></div></div>
+  </nav>
+  <main>
+    <section class="page-hero">
+      <div class="container page-hero-inner">
+        <div><div class="page-eyebrow"><span class="badge-dot"></span><i class="fas fa-envelope"></i> Contact</div><h1 class="page-title">Reach the FYP office for support, guidance, and coordination.</h1><p class="page-subtitle">Use the contact form for general questions, eligibility concerns, portal issues, or guidance about submissions and review schedules.</p></div>
+        <div class="page-hero-panel"><div class="panel-list"><div class="panel-item"><div class="panel-icon"><i class="fas fa-clock"></i></div><div><h3>Office Hours</h3><p>Monday to Friday, 08:30 AM to 04:30 PM.</p></div></div><div class="panel-item"><div class="panel-icon"><i class="fas fa-reply"></i></div><div><h3>Support Scope</h3><p>Eligibility, deadlines, portal access, proposal review, and evaluation coordination.</p></div></div></div></div>
+      </div>
+    </section>
+    <section class="section bg-white border-y-light">
+      <div class="container contact-layout">
+        <div class="contact-form-card">
+          <p class="section-label">Send Message</p>
+          <h2 class="section-title">How can we help?</h2>
+          <form class="contact-form" data-contact-form>
+            <div class="form-group"><label class="form-label" for="name">Name</label><input class="form-input" id="name" name="name" type="text" placeholder="Enter your name" minlength="3" required /></div>
+            <div class="form-group"><label class="form-label" for="email">Email</label><input class="form-input" id="email" name="email" type="email" placeholder="name@example.com" required /></div>
+            <div class="form-group"><label class="form-label" for="message">Message</label><textarea class="form-textarea" id="message" name="message" placeholder="Write your message" minlength="10" required></textarea></div>
+            <div class="form-status" role="status" aria-live="polite"></div>
+            <button type="submit" class="btn btn-primary">Submit Query <i class="fas fa-arrow-right"></i></button>
+          </form>
+        </div>
+        <div>
+          <div class="contact-details-card">
+            <p class="section-label">Official Details</p>
+            <div class="contact-details">
+              <div class="contact-detail"><div class="contact-detail-icon"><i class="fas fa-envelope"></i></div><div><h3>Email</h3><a href="mailto:csfyp@cuiatd.edu.pk">csfyp@cuiatd.edu.pk</a></div></div>
+              <div class="contact-detail"><div class="contact-detail-icon"><i class="fas fa-phone"></i></div><div><h3>Phone</h3><p>+92-992-383591 Ext. 240</p></div></div>
+              <div class="contact-detail"><div class="contact-detail-icon"><i class="fas fa-location-dot"></i></div><div><h3>Address</h3><p>FYP Office, CS Department, COMSATS University Islamabad, Abbottabad Campus</p></div></div>
+            </div>
+          </div>
+          <div class="map-card"><div class="map-pin"><i class="fas fa-location-dot"></i></div><h3>Campus Location</h3><p>Use the official university website or campus contact desk for precise route guidance and visitor information.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"><div class="container footer-inner"><div class="footer-brand"><img src="../public/cuilogo.png" alt="CUI" class="footer-logo" onerror="this.style.display='none'" /><span class="footer-brand-text">CUI FYP System</span></div><div class="footer-links"><a href="about-program.html">About</a><a href="guidelines.html">Guidelines</a><a href="contact.html">Contact</a></div><div class="footer-copy">&copy; 2026 CUI Abbottabad - Department of Computer Science. All rights reserved.</div></div></footer>
+  <script src="scripts/public-pages.js"></script>
+</body>
+</html>

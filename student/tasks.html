@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Manager — FYP Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../styles/tokens.css" />
+  <link rel="stylesheet" href="../styles/dashboard.css" />
+  <style>
+    .board-container { display: flex; gap: var(--space-5); overflow-x: auto; padding-bottom: var(--space-4); min-height: 70vh; }
+    .board-column { background: var(--color-surface-alt); border-radius: var(--radius-xl); min-width: 320px; max-width: 350px; display: flex; flex-direction: column; }
+    .column-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); border-bottom: 1.5px solid var(--color-border); font-weight: 700; font-size: var(--font-size-md); color: var(--color-text); }
+    .column-header-todo { border-top: 4px solid var(--color-text-faint); border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
+    .column-header-prog { border-top: 4px solid var(--color-primary); border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
+    .column-header-done { border-top: 4px solid var(--color-success); border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
+    .column-body { padding: var(--space-4); flex: 1; display: flex; flex-direction: column; gap: var(--space-3); min-height: 150px; }
+    
+    .task-card { background: white; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); cursor: grab; box-shadow: var(--shadow-xs); transition: box-shadow var(--transition-fast), transform var(--transition-fast); }
+    .task-card:active { cursor: grabbing; transform: scale(0.98); }
+    .task-card:hover { box-shadow: var(--shadow-md); border-color: var(--color-border-blue); }
+    .task-card.dragging { opacity: 0.5; background: var(--color-lightbg); border: 2px dashed var(--color-primary); }
+    
+    .task-title { font-weight: 700; font-size: var(--font-size-sm); color: var(--color-text); margin-bottom: 0.25rem; }
+    .task-desc { font-size: var(--font-size-xs); color: var(--color-text-muted); margin-bottom: var(--space-3); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .task-meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.65rem; color: var(--color-text-secondary); font-weight: 600; }
+    .task-assignees { display: flex; margin-left: auto; }
+    .task-avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; border: 2px solid white; margin-left: -8px; }
+    .task-date { display: flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; background: var(--color-lightbg); color: var(--color-primary); }
+    .task-date.overdue { background: #fef2f2; color: var(--color-danger); }
+  </style>
+</head>
+<body class="dashboard-body">
+  
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="sidebar-logo-text"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Student Portal</div></div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Overview</div>
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Group & Supervisor</div>
+        <a href="partners.html" class="nav-item"><i class="fas fa-users nav-item-icon"></i><span class="nav-item-label">FYP Partners</span></a>
+        <a href="supervisor.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Selection</span></a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Project Execution</div>
+        <a href="idea.html" class="nav-item"><i class="fas fa-lightbulb nav-item-icon"></i><span class="nav-item-label">Project Idea</span></a>
+        <a href="tasks.html" class="nav-item active"><i class="fas fa-tasks nav-item-icon"></i><span class="nav-item-label">Task Manager</span></a>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div>
+          <div class="topbar-page-title">Task Manager</div>
+          <div class="topbar-subtitle">Project: AI-Powered Traffic Management</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Task</button>
+      </div>
+    </header>
+
+    <main class="content-area">
+      
+      <div class="board-container">
+        <!-- To Do Column -->
+        <div class="board-column">
+          <div class="column-header column-header-todo">
+            <span>To Do</span>
+            <span class="chip chip-gray" id="todo-count">2</span>
+          </div>
+          <div class="column-body" id="todo-col">
+            
+            <div class="task-card" draggable="true">
+              <div class="task-title">Literature Review</div>
+              <div class="task-desc">Read and summarize 5 recent papers on YOLOv8 for vehicle detection.</div>
+              <div class="task-meta">
+                <div class="task-date"><i class="fas fa-calendar-alt"></i> May 10</div>
+                <div class="task-assignees">
+                  <div class="task-avatar">AF</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="task-card" draggable="true">
+              <div class="task-title">Dataset Collection</div>
+              <div class="task-desc">Gather CCTV footage of local traffic intersections.</div>
+              <div class="task-meta">
+                <div class="task-date"><i class="fas fa-calendar-alt"></i> May 15</div>
+                <div class="task-assignees">
+                  <div class="task-avatar" style="background:#0ea5e9;">ZA</div>
+                  <div class="task-avatar">AF</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- In Progress Column -->
+        <div class="board-column">
+          <div class="column-header column-header-prog">
+            <span>In Progress</span>
+            <span class="chip chip-info" id="prog-count">1</span>
+          </div>
+          <div class="column-body" id="prog-col">
+            
+            <div class="task-card" draggable="true">
+              <div class="task-title">Write Proposal Draft</div>
+              <div class="task-desc">Draft the introduction and problem statement sections.</div>
+              <div class="task-meta">
+                <div class="task-date overdue"><i class="fas fa-exclamation-circle"></i> May 3</div>
+                <div class="task-assignees">
+                  <div class="task-avatar">AF</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Completed Column -->
+        <div class="board-column">
+          <div class="column-header column-header-done">
+            <span>Completed</span>
+            <span class="chip chip-success" id="done-count">1</span>
+          </div>
+          <div class="column-body" id="done-col">
+            
+            <div class="task-card" draggable="true">
+              <div class="task-title">Group Formation</div>
+              <div class="task-desc">Finalized team members and sent requests.</div>
+              <div class="task-meta">
+                <div class="task-date" style="background:#ecfdf5; color:#059669;"><i class="fas fa-check-double"></i> Apr 28</div>
+                <div class="task-assignees">
+                  <div class="task-avatar">AF</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+  <script src="../scripts/auth.js"></script>
+  <script>
+    AUTH.requireRole('Student');
+    
+    // Drag and Drop Logic
+    const taskCards = document.querySelectorAll('.task-card');
+    const columns = document.querySelectorAll('.column-body');
+    let draggedTask = null;
+
+    taskCards.forEach(card => {
+      card.addEventListener('dragstart', () => {
+        draggedTask = card;
+        setTimeout(() => card.classList.add('dragging'), 0);
+      });
+      card.addEventListener('dragend', () => {
+        draggedTask.classList.remove('dragging');
+        draggedTask = null;
+        updateCounts();
+      });
+    });
+
+    columns.forEach(col => {
+      col.addEventListener('dragover', e => {
+        e.preventDefault();
+        const afterElement = getDragAfterElement(col, e.clientY);
+        if (afterElement == null) {
+          col.appendChild(draggedTask);
+        } else {
+          col.insertBefore(draggedTask, afterElement);
+        }
+      });
+    });
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.task-card:not(.dragging)')];
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    function updateCounts() {
+      document.getElementById('todo-count').textContent = document.getElementById('todo-col').children.length;
+      document.getElementById('prog-count').textContent = document.getElementById('prog-col').children.length;
+      document.getElementById('done-count').textContent = document.getElementById('done-col').children.length;
+    }
+  </script>
+</body>
+</html>
