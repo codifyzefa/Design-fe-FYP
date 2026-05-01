@@ -8,7 +8,32 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="../styles/tokens.css" />
   <link rel="stylesheet" href="../styles/dashboard.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+          colors: {
+            primary: '#1E3A8A',
+            secondary: '#2563EB',
+            lightbg: '#EFF6FF',
+            success: '#059669',
+            warning: '#D97706',
+            danger: '#DC2626',
+            pending: '#B45309'
+          }
+        }
+      }
+    }
+  </script>
   <style>
+    /* Profile Locked Styles */
+    body.profile-locked .nav-btn.locked { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+    body.profile-locked .lock-icon { display: inline-block; }
+    .lock-icon { display: none; }
+    .main-wrap { margin-left: 0 !important; }
+
     .section-dropdown { margin-bottom: var(--space-6); }
     .dropdown-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--radius-lg); cursor: pointer; transition: all var(--transition-fast); }
     .dropdown-header:hover { border-color: var(--color-secondary); }
@@ -26,33 +51,104 @@
 </head>
 <body class="dashboard-body">
   
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo">
-        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
-        <div class="sidebar-logo-text">
-          <div class="sidebar-title">CUI DFYP</div>
-          <div class="sidebar-role">Student Portal</div>
+    <!-- ================= SIDEBAR ================= -->
+    <div id="sidebar" class="bg-primary flex flex-col flex-shrink-0 transition-all duration-300 overflow-hidden fixed lg:relative z-[50] h-full -translate-x-full lg:translate-x-0 w-64 lg:w-64">
+      
+      <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10 relative">
+        <div class="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-graduation-cap text-white text-sm"></i>
+        </div>
+        <div id="sidebarHeaderText" class="overflow-hidden transition-all duration-300">
+          <div class="text-white text-sm font-bold whitespace-nowrap">CUI DFYP</div>
+          <div class="text-white/60 text-xs whitespace-nowrap leading-tight" id="sidebarRoleText">Student Portal</div>
+        </div>
+        
+        <button onclick="toggleMobileSidebar()" class="ml-auto lg:hidden bg-transparent border-0 text-white cursor-pointer p-1 rounded-lg hover:bg-white/15 transition-colors absolute right-4">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto p-2 mt-2" style="scrollbar-width: none;">
+        
+        <!-- Overview -->
+        <div class="mb-1">
+          <div class="nav-section-label text-[0.6rem] font-bold uppercase tracking-widest text-white/30 px-3 mb-1 truncate transition-all">Overview</div>
+          <div onclick="navigateSPA(event, 'view-dashboard')" data-title="Dashboard" class="nav-btn locked flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/90 hover:bg-white/15 hover:text-white" title="Dashboard">
+            <i class="fas fa-home text-sm w-5 text-center flex-shrink-0"></i>
+            <span class="nav-label text-sm font-medium whitespace-nowrap flex-1 transition-all duration-200">Dashboard</span>
+            <i class="fas fa-lock text-[10px] text-white/40 lock-icon animate-pulse"></i>
+          </div>
+        </div>
+
+        <!-- Account -->
+        <div class="mb-1 mt-4">
+          <div class="nav-section-label text-[0.6rem] font-bold uppercase tracking-widest text-white/30 px-3 mb-1 truncate transition-all">Account</div>
+          <div onclick="navigateSPA(event, 'view-profile')" data-title="My Profile" id="nav-profile" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/90 hover:bg-white/15 hover:text-white" title="My Profile">
+            <i class="fas fa-user-circle text-sm w-5 text-center flex-shrink-0"></i>
+            <span class="nav-label text-sm font-medium whitespace-nowrap flex-1 transition-all duration-200">My Profile</span>
+          </div>
+        </div>
+
+        <!-- Group & Supervisor -->
+        <div class="mb-1 mt-4">
+          <div class="nav-section-label text-[0.6rem] font-bold uppercase tracking-widest text-white/30 px-3 mb-1 truncate transition-all">Group & Supervisor</div>
+          
+          <div class="mb-1">
+            <div onclick="toggleDropdown('dd-partners')" class="nav-btn locked flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold" title="FYP Partners">
+              <i class="fas fa-users text-sm w-5 text-center flex-shrink-0"></i>
+              <span class="nav-label text-sm font-medium flex-1 transition-all duration-200">FYP Partners</span>
+              <i class="fas fa-lock text-[10px] text-white/40 lock-icon animate-pulse mr-1"></i>
+              <i id="icon-dd-partners" class="fas fa-chevron-down text-[10px] transition-transform duration-200"></i>
+            </div>
+            <div id="dd-partners" class="hidden mt-1 ml-4 border-l border-white/10 pl-2 space-y-1">
+              <div onclick="navigateSPA(event, 'view-new-request')" data-title="New Request" class="nav-btn locked flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all text-sm text-white/50 hover:text-white hover:bg-white/5" title="New Request"><i class="fas fa-circle text-[4px]"></i><span class="nav-label whitespace-nowrap">New Request</span><i class="fas fa-lock text-[10px] text-white/40 lock-icon animate-pulse ml-auto"></i></div>
+              <div onclick="navigateSPA(event, 'view-incoming-requests')" data-title="Incoming Requests" class="nav-btn locked flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all text-sm text-white/50 hover:text-white hover:bg-white/5" title="Incoming Requests"><i class="fas fa-circle text-[4px]"></i><span class="nav-label whitespace-nowrap">Incoming Requests</span><i class="fas fa-lock text-[10px] text-white/40 lock-icon animate-pulse ml-auto"></i></div>
+            </div>
+          </div>
+
+          <div onclick="navigateSPA(event, 'view-supervisor')" data-title="Supervisor Selection" class="nav-btn locked flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/90 hover:bg-white/15 hover:text-white" title="Supervisor Selection">
+            <i class="fas fa-user-tie text-sm w-5 text-center flex-shrink-0"></i>
+            <span class="nav-label text-sm font-medium flex-1 transition-all duration-200 whitespace-nowrap">Supervisor Selection</span>
+            <i class="fas fa-lock text-[10px] text-white/40 lock-icon animate-pulse"></i>
+          </div>
+        </div>
+
+        <!-- Project Execution -->
+        <div class="mb-1 mt-4">
+          <div class="nav-section-label text-[0.6rem] font-bold uppercase tracking-widest text-white/30 px-3 mb-1 truncate transition-all">Project Execution</div>
+          
+          <div class="mb-1">
+            <div onclick="toggleDropdown('dd-ideas')" class="nav-btn locked flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/90 hover:bg-white/15 hover:text-white" title="Project Idea">
+              <i class="fas fa-lightbulb text-sm w-5 text-center flex-shrink-0"></i>
+              <span class="nav-label text-sm font-medium flex-1 transition-all duration-200">Project Idea</span>
+              <i class="fas fa-lock text-[10px] text-white/40 lock-icon animate-pulse mr-1"></i>
+              <i id="icon-dd-ideas" class="fas fa-chevron-down text-[10px] transition-transform duration-200"></i>
+            </div>
+            <div id="dd-ideas" class="hidden mt-1 ml-4 border-l border-white/10 pl-2 space-y-1">
+              <div onclick="navigateSPA(event, 'view-new-idea')" data-title="New Idea" class="nav-btn locked flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all text-sm text-white/50 hover:text-white hover:bg-white/5" title="New Idea"><i class="fas fa-circle text-[4px]"></i><span class="nav-label whitespace-nowrap">New Idea</span><i class="fas fa-lock text-[10px] text-white/40 lock-icon animate-pulse ml-auto"></i></div>
+              <div onclick="navigateSPA(event, 'view-approved-ideas')" data-title="Approved Ideas" class="nav-btn locked flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all text-sm text-white/50 hover:text-white hover:bg-white/5" title="Approved Ideas"><i class="fas fa-circle text-[4px]"></i><span class="nav-label whitespace-nowrap">Approved Ideas</span><i class="fas fa-lock text-[10px] text-white/40 lock-icon animate-pulse ml-auto"></i></div>
+            </div>
+          </div>
+
+          <a href="tasks.html" class="nav-btn locked flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/90 hover:bg-white/15 hover:text-white" title="Task Manager" style="text-decoration:none;">
+            <i class="fas fa-tasks text-sm w-5 text-center flex-shrink-0"></i>
+            <span class="nav-label text-sm font-medium flex-1 transition-all duration-200 whitespace-nowrap">Task Manager</span>
+            <i class="fas fa-lock text-[10px] text-white/40 lock-icon animate-pulse"></i>
+          </a>
+        </div>
+
+      </nav>
+
+      <div class="p-2 border-t border-white/10">
+        <div onclick="confirmLogout(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-white/90 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200" title="Logout">
+          <i class="fas fa-right-from-bracket text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium transition-all duration-200">Logout</span>
         </div>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-group">
-        <div class="nav-group-label">Overview</div>
-        <a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
-      </div>
-      <div class="nav-group">
-        <div class="nav-group-label">Group & Supervisor</div>
-        <a href="partners.html" class="nav-item active"><i class="fas fa-users nav-item-icon"></i><span class="nav-item-label">FYP Partners</span></a>
-        <a href="supervisor.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Selection</span></a>
-      </div>
-      <div class="nav-group">
-        <div class="nav-group-label">Project Execution</div>
-        <a href="idea.html" class="nav-item"><i class="fas fa-lightbulb nav-item-icon"></i><span class="nav-item-label">Project Idea</span></a>
-        <a href="tasks.html" class="nav-item"><i class="fas fa-tasks nav-item-icon"></i><span class="nav-item-label">Task Manager</span></a>
-      </div>
-    </nav>
-  </aside>
+
+    <!-- Mobile Overlay -->
+    <div id="mobileOverlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-[40] lg:hidden backdrop-blur-sm hidden"></div>
 
   <div class="main-wrap" id="mainWrap">
     <header class="topbar">
@@ -141,5 +237,24 @@
       icon.className = content.classList.contains('open') ? 'fas fa-chevron-up text-muted' : 'fas fa-chevron-down text-muted';
     }
   </script>
+
+<script>
+  function navigateSPA(e, targetId) {
+    if (e) e.preventDefault();
+    window.location.href = 'dashboard.html';
+  }
+  function toggleMobileSidebar() {
+    const sb = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    if (sb) sb.classList.toggle('-translate-x-full');
+    if (overlay) overlay.classList.toggle('hidden');
+  }
+  function confirmLogout(e) {
+    e.preventDefault();
+    if(typeof AUTH !== 'undefined') AUTH.logout();
+    window.location.href = '../login.html';
+  }
+</script>
+
 </body>
 </html>
