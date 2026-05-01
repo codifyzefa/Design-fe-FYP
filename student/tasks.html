@@ -1,212 +1,5136 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Task Manager — FYP Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="../styles/tokens.css" />
-  <link rel="stylesheet" href="../styles/dashboard.css" />
-  <style>
-    .board-container { display: flex; gap: var(--space-5); overflow-x: auto; padding-bottom: var(--space-4); min-height: 70vh; }
-    .board-column { background: var(--color-surface-alt); border-radius: var(--radius-xl); min-width: 320px; max-width: 350px; display: flex; flex-direction: column; }
-    .column-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); border-bottom: 1.5px solid var(--color-border); font-weight: 700; font-size: var(--font-size-md); color: var(--color-text); }
-    .column-header-todo { border-top: 4px solid var(--color-text-faint); border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
-    .column-header-prog { border-top: 4px solid var(--color-primary); border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
-    .column-header-done { border-top: 4px solid var(--color-success); border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
-    .column-body { padding: var(--space-4); flex: 1; display: flex; flex-direction: column; gap: var(--space-3); min-height: 150px; }
-    
-    .task-card { background: white; border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); cursor: grab; box-shadow: var(--shadow-xs); transition: box-shadow var(--transition-fast), transform var(--transition-fast); }
-    .task-card:active { cursor: grabbing; transform: scale(0.98); }
-    .task-card:hover { box-shadow: var(--shadow-md); border-color: var(--color-border-blue); }
-    .task-card.dragging { opacity: 0.5; background: var(--color-lightbg); border: 2px dashed var(--color-primary); }
-    
-    .task-title { font-weight: 700; font-size: var(--font-size-sm); color: var(--color-text); margin-bottom: 0.25rem; }
-    .task-desc { font-size: var(--font-size-xs); color: var(--color-text-muted); margin-bottom: var(--space-3); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .task-meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.65rem; color: var(--color-text-secondary); font-weight: 600; }
-    .task-assignees { display: flex; margin-left: auto; }
-    .task-avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; border: 2px solid white; margin-left: -8px; }
-    .task-date { display: flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; background: var(--color-lightbg); color: var(--color-primary); }
-    .task-date.overdue { background: #fef2f2; color: var(--color-danger); }
-  </style>
-</head>
-<body class="dashboard-body">
-  
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo">
-        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
-        <div class="sidebar-logo-text"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Student Portal</div></div>
-      </div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-group">
-        <div class="nav-group-label">Overview</div>
-        <a href="dashboard.html" class="nav-item"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
-      </div>
-      <div class="nav-group">
-        <div class="nav-group-label">Group & Supervisor</div>
-        <a href="partners.html" class="nav-item"><i class="fas fa-users nav-item-icon"></i><span class="nav-item-label">FYP Partners</span></a>
-        <a href="supervisor.html" class="nav-item"><i class="fas fa-user-tie nav-item-icon"></i><span class="nav-item-label">Supervisor Selection</span></a>
-      </div>
-      <div class="nav-group">
-        <div class="nav-group-label">Project Execution</div>
-        <a href="idea.html" class="nav-item"><i class="fas fa-lightbulb nav-item-icon"></i><span class="nav-item-label">Project Idea</span></a>
-        <a href="tasks.html" class="nav-item active"><i class="fas fa-tasks nav-item-icon"></i><span class="nav-item-label">Task Manager</span></a>
-      </div>
-    </nav>
-  </aside>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager — FYP Portal</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/tokens.css" />
+    <link rel="stylesheet" href="../styles/dashboard.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+        background: #eff6ff;
+        margin: 0;
+        padding: 0;
+      }
+      /* Override dashboard.css which sets position:fixed on body — the React app manages its own layout */
+      .dashboard-body {
+        display: block !important;
+        position: static !important;
+        height: auto !important;
+        overflow: auto !important;
+        inset: unset !important;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Poppins", sans-serif;
+      }
 
-  <div class="main-wrap">
-    <header class="topbar">
-      <div class="topbar-left">
-        <div>
-          <div class="topbar-page-title">Task Manager</div>
-          <div class="topbar-subtitle">Project: AI-Powered Traffic Management</div>
-        </div>
-      </div>
-      <div class="topbar-right">
-        <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Task</button>
-      </div>
-    </header>
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
 
-    <main class="content-area">
-      
-      <div class="board-container">
-        <!-- To Do Column -->
-        <div class="board-column">
-          <div class="column-header column-header-todo">
-            <span>To Do</span>
-            <span class="chip chip-gray" id="todo-count">2</span>
-          </div>
-          <div class="column-body" id="todo-col">
-            
-            <div class="task-card" draggable="true">
-              <div class="task-title">Literature Review</div>
-              <div class="task-desc">Read and summarize 5 recent papers on YOLOv8 for vehicle detection.</div>
-              <div class="task-meta">
-                <div class="task-date"><i class="fas fa-calendar-alt"></i> May 10</div>
-                <div class="task-assignees">
-                  <div class="task-avatar">AF</div>
-                </div>
-              </div>
-            </div>
+      :root {
+        --primary: #1e3a8a;
+        --primary-h: #1e2f6e;
+        --secondary: #2563eb;
+        --sidebar-w: 256px;
+        --sidebar-collapsed: 68px;
+      }
 
-            <div class="task-card" draggable="true">
-              <div class="task-title">Dataset Collection</div>
-              <div class="task-desc">Gather CCTV footage of local traffic intersections.</div>
-              <div class="task-meta">
-                <div class="task-date"><i class="fas fa-calendar-alt"></i> May 15</div>
-                <div class="task-assignees">
-                  <div class="task-avatar" style="background:#0ea5e9;">ZA</div>
-                  <div class="task-avatar">AF</div>
-                </div>
-              </div>
-            </div>
+      /* ── Sidebar ── */
+      .sidebar {
+        width: var(--sidebar-w);
+        background-color: "#1e3a8a"; 
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 50;
+        overflow: hidden;
+        box-shadow: 4px 0 20px rgba(30, 58, 138, 0.25);
+      }
+      .sidebar.collapsed {
+        width: var(--sidebar-collapsed);
+      }
+      .sidebar-text {
+        transition:
+          opacity 0.2s,
+          width 0.2s;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .collapsed .sidebar-text {
+        opacity: 0;
+        width: 0;
+      }
 
-          </div>
-        </div>
+      /* ── Nav Items ── */
+      .nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 14px;
+        border-radius: 12px;
+        width: 100%;
+        border: none;
+        cursor: pointer;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 13.5px;
+        font-family: "DM Sans", sans-serif;
+        font-weight: 500;
+        transition:
+          background 0.18s,
+          color 0.18s;
+        text-align: left;
+      }
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+      .nav-btn.active {
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+        font-weight: 600;
+        box-shadow: inset 3px 0 0 rgba(255, 255, 255, 0.8);
+      }
 
-        <!-- In Progress Column -->
-        <div class="board-column">
-          <div class="column-header column-header-prog">
-            <span>In Progress</span>
-            <span class="chip chip-info" id="prog-count">1</span>
-          </div>
-          <div class="column-body" id="prog-col">
-            
-            <div class="task-card" draggable="true">
-              <div class="task-title">Write Proposal Draft</div>
-              <div class="task-desc">Draft the introduction and problem statement sections.</div>
-              <div class="task-meta">
-                <div class="task-date overdue"><i class="fas fa-exclamation-circle"></i> May 3</div>
-                <div class="task-assignees">
-                  <div class="task-avatar">AF</div>
-                </div>
-              </div>
-            </div>
+      /* ── Cards ── */
+      .card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #e8edf3;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+      .card-hover {
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(0, 91, 172, 0.12);
+      }
 
-          </div>
-        </div>
+      /* ── Badges ── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
+      .badge-high {
+        background: #fee2e2;
+        color: #c62828;
+      }
+      .badge-medium {
+        background: #fff3cd;
+        color: #b45309;
+      }
+      .badge-low {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .badge-todo {
+        background: #f1f5f9;
+        color: #475569;
+      }
+      .badge-inprogress {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-review {
+        background: #ede9fe;
+        color: #7c3aed;
+      }
+      .badge-done {
+        background: #d1fae5;
+        color: #065f46;
+      }
 
-        <!-- Completed Column -->
-        <div class="board-column">
-          <div class="column-header column-header-done">
-            <span>Completed</span>
-            <span class="chip chip-success" id="done-count">1</span>
-          </div>
-          <div class="column-body" id="done-col">
-            
-            <div class="task-card" draggable="true">
-              <div class="task-title">Group Formation</div>
-              <div class="task-desc">Finalized team members and sent requests.</div>
-              <div class="task-meta">
-                <div class="task-date" style="background:#ecfdf5; color:#059669;"><i class="fas fa-check-double"></i> Apr 28</div>
-                <div class="task-assignees">
-                  <div class="task-avatar">AF</div>
-                </div>
-              </div>
-            </div>
+      /* ── Task Card ── */
+      .task-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 12px;
+        cursor: grab;
+        user-select: none;
+        border: 1.5px solid #edf0f4;
+        transition:
+          box-shadow 0.15s,
+          border-color 0.15s;
+      }
+      .task-card:hover {
+        box-shadow: 0 6px 18px rgba(0, 91, 172, 0.1);
+        border-color: #c5d6ee;
+      }
+      .task-card.is-dragging {
+        opacity: 0.45;
+        transform: rotate(1.5deg) scale(1.02);
+        cursor: grabbing;
+      }
 
-          </div>
-        </div>
+      /* ── Kanban Column ── */
+      .kanban-col {
+        min-height: 480px;
+        border-radius: 14px;
+        padding: 14px;
+        border: 2px solid transparent;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .kanban-col.drag-over {
+        border-color: var(--primary);
+        background: rgba(0, 91, 172, 0.04) !important;
+      }
 
-      </div>
+      /* ── Modal ── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        backdrop-filter: blur(5px);
+      }
+      .modal-box {
+        background: #fff;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 520px;
+        margin: 16px;
+        animation: slideUp 0.22s ease-out;
+        overflow: hidden;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22);
+      }
 
-    </main>
-  </div>
-  <script src="../scripts/auth.js"></script>
-  <script>
-    AUTH.requireRole('Student');
-    
-    // Drag and Drop Logic
-    const taskCards = document.querySelectorAll('.task-card');
-    const columns = document.querySelectorAll('.column-body');
-    let draggedTask = null;
+      /* ── Notif Dropdown ── */
+      .notif-drop {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        width: 360px;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14);
+        z-index: 90;
+        border: 1px solid #e8edf3;
+        animation: fadeDown 0.18s ease-out;
+      }
 
-    taskCards.forEach(card => {
-      card.addEventListener('dragstart', () => {
-        draggedTask = card;
-        setTimeout(() => card.classList.add('dragging'), 0);
-      });
-      card.addEventListener('dragend', () => {
-        draggedTask.classList.remove('dragging');
-        draggedTask = null;
-        updateCounts();
-      });
-    });
+      /* ── Progress Bar ── */
+      .prog-bar {
+        height: 6px;
+        background: #edf0f4;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .prog-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width 0.6s ease;
+      }
 
-    columns.forEach(col => {
-      col.addEventListener('dragover', e => {
-        e.preventDefault();
-        const afterElement = getDragAfterElement(col, e.clientY);
-        if (afterElement == null) {
-          col.appendChild(draggedTask);
-        } else {
-          col.insertBefore(draggedTask, afterElement);
+      /* ── Animations ── */
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
         }
-      });
-    });
-
-    function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll('.task-card:not(.dragging)')];
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
+        to {
+          opacity: 1;
+          transform: none;
         }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
-    }
+      }
+      @keyframes fadeDown {
+        from {
+          opacity: 0;
+          transform: translateY(-6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes pulseDot {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .fade-in {
+        animation: fadeIn 0.25s ease-out;
+      }
+      .pulse-dot {
+        animation: pulseDot 2s infinite;
+      }
 
-    function updateCounts() {
-      document.getElementById('todo-count').textContent = document.getElementById('todo-col').children.length;
-      document.getElementById('prog-count').textContent = document.getElementById('prog-col').children.length;
-      document.getElementById('done-count').textContent = document.getElementById('done-col').children.length;
-    }
-  </script>
-</body>
+      /* ── Calendar ── */
+      .cal-day {
+        min-height: 80px;
+        border-right: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 6px;
+        transition: background 0.12s;
+      }
+      .cal-day:hover {
+        background: #f8faff;
+      }
+
+      /* ── Tooltip avatar ── */
+      .avatar {
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+        font-family: "Outfit", sans-serif;
+      }
+
+      /* ── Table ── */
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        text-align: left;
+      }
+
+      /* ── Star ── */
+      .star-fill {
+        color: #f59e0b;
+      }
+      .star-empty {
+        color: #d1d5db;
+      }
+
+      /* ── Input focus ── */
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 3px rgba(0, 91, 172, 0.1) !important;
+      }
+
+      /* ── Tag pill ── */
+      .tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        background: #e0ecfb;
+        color: #1e4d8c;
+      }
+    </style>
+    <script>
+      tailwind.config = { corePlugins: { preflight: false } };
+    </script>
+  </head>
+  <body class="dashboard-body">
+    <div id="root"></div>
+    <script src="../scripts/auth.js"></script>
+    <script type="text/babel">
+      const { useState, useEffect, useRef, useCallback } = React;
+
+      /* ═══════════════════════════════
+   SVG ICON SYSTEM
+═══════════════════════════════ */
+      const Ico = {
+        home: (
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        ),
+        board: (
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+        ),
+        team: (
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        ),
+        analytics: (
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+        ),
+        calendar: (
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+        ),
+        grad: (
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+            <path d="M6 12v5c3 3 9 3 12 0v-5" />
+          </svg>
+        ),
+        bell: (
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+        ),
+        edit: (
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+        ),
+        plus: (
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        ),
+        trash: (
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M9 6V4h6v2" />
+          </svg>
+        ),
+        check: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        ),
+        bolt: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+        ),
+        eye: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        ),
+        clock: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        ),
+        refresh: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="23 4 23 10 17 10" />
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+          </svg>
+        ),
+        trophy: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="8 21 12 21 16 21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+            <path d="M7 4H17l-1 7a5 5 0 0 1-10 0L7 4z" />
+            <path d="M7 4H5a2 2 0 0 0-2 2v1a4 4 0 0 0 4 4" />
+            <path d="M17 4h2a2 2 0 0 1 2 2v1a4 4 0 0 0-4 4" />
+          </svg>
+        ),
+        fire: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z" />
+          </svg>
+        ),
+        hourglass: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M5 22h14" />
+            <path d="M5 2h14" />
+            <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" />
+            <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />
+          </svg>
+        ),
+        inbox: (
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+            <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+          </svg>
+        ),
+        mail: (
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+        ),
+        teacher: (
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="23" y1="11" x2="17" y2="11" />
+            <line x1="20" y1="8" x2="20" y2="14" />
+          </svg>
+        ),
+        chart: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+        ),
+        search: (
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        ),
+        warn: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        ),
+        shuffle: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="16 3 21 3 21 8" />
+            <line x1="4" y1="20" x2="21" y2="3" />
+            <polyline points="21 16 21 21 16 21" />
+            <line x1="15" y1="15" x2="21" y2="21" />
+            <line x1="4" y1="4" x2="9" y2="9" />
+          </svg>
+        ),
+        comment: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+        ),
+        approve: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        ),
+        rocket: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+            <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+          </svg>
+        ),
+        pin: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+        ),
+        redDot: (
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8" fill="#ef4444" />
+          </svg>
+        ),
+        deadline: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        ),
+        done: (
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#059669"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        ),
+        party: (
+          <svg
+            width="36"
+            height="36"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M5.8 11.3L2 22l10.7-3.79" />
+            <path d="M4 3h.01" />
+            <path d="M22 8h.01" />
+            <path d="M15 2h.01" />
+            <path d="M22 20h.01" />
+            <path d="M22 2l-7.5 7.5" />
+            <path d="M15 8l1.5 1.5" />
+          </svg>
+        ),
+      };
+
+      /* ═══════════════════════════════
+   DUMMY DATA
+═══════════════════════════════ */
+      const USERS = [
+        {
+          id: 1,
+          name: "Ahmed Raza",
+          role: "Team Lead",
+          initials: "AR",
+          color: "#005BAC",
+          email: "ahmed.raza@cuiatd.edu.pk",
+        },
+        {
+          id: 2,
+          name: "Fatima Khan",
+          role: "Frontend Dev",
+          initials: "FK",
+          color: "#7C3AED",
+          email: "fatima.khan@cuiatd.edu.pk",
+        },
+        {
+          id: 3,
+          name: "Usman Ali",
+          role: "Backend Dev",
+          initials: "UA",
+          color: "#059669",
+          email: "usman.ali@cuiatd.edu.pk",
+        },
+        {
+          id: 4,
+          name: "Ayesha Malik",
+          role: "ML Engineer",
+          initials: "AM",
+          color: "#DC2626",
+          email: "ayesha.malik@cuiatd.edu.pk",
+        },
+        {
+          id: 5,
+          name: "Dr. Tariq Hassan",
+          role: "Supervisor",
+          initials: "TH",
+          color: "#B45309",
+          email: "tariq.hassan@cuiatd.edu.pk",
+        },
+      ];
+
+      const INIT_TASKS = [
+        {
+          id: 1,
+          title: "Project Proposal Document",
+          desc: "Write detailed FYP proposal: problem, objectives, methodology",
+          status: "done",
+          priority: "high",
+          assignee: 1,
+          due: "2024-12-01",
+          progress: 100,
+          tags: ["Documentation"],
+        },
+        {
+          id: 2,
+          title: "Literature Review",
+          desc: "Review 20+ research papers on AI recommendation systems",
+          status: "done",
+          priority: "high",
+          assignee: 2,
+          due: "2024-12-15",
+          progress: 100,
+          tags: ["Research"],
+        },
+        {
+          id: 3,
+          title: "System Architecture Design",
+          desc: "Design high-level system architecture & component diagrams",
+          status: "done",
+          priority: "high",
+          assignee: 1,
+          due: "2025-01-05",
+          progress: 100,
+          tags: ["Design"],
+        },
+        {
+          id: 4,
+          title: "Database Schema Design",
+          desc: "Design normalized DB schema with ER diagrams",
+          status: "done",
+          priority: "medium",
+          assignee: 3,
+          due: "2025-01-10",
+          progress: 100,
+          tags: ["Backend"],
+        },
+        {
+          id: 5,
+          title: "UI/UX Wireframes",
+          desc: "Create wireframes for all major application screens",
+          status: "done",
+          priority: "medium",
+          assignee: 2,
+          due: "2025-01-15",
+          progress: 100,
+          tags: ["Design"],
+        },
+        {
+          id: 6,
+          title: "Frontend Auth & Routing",
+          desc: "Setup React project with routing, auth flow and base components",
+          status: "inprogress",
+          priority: "high",
+          assignee: 2,
+          due: "2025-02-15",
+          progress: 75,
+          tags: ["Frontend"],
+        },
+        {
+          id: 7,
+          title: "REST API Development",
+          desc: "Build core REST APIs for user management and data operations",
+          status: "inprogress",
+          priority: "high",
+          assignee: 3,
+          due: "2025-02-18",
+          progress: 60,
+          tags: ["Backend"],
+        },
+        {
+          id: 8,
+          title: "ML Model Training — Phase 1",
+          desc: "Train initial model on dataset, evaluate accuracy metrics",
+          status: "inprogress",
+          priority: "high",
+          assignee: 4,
+          due: "2025-02-20",
+          progress: 45,
+          tags: ["ML"],
+        },
+        {
+          id: 9,
+          title: "Dashboard UI Components",
+          desc: "Build reusable dashboard components with charts & stat cards",
+          status: "inprogress",
+          priority: "medium",
+          assignee: 2,
+          due: "2025-02-17",
+          progress: 80,
+          tags: ["Frontend"],
+        },
+        {
+          id: 10,
+          title: "Code Review & Refactoring",
+          desc: "Review all code and refactor to clean architecture",
+          status: "inprogress",
+          priority: "medium",
+          assignee: 1,
+          due: "2025-02-16",
+          progress: 30,
+          tags: ["Quality"],
+        },
+        {
+          id: 11,
+          title: "API Integration Testing",
+          desc: "Write unit & integration tests for all API endpoints",
+          status: "review",
+          priority: "medium",
+          assignee: 3,
+          due: "2025-02-14",
+          progress: 92,
+          tags: ["Testing"],
+        },
+        {
+          id: 12,
+          title: "Mobile Responsiveness",
+          desc: "Ensure all UI screens are fully responsive on mobile",
+          status: "review",
+          priority: "medium",
+          assignee: 2,
+          due: "2025-02-13",
+          progress: 88,
+          tags: ["Frontend"],
+        },
+        {
+          id: 13,
+          title: "Data Preprocessing Pipeline",
+          desc: "Build automated data cleaning and preprocessing pipeline",
+          status: "review",
+          priority: "high",
+          assignee: 4,
+          due: "2025-02-12",
+          progress: 95,
+          tags: ["ML"],
+        },
+        {
+          id: 14,
+          title: "Supervisor Meeting Slides – S3",
+          desc: "Prepare presentation slides for upcoming supervisor meeting",
+          status: "todo",
+          priority: "medium",
+          assignee: 1,
+          due: "2025-02-22",
+          progress: 0,
+          tags: ["Documentation"],
+        },
+        {
+          id: 15,
+          title: "Performance Optimization",
+          desc: "Optimize database queries and API response times",
+          status: "todo",
+          priority: "low",
+          assignee: 3,
+          due: "2025-02-28",
+          progress: 0,
+          tags: ["Backend"],
+        },
+        {
+          id: 16,
+          title: "User Acceptance Testing",
+          desc: "Conduct UAT with sample users and collect feedback",
+          status: "todo",
+          priority: "high",
+          assignee: 1,
+          due: "2025-03-03",
+          progress: 0,
+          tags: ["Testing"],
+        },
+        {
+          id: 17,
+          title: "ML Model Integration",
+          desc: "Integrate trained ML model with backend API endpoints",
+          status: "todo",
+          priority: "high",
+          assignee: 4,
+          due: "2025-03-01",
+          progress: 0,
+          tags: ["ML", "Backend"],
+        },
+        {
+          id: 18,
+          title: "Security Audit",
+          desc: "Perform security review and fix vulnerabilities",
+          status: "todo",
+          priority: "medium",
+          assignee: 3,
+          due: "2025-03-06",
+          progress: 0,
+          tags: ["Security"],
+        },
+        {
+          id: 19,
+          title: "Final Documentation",
+          desc: "Write comprehensive project documentation and user manual",
+          status: "todo",
+          priority: "high",
+          assignee: 1,
+          due: "2025-03-10",
+          progress: 0,
+          tags: ["Documentation"],
+        },
+        {
+          id: 20,
+          title: "Deployment & CI/CD Setup",
+          desc: "Setup CI/CD pipeline and deploy to cloud server",
+          status: "todo",
+          priority: "medium",
+          assignee: 3,
+          due: "2025-03-08",
+          progress: 0,
+          tags: ["DevOps"],
+        },
+        {
+          id: 21,
+          title: "Notification System",
+          desc: "Implement real-time notification system via WebSockets",
+          status: "todo",
+          priority: "low",
+          assignee: 3,
+          due: "2025-03-02",
+          progress: 0,
+          tags: ["Backend"],
+        },
+        {
+          id: 22,
+          title: "Final Presentation Prep",
+          desc: "Prepare FYP defense slides and full live demo",
+          status: "todo",
+          priority: "high",
+          assignee: 1,
+          due: "2025-03-15",
+          progress: 0,
+          tags: ["Presentation"],
+        },
+      ];
+
+      const ACTIVITY = [
+        {
+          id: 1,
+          user: 1,
+          action: "completed",
+          task: "System Architecture Design",
+          time: "2 h ago",
+          type: "done",
+        },
+        {
+          id: 2,
+          user: 2,
+          action: "moved to Review",
+          task: "Mobile Responsiveness",
+          time: "3 h ago",
+          type: "move",
+        },
+        {
+          id: 3,
+          user: 4,
+          action: "updated progress",
+          task: "ML Model Training – Phase 1",
+          time: "4 h ago",
+          type: "update",
+        },
+        {
+          id: 4,
+          user: 3,
+          action: "submitted review",
+          task: "API Integration Testing",
+          time: "5 h ago",
+          type: "review",
+        },
+        {
+          id: 5,
+          user: 1,
+          action: "added comment on",
+          task: "REST API Development",
+          time: "6 h ago",
+          type: "comment",
+        },
+        {
+          id: 6,
+          user: 5,
+          action: "approved",
+          task: "Literature Review",
+          time: "1 day ago",
+          type: "approve",
+        },
+        {
+          id: 7,
+          user: 2,
+          action: "started work on",
+          task: "Dashboard UI Components",
+          time: "1 day ago",
+          type: "start",
+        },
+        {
+          id: 8,
+          user: 4,
+          action: "completed",
+          task: "Data Preprocessing Pipeline",
+          time: "2 days ago",
+          type: "done",
+        },
+      ];
+
+      const INIT_NOTIFS = [
+        {
+          id: 1,
+          type: "deadline",
+          msg: 'Task "ML Model Integration" due in 3 days',
+          time: "1 h ago",
+          read: false,
+        },
+        {
+          id: 2,
+          type: "done",
+          msg: 'Ahmed Raza completed "System Architecture Design"',
+          time: "2 h ago",
+          read: false,
+        },
+        {
+          id: 3,
+          type: "overdue",
+          msg: '"Performance Optimization" is at risk of overdue',
+          time: "3 h ago",
+          read: false,
+        },
+        {
+          id: 4,
+          type: "comment",
+          msg: "Dr. Hassan left feedback on your submission",
+          time: "5 h ago",
+          read: true,
+        },
+        {
+          id: 5,
+          type: "assigned",
+          msg: 'You have been assigned "Security Audit"',
+          time: "1 day ago",
+          read: true,
+        },
+        {
+          id: 6,
+          type: "deadline",
+          msg: "Sprint 3 milestone due in 5 days",
+          time: "1 day ago",
+          read: true,
+        },
+      ];
+
+      const MILESTONES = [
+        {
+          id: 1,
+          title: "Project Kickoff & Proposal",
+          date: "2024-12-01",
+          pct: 100,
+        },
+        {
+          id: 2,
+          title: "Research & Design Phase",
+          date: "2025-01-15",
+          pct: 100,
+        },
+        { id: 3, title: "Development Sprint 1", date: "2025-02-01", pct: 100 },
+        { id: 4, title: "Development Sprint 2", date: "2025-02-28", pct: 58 },
+        { id: 5, title: "Testing & Integration", date: "2025-03-05", pct: 0 },
+        {
+          id: 6,
+          title: "Final Submission & Defense",
+          date: "2025-03-15",
+          pct: 0,
+        },
+      ];
+
+      const WEEKLY = [
+        { w: "Wk 1", assigned: 2, done: 2 },
+        { w: "Wk 2", assigned: 4, done: 3 },
+        { w: "Wk 3", assigned: 5, done: 4 },
+        { w: "Wk 4", assigned: 6, done: 4 },
+        { w: "Wk 5", assigned: 7, done: 5 },
+        { w: "Wk 6", assigned: 5, done: 3 },
+        { w: "Wk 7", assigned: 8, done: 5 },
+        { w: "Wk 8", assigned: 6, done: 4 },
+      ];
+
+      const FEEDBACKS = [
+        {
+          id: 1,
+          task: "System Architecture Design",
+          comment:
+            "Good overall structure — add more detail to data flow diagrams and consider edge cases for high-load scenarios.",
+          type: "suggestion",
+          rating: 4,
+          date: "Feb 10, 2025",
+        },
+        {
+          id: 2,
+          task: "Literature Review",
+          comment:
+            "Excellent work! Comprehensive and well-cited. This forms a solid foundation for the research justification.",
+          type: "positive",
+          rating: 5,
+          date: "Feb 5, 2025",
+        },
+        {
+          id: 3,
+          task: "Project Proposal",
+          comment:
+            "Well-written. Revise the scope section to be more specific about deliverables and measurable outcomes.",
+          type: "revision",
+          rating: 3,
+          date: "Jan 28, 2025",
+        },
+        {
+          id: 4,
+          task: "Progress Meeting – Sprint 1",
+          comment:
+            "Team is making steady progress. Prioritize backend APIs before moving to frontend integration.",
+          type: "suggestion",
+          rating: 4,
+          date: "Jan 15, 2025",
+        },
+      ];
+
+      /* ── helpers ── */
+      const fmtDate = (s) => {
+        if (!s) return "—";
+        const d = new Date(s);
+        return d.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+      };
+      const isOverdue = (s) => s && new Date(s) < new Date();
+      const userById = (id, users) => users.find((u) => u.id === id);
+      const priClass = (p) =>
+        ({ high: "badge-high", medium: "badge-medium", low: "badge-low" })[p] ||
+        "badge-low";
+      const stClass = (s) =>
+        ({
+          todo: "badge-todo",
+          inprogress: "badge-inprogress",
+          review: "badge-review",
+          done: "badge-done",
+        })[s];
+      const stLabel = (s) =>
+        ({
+          todo: "Not Started",
+          inprogress: "In Progress",
+          review: "Review",
+          done: "Completed",
+        })[s];
+      const actIcon = (t) =>
+        ({
+          done: Ico.done,
+          move: Ico.shuffle,
+          update: Ico.edit,
+          review: Ico.search,
+          comment: Ico.comment,
+          approve: Ico.approve,
+          start: Ico.rocket,
+        })[t] || Ico.pin;
+      const notifIcon = (t) =>
+        ({
+          deadline: Ico.deadline,
+          done: Ico.done,
+          overdue: Ico.redDot,
+          comment: Ico.comment,
+          assigned: Ico.pin,
+        })[t] || Ico.bell;
+
+      /* ═══════════════════════════════
+   ATOMS
+═══════════════════════════════ */
+      function Av({ user, size = 36 }) {
+        if (!user) return null;
+        return (
+          <div
+            className="avatar"
+            style={{
+              width: size,
+              height: size,
+              background: user.color,
+              fontSize: size * 0.34,
+            }}
+          >
+            {user.initials}
+          </div>
+        );
+      }
+      function Badge({ label, cls }) {
+        return <span className={`badge ${cls}`}>{label}</span>;
+      }
+      function PriBadge({ p }) {
+        return <Badge label={p} cls={priClass(p)} />;
+      }
+      function StBadge({ s }) {
+        return <Badge label={stLabel(s)} cls={stClass(s)} />;
+      }
+
+      function ProgBar({ pct, color = "#005BAC", h = 6 }) {
+        return (
+          <div className="prog-bar" style={{ height: h }}>
+            <div
+              className="prog-fill"
+              style={{ width: `${pct}%`, background: color }}
+            ></div>
+          </div>
+        );
+      }
+
+      function StatCard({ icon, title, value, sub, color, bg }) {
+        return (
+          <div className="card card-hover p-5">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: "#64748b",
+                    fontWeight: 600,
+                    marginBottom: 4,
+                  }}
+                >
+                  {title}
+                </p>
+                <p
+                  style={{
+                    fontSize: 32,
+                    fontWeight: 800,
+                    color,
+                    fontFamily: "Outfit,sans-serif",
+                    lineHeight: 1,
+                  }}
+                >
+                  {value}
+                </p>
+                {sub && (
+                  <p style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>
+                    {sub}
+                  </p>
+                )}
+              </div>
+              <div
+                style={{
+                  background: bg,
+                  borderRadius: 12,
+                  padding: 10,
+                  fontSize: 22,
+                }}
+              >
+                {icon}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ═══════════════════════════════
+                    SIDEBAR
+        ═══════════════════════════════ */
+      /* ── Portal nav link icons ── */
+      const PortalIco = {
+        home: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+        users: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+        tie: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>,
+        bulb: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>,
+        tasks: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>,
+      };
+
+      const PORTAL_LINKS = [
+        { href: "dashboard.html", icon: PortalIco.home,  label: "Dashboard" },
+        { href: "partners.html",  icon: PortalIco.users, label: "FYP Partners" },
+        { href: "supervisor.html",icon: PortalIco.tie,   label: "Supervisor" },
+        { href: "idea.html",      icon: PortalIco.bulb,  label: "Project Idea" },
+        { href: "tasks.html",     icon: PortalIco.tasks, label: "Task Manager", active: true },
+      ];
+
+      function Sidebar({ page, setPage, collapsed, setCollapsed, tasks }) {
+        const nav = [
+          { id: "dashboard", icon: Ico.home, label: "Dashboard" },
+          { id: "kanban", icon: Ico.board, label: "Task Board" },
+          { id: "team", icon: Ico.team, label: "Team" },
+          { id: "analytics", icon: Ico.analytics, label: "Analytics" },
+          { id: "calendar", icon: Ico.calendar, label: "Calendar" },
+          { id: "supervisor", icon: Ico.grad, label: "Supervisor" },
+        ];
+        const done = tasks.filter((t) => t.status === "done").length;
+        const pct = Math.round((done / tasks.length) * 100);
+
+        return (
+          <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
+            {/* Logo */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "18px 14px 14px",
+                borderBottom: "1px solid rgba(255,255,255,.1)",
+                minHeight: 68,
+              }}
+            >
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  background: "#fff",
+                  borderRadius: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 18,
+                  flexShrink: 0,
+                  boxShadow: "0 2px 8px rgba(0,0,0,.2)",
+                }}
+              >
+                🎓
+              </div>
+              <div className="sidebar-text" style={{ flex: 1 }}>
+                <div
+                  style={{
+                    color: "#fff",
+                    fontWeight: 800,
+                    fontSize: 14,
+                    fontFamily: "Outfit,sans-serif",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  CUI DFYP
+                </div>
+                <div style={{ color: "rgba(255,255,255,.5)", fontSize: 11 }}>
+                  Student Portal
+                </div>
+              </div>
+              <button
+                onClick={() => setCollapsed((c) => !c)}
+                style={{
+                  background: "rgba(255,255,255,.12)",
+                  border: "none",
+                  borderRadius: 8,
+                  width: 26,
+                  height: 26,
+                  cursor: "pointer",
+                  color: "rgba(255,255,255,.7)",
+                  fontSize: 11,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                {collapsed ? "▶" : "◀"}
+              </button>
+            </div>
+
+            {/* ── FYP Portal Navigation ── */}
+            <div style={{ padding: "10px 8px 0" }}>
+              {!collapsed && (
+                <div style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: ".8px",
+                  color: "rgba(255,255,255,.35)",
+                  padding: "0 6px",
+                  marginBottom: 4,
+                }}>FYP PORTAL</div>
+              )}
+              {PORTAL_LINKS.map((lnk) => (
+                <a
+                  key={lnk.href}
+                  href={lnk.href}
+                  title={collapsed ? lnk.label : ""}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: collapsed ? "8px 0" : "8px 10px",
+                    justifyContent: collapsed ? "center" : "flex-start",
+                    borderRadius: 10,
+                    textDecoration: "none",
+                    fontSize: 13,
+                    fontWeight: lnk.active ? 700 : 500,
+                    color: lnk.active ? "#fff" : "rgba(255,255,255,.65)",
+                    background: lnk.active ? "rgba(255,255,255,.18)" : "transparent",
+                    boxShadow: lnk.active ? "inset 3px 0 0 rgba(255,255,255,.8)" : "none",
+                    transition: "background .15s, color .15s",
+                    marginBottom: 2,
+                  }}
+                  onMouseEnter={e => { if (!lnk.active) { e.currentTarget.style.background="rgba(255,255,255,.1)"; e.currentTarget.style.color="#fff"; }}}
+                  onMouseLeave={e => { if (!lnk.active) { e.currentTarget.style.background="transparent"; e.currentTarget.style.color="rgba(255,255,255,.65)"; }}}
+                >
+                  <span style={{ flexShrink: 0 }}>{lnk.icon}</span>
+                  <span className="sidebar-text" style={{ whiteSpace: "nowrap", overflow: "hidden" }}>{lnk.label}</span>
+                </a>
+              ))}
+            </div>
+
+            {/* ── Divider ── */}
+            <div style={{ margin: "10px 12px", borderTop: "1px solid rgba(255,255,255,.12)" }} />
+
+            {/* Project */}
+            {!collapsed && (
+              <div
+                style={{
+                  margin: "0 12px 0",
+                  background: "rgba(255,255,255,.1)",
+                  borderRadius: 12,
+                  padding: 12,
+                }}
+              >
+                <div
+                  style={{
+                    color: "rgba(255,255,255,.5)",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: ".8px",
+                    marginBottom: 4,
+                  }}
+                >
+                  ACTIVE PROJECT
+                </div>
+                <div
+                  style={{
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontSize: 13,
+                    fontFamily: "Outfit,sans-serif",
+                    lineHeight: 1.3,
+                  }}
+                >
+                  AI Recommendation System
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginTop: 8,
+                  }}
+                >
+                  <div
+                    style={{
+                      flex: 1,
+                      background: "rgba(255,255,255,.2)",
+                      borderRadius: 99,
+                      height: 5,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: `${pct}%`,
+                        background: "#34d399",
+                        height: "100%",
+                        borderRadius: 99,
+                      }}
+                    ></div>
+                  </div>
+                  <span
+                    style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}
+                  >
+                    {pct}%
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* ── Task Manager Nav ── */}
+            <nav
+              style={{
+                flex: 1,
+                padding: "12px 8px",
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                overflowY: "auto",
+              }}
+            >
+              {!collapsed && (
+                <div style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: ".8px",
+                  color: "rgba(255,255,255,.35)",
+                  padding: "0 6px",
+                  marginBottom: 4,
+                }}>TASK MANAGER</div>
+              )}
+              {nav.map((n) => (
+                <button
+                  key={n.id}
+                  className={`nav-btn ${page === n.id ? "active" : ""}`}
+                  onClick={() => setPage(n.id)}
+                  title={collapsed ? n.label : ""}
+                >
+                  <span style={{ fontSize: 18, flexShrink: 0 }}>{n.icon}</span>
+                  <span className="sidebar-text" style={{ fontSize: 13.5 }}>
+                    {n.label}
+                  </span>
+                  {!collapsed && page === n.id && (
+                    <span
+                      style={{
+                        marginLeft: "auto",
+                        width: 6,
+                        height: 6,
+                        background: "rgba(255,255,255,.9)",
+                        borderRadius: "50%",
+                      }}
+                    ></span>
+                  )}
+                </button>
+              ))}
+            </nav>
+
+            {/* User */}
+            <div
+              style={{
+                padding: "12px 14px",
+                borderTop: "1px solid rgba(255,255,255,.1)",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <div
+                className="avatar"
+                style={{
+                  width: 32,
+                  height: 32,
+                  background: "#f59e0b",
+                  fontSize: 11,
+                  flexShrink: 0,
+                }}
+              >
+                AR
+              </div>
+              <div className="sidebar-text">
+                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>
+                  Ahmed Raza
+                </div>
+                <div style={{ color: "rgba(255,255,255,.5)", fontSize: 11 }}>
+                  Team Lead
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ═══════════════════════════════
+   NAVBAR
+═══════════════════════════════ */
+      function Navbar({ page, notifs, setNotifs, onAdd }) {
+        const [showN, setShowN] = useState(false);
+        const unread = notifs.filter((n) => !n.read).length;
+        const titles = {
+          dashboard: "Dashboard",
+          kanban: "Task Board",
+          team: "Team Overview",
+          analytics: "Analytics",
+          calendar: "Calendar",
+          supervisor: "Supervisor View",
+        };
+
+        return (
+          <div
+            style={{
+              background: "#fff",
+              borderBottom: "1px solid #e8edf3",
+              padding: "0 24px",
+              height: 64,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              position: "sticky",
+              top: 0,
+              zIndex: 40,
+              boxShadow: "0 1px 6px rgba(0,0,0,.05)",
+            }}
+          >
+            <div>
+              <h1
+                style={{
+                  fontSize: 20,
+                  fontWeight: 800,
+                  color: "#1e293b",
+                  fontFamily: "Outfit,sans-serif",
+                  margin: 0,
+                  lineHeight: 1.2,
+                }}
+              >
+                {titles[page]}
+              </h1>
+              <p style={{ fontSize: 11, color: "#94a3b8", margin: 0 }}>
+                COMSATS University Islamabad, Abbottabad Campus — Spring 2025
+              </p>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              {/* Add Task */}
+              <button
+                onClick={onAdd}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "8px 18px",
+                  background: "#005BAC",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 10,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: "DM Sans,sans-serif",
+                  boxShadow: "0 2px 8px rgba(0,91,172,.3)",
+                }}
+              >
+                <span style={{ fontSize: 16, fontWeight: 300 }}>+</span> Add
+                Task
+              </button>
+
+              {/* Notifications */}
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={() => setShowN((x) => !x)}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    border: "1px solid #e8edf3",
+                    background: "#fff",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 17,
+                    position: "relative",
+                  }}
+                >
+                  🔔
+                  {unread > 0 && (
+                    <span
+                      className="pulse-dot"
+                      style={{
+                        position: "absolute",
+                        top: -2,
+                        right: -2,
+                        width: 18,
+                        height: 18,
+                        background: "#ef4444",
+                        color: "#fff",
+                        borderRadius: "50%",
+                        fontSize: 10,
+                        fontWeight: 800,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontFamily: "Outfit,sans-serif",
+                      }}
+                    >
+                      {unread}
+                    </span>
+                  )}
+                </button>
+                {showN && (
+                  <div className="notif-drop">
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "12px 16px",
+                        borderBottom: "1px solid #f1f5f9",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontWeight: 700,
+                          fontSize: 14,
+                          fontFamily: "Outfit,sans-serif",
+                          color: "#1e293b",
+                        }}
+                      >
+                        Notifications
+                      </span>
+                      <button
+                        onClick={() => {
+                          setNotifs((p) =>
+                            p.map((n) => ({ ...n, read: true })),
+                          );
+                        }}
+                        style={{
+                          fontSize: 11,
+                          color: "#005BAC",
+                          fontWeight: 700,
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Mark all read
+                      </button>
+                    </div>
+                    <div style={{ maxHeight: 340, overflowY: "auto" }}>
+                      {notifs.map((n) => (
+                        <div
+                          key={n.id}
+                          style={{
+                            padding: "10px 16px",
+                            borderBottom: "1px solid #f8fafc",
+                            background: n.read ? "transparent" : "#f0f7ff",
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: 10,
+                            cursor: "pointer",
+                          }}
+                          onClick={() =>
+                            setNotifs((p) =>
+                              p.map((x) =>
+                                x.id === n.id ? { ...x, read: true } : x,
+                              ),
+                            )
+                          }
+                        >
+                          <span
+                            style={{
+                              fontSize: 18,
+                              flexShrink: 0,
+                              marginTop: 1,
+                            }}
+                          >
+                            {notifEmoji(n.type)}
+                          </span>
+                          <div style={{ flex: 1 }}>
+                            <p
+                              style={{
+                                fontSize: 13,
+                                color: "#334155",
+                                fontWeight: n.read ? 400 : 600,
+                                margin: 0,
+                                lineHeight: 1.4,
+                              }}
+                            >
+                              {n.msg}
+                            </p>
+                            <p
+                              style={{
+                                fontSize: 11,
+                                color: "#94a3b8",
+                                margin: "2px 0 0",
+                              }}
+                            >
+                              {n.time}
+                            </p>
+                          </div>
+                          {!n.read && (
+                            <span
+                              style={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: "50%",
+                                background: "#005BAC",
+                                flexShrink: 0,
+                                marginTop: 4,
+                              }}
+                            ></span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Avatar */}
+              <div
+                className="avatar"
+                style={{
+                  width: 38,
+                  height: 38,
+                  background: "#005BAC",
+                  fontSize: 12,
+                  cursor: "pointer",
+                  boxShadow: "0 2px 8px rgba(0,91,172,.3)",
+                }}
+              >
+                AR
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ═══════════════════════════════
+   TASK MODAL
+═══════════════════════════════ */
+      function TaskModal({ task, users, onSave, onClose }) {
+        const blank = {
+          title: "",
+          desc: "",
+          status: "todo",
+          priority: "medium",
+          assignee: 1,
+          due: "",
+          progress: 0,
+          tags: [],
+        };
+        const [f, setF] = useState(task ? { ...task } : blank);
+
+        return (
+          <div
+            className="modal-overlay"
+            onClick={(e) => e.target === e.currentTarget && onClose()}
+          >
+            <div className="modal-box">
+              <div
+                style={{
+                  background: "linear-gradient(135deg,#003d78,#005BAC)",
+                  padding: "18px 24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <h2
+                  style={{
+                    color: "#fff",
+                    fontSize: 17,
+                    fontWeight: 700,
+                    margin: 0,
+                    fontFamily: "Outfit,sans-serif",
+                  }}
+                >
+                  {task ? "✏️ Edit Task" : "➕ New Task"}
+                </h2>
+                <button
+                  onClick={onClose}
+                  style={{
+                    background: "rgba(255,255,255,.15)",
+                    border: "none",
+                    color: "#fff",
+                    width: 28,
+                    height: 28,
+                    borderRadius: 8,
+                    cursor: "pointer",
+                    fontSize: 16,
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+              <div
+                style={{
+                  padding: "20px 24px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 14,
+                  maxHeight: "70vh",
+                  overflowY: "auto",
+                }}
+              >
+                {/* Title */}
+                <div>
+                  <label
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#475569",
+                      display: "block",
+                      marginBottom: 5,
+                    }}
+                  >
+                    TASK TITLE *
+                  </label>
+                  <input
+                    value={f.title}
+                    onChange={(e) => setF({ ...f, title: e.target.value })}
+                    placeholder="Enter task title..."
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      border: "1.5px solid #e2e8f0",
+                      borderRadius: 10,
+                      fontSize: 14,
+                      fontFamily: "DM Sans,sans-serif",
+                      color: "#1e293b",
+                    }}
+                  />
+                </div>
+                {/* Description */}
+                <div>
+                  <label
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#475569",
+                      display: "block",
+                      marginBottom: 5,
+                    }}
+                  >
+                    DESCRIPTION
+                  </label>
+                  <textarea
+                    value={f.desc}
+                    onChange={(e) => setF({ ...f, desc: e.target.value })}
+                    placeholder="What needs to be done?"
+                    rows={3}
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      border: "1.5px solid #e2e8f0",
+                      borderRadius: 10,
+                      fontSize: 14,
+                      resize: "none",
+                      fontFamily: "DM Sans,sans-serif",
+                      color: "#1e293b",
+                    }}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 14,
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: "#475569",
+                        display: "block",
+                        marginBottom: 5,
+                      }}
+                    >
+                      PRIORITY
+                    </label>
+                    <select
+                      value={f.priority}
+                      onChange={(e) => setF({ ...f, priority: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "10px 14px",
+                        border: "1.5px solid #e2e8f0",
+                        borderRadius: 10,
+                        fontSize: 14,
+                        fontFamily: "DM Sans,sans-serif",
+                        background: "#fff",
+                        color: "#1e293b",
+                      }}
+                    >
+                      <option value="low">🟢 Low</option>
+                      <option value="medium">🟡 Medium</option>
+                      <option value="high">🔴 High</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: "#475569",
+                        display: "block",
+                        marginBottom: 5,
+                      }}
+                    >
+                      STATUS
+                    </label>
+                    <select
+                      value={f.status}
+                      onChange={(e) => setF({ ...f, status: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "10px 14px",
+                        border: "1.5px solid #e2e8f0",
+                        borderRadius: 10,
+                        fontSize: 14,
+                        fontFamily: "DM Sans,sans-serif",
+                        background: "#fff",
+                        color: "#1e293b",
+                      }}
+                    >
+                      <option value="todo">Not Started</option>
+                      <option value="inprogress">In Progress</option>
+                      <option value="review">Review</option>
+                      <option value="done">Completed</option>
+                    </select>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 14,
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: "#475569",
+                        display: "block",
+                        marginBottom: 5,
+                      }}
+                    >
+                      ASSIGN TO
+                    </label>
+                    <select
+                      value={f.assignee}
+                      onChange={(e) =>
+                        setF({ ...f, assignee: parseInt(e.target.value) })
+                      }
+                      style={{
+                        width: "100%",
+                        padding: "10px 14px",
+                        border: "1.5px solid #e2e8f0",
+                        borderRadius: 10,
+                        fontSize: 14,
+                        fontFamily: "DM Sans,sans-serif",
+                        background: "#fff",
+                        color: "#1e293b",
+                      }}
+                    >
+                      {users
+                        .filter((u) => u.id !== 5)
+                        .map((u) => (
+                          <option key={u.id} value={u.id}>
+                            {u.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: "#475569",
+                        display: "block",
+                        marginBottom: 5,
+                      }}
+                    >
+                      DUE DATE
+                    </label>
+                    <input
+                      type="date"
+                      value={f.due}
+                      onChange={(e) => setF({ ...f, due: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "10px 14px",
+                        border: "1.5px solid #e2e8f0",
+                        borderRadius: 10,
+                        fontSize: 14,
+                        fontFamily: "DM Sans,sans-serif",
+                        color: "#1e293b",
+                      }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#475569",
+                      display: "block",
+                      marginBottom: 5,
+                    }}
+                  >
+                    PROGRESS: {f.progress}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="5"
+                    value={f.progress}
+                    onChange={(e) =>
+                      setF({ ...f, progress: parseInt(e.target.value) })
+                    }
+                    style={{ width: "100%", accentColor: "#005BAC" }}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  padding: "16px 24px",
+                  borderTop: "1px solid #f1f5f9",
+                  display: "flex",
+                  gap: 10,
+                  justifyContent: "flex-end",
+                }}
+              >
+                <button
+                  onClick={onClose}
+                  style={{
+                    padding: "9px 20px",
+                    borderRadius: 10,
+                    border: "1.5px solid #e2e8f0",
+                    background: "#fff",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    color: "#64748b",
+                    fontFamily: "DM Sans,sans-serif",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    if (f.title.trim()) onSave(f);
+                  }}
+                  style={{
+                    padding: "9px 20px",
+                    borderRadius: 10,
+                    background: "#005BAC",
+                    color: "#fff",
+                    border: "none",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    fontFamily: "DM Sans,sans-serif",
+                    boxShadow: "0 2px 8px rgba(0,91,172,.3)",
+                  }}
+                >
+                  {task ? "Save Changes" : "Create Task"}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ═══════════════════════════════
+   DASHBOARD
+═══════════════════════════════ */
+      function Dashboard({ tasks, users }) {
+        const total = tasks.length;
+        const done = tasks.filter((t) => t.status === "done").length;
+        const inProg = tasks.filter((t) => t.status === "inprogress").length;
+        const review = tasks.filter((t) => t.status === "review").length;
+        const todo = tasks.filter((t) => t.status === "todo").length;
+        const pct = Math.round((done / total) * 100);
+
+        const upcoming = [...tasks]
+          .filter((t) => t.status !== "done" && t.due)
+          .sort((a, b) => new Date(a.due) - new Date(b.due))
+          .slice(0, 6);
+
+        return (
+          <div
+            className="fade-in"
+            style={{ display: "flex", flexDirection: "column", gap: 24 }}
+          >
+            {/* Hero Banner */}
+            <div
+              style={{
+                background:
+                  "linear-gradient(135deg,#002d5c 0%,#004a94 55%,#0064c2 100%)",
+                borderRadius: 20,
+                padding: "28px 32px",
+                color: "#fff",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  right: 24,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  fontSize: 120,
+                  opacity: 0.07,
+                  fontFamily: "Outfit,sans-serif",
+                  fontWeight: 800,
+                  lineHeight: 1,
+                  userSelect: "none",
+                }}
+              >
+                FYP
+              </div>
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    marginBottom: 12,
+                  }}
+                >
+                  <div
+                    className="avatar"
+                    style={{
+                      width: 44,
+                      height: 44,
+                      background: "#f59e0b",
+                      fontSize: 14,
+                    }}
+                  >
+                    AR
+                  </div>
+                  <div>
+                    <h2
+                      style={{
+                        fontSize: 22,
+                        fontWeight: 800,
+                        margin: 0,
+                        fontFamily: "Outfit,sans-serif",
+                      }}
+                    >
+                      Welcome back, Ahmed! 👋
+                    </h2>
+                    <p
+                      style={{
+                        color: "rgba(255,255,255,.6)",
+                        margin: 0,
+                        fontSize: 13,
+                      }}
+                    >
+                      AI-Powered Recommendation System · Sprint 2 of 4
+                    </p>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 32,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <p
+                      style={{
+                        color: "rgba(255,255,255,.55)",
+                        fontSize: 12,
+                        margin: "0 0 2px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      OVERALL PROGRESS
+                    </p>
+                    <p
+                      style={{
+                        fontSize: 40,
+                        fontWeight: 800,
+                        fontFamily: "Outfit,sans-serif",
+                        margin: 0,
+                        lineHeight: 1,
+                      }}
+                    >
+                      {pct}%
+                    </p>
+                  </div>
+                  <div style={{ flex: 1, maxWidth: 320 }}>
+                    <div
+                      style={{
+                        background: "rgba(255,255,255,.18)",
+                        borderRadius: 99,
+                        height: 10,
+                        marginBottom: 6,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${pct}%`,
+                          background: "#34d399",
+                          height: "100%",
+                          borderRadius: 99,
+                          transition: "width .8s ease",
+                        }}
+                      ></div>
+                    </div>
+                    <p
+                      style={{
+                        color: "rgba(255,255,255,.55)",
+                        fontSize: 12,
+                        margin: 0,
+                      }}
+                    >
+                      {done} of {total} tasks completed
+                    </p>
+                  </div>
+                  <div style={{ display: "flex", gap: 16 }}>
+                    {[
+                      ["🔥", inProg, "Active"],
+                      ["👁️", review, "Review"],
+                      ["📋", todo, "Pending"],
+                    ].map(([ic, v, l]) => (
+                      <div key={l} style={{ textAlign: "center" }}>
+                        <p style={{ fontSize: 22, margin: 0 }}>{ic}</p>
+                        <p
+                          style={{
+                            fontSize: 22,
+                            fontWeight: 800,
+                            fontFamily: "Outfit,sans-serif",
+                            margin: 0,
+                          }}
+                        >
+                          {v}
+                        </p>
+                        <p
+                          style={{
+                            fontSize: 11,
+                            color: "rgba(255,255,255,.5)",
+                            margin: 0,
+                          }}
+                        >
+                          {l}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Stat Cards */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))",
+                gap: 16,
+              }}
+            >
+              <StatCard
+                icon="📋"
+                title="Total Tasks"
+                value={total}
+                sub="All tasks in project"
+                color="#005BAC"
+                bg="#eff6ff"
+              />
+              <StatCard
+                icon="✅"
+                title="Completed"
+                value={done}
+                sub={`${pct}% completion rate`}
+                color="#059669"
+                bg="#f0fdf4"
+              />
+              <StatCard
+                icon="⚡"
+                title="In Progress"
+                value={inProg}
+                sub="Currently active"
+                color="#2563eb"
+                bg="#eff6ff"
+              />
+              <StatCard
+                icon="⏳"
+                title="Pending"
+                value={todo}
+                sub={`${review} in review`}
+                color="#d97706"
+                bg="#fffbeb"
+              />
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "2fr 1fr",
+                gap: 20,
+              }}
+            >
+              {/* Upcoming Deadlines */}
+              <div className="card" style={{ padding: 20 }}>
+                <h3
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    fontFamily: "Outfit,sans-serif",
+                    margin: "0 0 16px",
+                    color: "#1e293b",
+                  }}
+                >
+                  ⏰ Upcoming Deadlines
+                </h3>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 10 }}
+                >
+                  {upcoming.map((t) => {
+                    const u = userById(t.assignee, users);
+                    const over = isOverdue(t.due);
+                    return (
+                      <div
+                        key={t.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                          padding: "10px 14px",
+                          borderRadius: 12,
+                          border: "1px solid #edf0f4",
+                          background: over ? "#fef2f2" : "#fafbfc",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 3,
+                            height: 40,
+                            borderRadius: 99,
+                            background: over
+                              ? "#ef4444"
+                              : t.priority === "high"
+                                ? "#f97316"
+                                : "#005BAC",
+                            flexShrink: 0,
+                          }}
+                        ></div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p
+                            style={{
+                              fontSize: 13.5,
+                              fontWeight: 600,
+                              color: "#1e293b",
+                              margin: "0 0 4px",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {t.title}
+                          </p>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                            }}
+                          >
+                            <PriBadge p={t.priority} />
+                            {u && (
+                              <span style={{ fontSize: 12, color: "#64748b" }}>
+                                {u.name}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div style={{ textAlign: "right", flexShrink: 0 }}>
+                          <p
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 700,
+                              color: over ? "#dc2626" : "#475569",
+                              margin: 0,
+                            }}
+                          >
+                            {fmtDate(t.due)}
+                          </p>
+                          {over && (
+                            <p
+                              style={{
+                                fontSize: 11,
+                                color: "#ef4444",
+                                margin: 0,
+                                fontWeight: 600,
+                              }}
+                            >
+                              Overdue
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Activity Feed */}
+              <div className="card" style={{ padding: 20 }}>
+                <h3
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    fontFamily: "Outfit,sans-serif",
+                    margin: "0 0 16px",
+                    color: "#1e293b",
+                  }}
+                >
+                  🔄 Recent Activity
+                </h3>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 14 }}
+                >
+                  {ACTIVITY.map((a) => {
+                    const u = userById(a.user, users);
+                    return (
+                      <div
+                        key={a.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: 10,
+                        }}
+                      >
+                        <Av user={u} size={30} />
+                        <div style={{ flex: 1 }}>
+                          <p
+                            style={{
+                              fontSize: 12.5,
+                              color: "#334155",
+                              margin: 0,
+                              lineHeight: 1.4,
+                            }}
+                          >
+                            <strong>{u?.name}</strong> {a.action}{" "}
+                            <span style={{ color: "#005BAC", fontWeight: 600 }}>
+                              "{a.task}"
+                            </span>
+                          </p>
+                          <p
+                            style={{
+                              fontSize: 11,
+                              color: "#94a3b8",
+                              margin: "2px 0 0",
+                            }}
+                          >
+                            {a.time}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Milestones */}
+            <div className="card" style={{ padding: 20 }}>
+              <h3
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  fontFamily: "Outfit,sans-serif",
+                  margin: "0 0 20px",
+                  color: "#1e293b",
+                }}
+              >
+                🏆 Project Milestones
+              </h3>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  overflowX: "auto",
+                  paddingBottom: 8,
+                }}
+              >
+                {MILESTONES.map((m, i) => (
+                  <React.Fragment key={m.id}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        minWidth: 110,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 42,
+                          height: 42,
+                          borderRadius: "50%",
+                          background:
+                            m.pct === 100
+                              ? "#10b981"
+                              : m.pct > 0
+                                ? "#005BAC"
+                                : "#f1f5f9",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: m.pct > 0 ? "#fff" : "#94a3b8",
+                          fontWeight: 700,
+                          fontSize: 14,
+                          boxShadow: "0 2px 8px rgba(0,0,0,.1)",
+                          border: m.pct === 0 ? "2px dashed #d1d5db" : "none",
+                        }}
+                      >
+                        {m.pct === 100 ? "✓" : i + 1}
+                      </div>
+                      <p
+                        style={{
+                          fontSize: 11.5,
+                          fontWeight: 600,
+                          color: "#475569",
+                          textAlign: "center",
+                          margin: "8px 0 2px",
+                          lineHeight: 1.3,
+                          maxWidth: 90,
+                        }}
+                      >
+                        {m.title}
+                      </p>
+                      <p style={{ fontSize: 11, color: "#94a3b8", margin: 0 }}>
+                        {fmtDate(m.date)}
+                      </p>
+                      {m.pct > 0 && m.pct < 100 && (
+                        <span
+                          style={{
+                            fontSize: 11,
+                            color: "#005BAC",
+                            fontWeight: 700,
+                            marginTop: 3,
+                          }}
+                        >
+                          {m.pct}%
+                        </span>
+                      )}
+                    </div>
+                    {i < MILESTONES.length - 1 && (
+                      <div
+                        style={{
+                          flex: 1,
+                          height: 2,
+                          background: m.pct === 100 ? "#10b981" : "#e2e8f0",
+                          margin: "20px 0 0",
+                          minWidth: 24,
+                        }}
+                      ></div>
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ═══════════════════════════════
+   KANBAN
+═══════════════════════════════ */
+      function Kanban({ tasks, setTasks, users, onEdit, onDelete }) {
+        const cols = [
+          {
+            id: "todo",
+            label: "Not Started",
+            color: "#64748b",
+            bg: "#f8fafc",
+            icon: "📋",
+          },
+          {
+            id: "inprogress",
+            label: "In Progress",
+            color: "#2563eb",
+            bg: "#eff6ff",
+            icon: "⚡",
+          },
+          {
+            id: "review",
+            label: "Review",
+            color: "#7c3aed",
+            bg: "#faf5ff",
+            icon: "👁️",
+          },
+          {
+            id: "done",
+            label: "Completed",
+            color: "#16a34a",
+            bg: "#f0fdf4",
+            icon: "✅",
+          },
+        ];
+        const [dragged, setDragged] = useState(null);
+        const [overCol, setOverCol] = useState(null);
+        const [filter, setFilter] = useState({
+          pri: "all",
+          mem: "all",
+          search: "",
+        });
+
+        const filtered = tasks.filter((t) => {
+          if (filter.pri !== "all" && t.priority !== filter.pri) return false;
+          if (filter.mem !== "all" && t.assignee !== parseInt(filter.mem))
+            return false;
+          if (
+            filter.search &&
+            !t.title.toLowerCase().includes(filter.search.toLowerCase())
+          )
+            return false;
+          return true;
+        });
+
+        const onDragStart = (e, t) => {
+          setDragged(t);
+          e.dataTransfer.effectAllowed = "move";
+        };
+        const onDragOver = (e, id) => {
+          e.preventDefault();
+          setOverCol(id);
+        };
+        const onDrop = (e, newStatus) => {
+          e.preventDefault();
+          if (dragged && dragged.status !== newStatus) {
+            setTasks((prev) =>
+              prev.map((t) =>
+                t.id === dragged.id
+                  ? {
+                      ...t,
+                      status: newStatus,
+                      progress: newStatus === "done" ? 100 : t.progress,
+                    }
+                  : t,
+              ),
+            );
+          }
+          setDragged(null);
+          setOverCol(null);
+        };
+
+        const sel = {
+          padding: "9px 14px",
+          border: "1.5px solid #e2e8f0",
+          borderRadius: 10,
+          fontSize: 13,
+          fontFamily: "DM Sans,sans-serif",
+          background: "#fff",
+          color: "#1e293b",
+          cursor: "pointer",
+        };
+
+        return (
+          <div className="fade-in">
+            {/* Filters */}
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                marginBottom: 20,
+                flexWrap: "wrap",
+                alignItems: "center",
+              }}
+            >
+              <input
+                value={filter.search}
+                onChange={(e) =>
+                  setFilter({ ...filter, search: e.target.value })
+                }
+                placeholder="🔍 Search tasks…"
+                style={{ ...sel, flex: 1, minWidth: 180, maxWidth: 260 }}
+              />
+              <select
+                value={filter.pri}
+                onChange={(e) => setFilter({ ...filter, pri: e.target.value })}
+                style={sel}
+              >
+                <option value="all">All Priorities</option>
+                <option value="high">🔴 High</option>
+                <option value="medium">🟡 Medium</option>
+                <option value="low">🟢 Low</option>
+              </select>
+              <select
+                value={filter.mem}
+                onChange={(e) => setFilter({ ...filter, mem: e.target.value })}
+                style={sel}
+              >
+                <option value="all">All Members</option>
+                {users
+                  .filter((u) => u.id !== 5)
+                  .map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.name}
+                    </option>
+                  ))}
+              </select>
+              <span
+                style={{
+                  marginLeft: "auto",
+                  fontSize: 12,
+                  color: "#94a3b8",
+                  fontWeight: 500,
+                }}
+              >
+                {filtered.length} tasks · Drag cards to move
+              </span>
+            </div>
+
+            {/* Board */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4,1fr)",
+                gap: 16,
+              }}
+            >
+              {cols.map((col) => {
+                const colTasks = filtered.filter((t) => t.status === col.id);
+                return (
+                  <div
+                    key={col.id}
+                    className={`kanban-col ${overCol === col.id ? "drag-over" : ""}`}
+                    style={{ background: col.bg }}
+                    onDragOver={(e) => onDragOver(e, col.id)}
+                    onDrop={(e) => onDrop(e, col.id)}
+                    onDragLeave={() => setOverCol(null)}
+                  >
+                    {/* Col header */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: 12,
+                        paddingBottom: 12,
+                        borderBottom: "1px solid rgba(255,255,255,.6)",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 7,
+                        }}
+                      >
+                        <span style={{ fontSize: 16 }}>{col.icon}</span>
+                        <span
+                          style={{
+                            fontWeight: 700,
+                            fontSize: 13,
+                            color: col.color,
+                            fontFamily: "Outfit,sans-serif",
+                          }}
+                        >
+                          {col.label}
+                        </span>
+                      </div>
+                      <span
+                        style={{
+                          width: 22,
+                          height: 22,
+                          borderRadius: "50%",
+                          background: col.color,
+                          color: "#fff",
+                          fontSize: 11,
+                          fontWeight: 800,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontFamily: "Outfit,sans-serif",
+                        }}
+                      >
+                        {colTasks.length}
+                      </span>
+                    </div>
+
+                    {/* Cards */}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 10,
+                      }}
+                    >
+                      {colTasks.map((t) => {
+                        const u = userById(t.assignee, users);
+                        const over = isOverdue(t.due) && t.status !== "done";
+                        return (
+                          <div
+                            key={t.id}
+                            className={`task-card ${dragged?.id === t.id ? "is-dragging" : ""}`}
+                            draggable
+                            onDragStart={(e) => onDragStart(e, t)}
+                          >
+                            {/* Tags */}
+                            {t.tags?.length > 0 && (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  gap: 4,
+                                  marginBottom: 8,
+                                  flexWrap: "wrap",
+                                }}
+                              >
+                                {t.tags.slice(0, 2).map((g) => (
+                                  <span key={g} className="tag">
+                                    {g}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            <p
+                              style={{
+                                fontSize: 13.5,
+                                fontWeight: 600,
+                                color: "#1e293b",
+                                marginBottom: 8,
+                                lineHeight: 1.4,
+                              }}
+                            >
+                              {t.title}
+                            </p>
+
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                marginBottom: 8,
+                              }}
+                            >
+                              <PriBadge p={t.priority} />
+                              {t.due && (
+                                <span
+                                  style={{
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                    color: over ? "#dc2626" : "#94a3b8",
+                                  }}
+                                >
+                                  📅 {fmtDate(t.due)}
+                                  {over ? " ⚠️" : ""}
+                                </span>
+                              )}
+                            </div>
+
+                            {t.progress > 0 && (
+                              <div style={{ marginBottom: 8 }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    marginBottom: 4,
+                                  }}
+                                >
+                                  <span
+                                    style={{ fontSize: 11, color: "#94a3b8" }}
+                                  >
+                                    Progress
+                                  </span>
+                                  <span
+                                    style={{
+                                      fontSize: 11,
+                                      fontWeight: 700,
+                                      color: "#475569",
+                                    }}
+                                  >
+                                    {t.progress}%
+                                  </span>
+                                </div>
+                                <ProgBar
+                                  pct={t.progress}
+                                  color={
+                                    t.status === "done" ? "#10b981" : "#005BAC"
+                                  }
+                                />
+                              </div>
+                            )}
+
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                marginTop: 8,
+                              }}
+                            >
+                              {u && <Av user={u} size={26} />}
+                              <div style={{ display: "flex", gap: 4 }}>
+                                <button
+                                  onClick={() => onEdit(t)}
+                                  style={{
+                                    width: 28,
+                                    height: 28,
+                                    borderRadius: 8,
+                                    border: "1px solid #e2e8f0",
+                                    background: "#fff",
+                                    cursor: "pointer",
+                                    fontSize: 13,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  title="Edit"
+                                >
+                                  ✏️
+                                </button>
+                                <button
+                                  onClick={() => onDelete(t.id)}
+                                  style={{
+                                    width: 28,
+                                    height: 28,
+                                    borderRadius: 8,
+                                    border: "1px solid #fee2e2",
+                                    background: "#fff5f5",
+                                    cursor: "pointer",
+                                    fontSize: 13,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  title="Delete"
+                                >
+                                  🗑️
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {colTasks.length === 0 && (
+                        <div
+                          style={{
+                            textAlign: "center",
+                            padding: "36px 0",
+                            color: "#d1d5db",
+                          }}
+                        >
+                          <div style={{ fontSize: 32, marginBottom: 6 }}>
+                            📭
+                          </div>
+                          <p style={{ fontSize: 12 }}>Drop tasks here</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      }
+
+      /* ═══════════════════════════════
+   TEAM
+═══════════════════════════════ */
+      function Team({ users, tasks }) {
+        return (
+          <div
+            className="fade-in"
+            style={{ display: "flex", flexDirection: "column", gap: 24 }}
+          >
+            {/* Member Cards */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))",
+                gap: 16,
+              }}
+            >
+              {users
+                .filter((u) => u.id !== 5)
+                .map((u) => {
+                  const asgd = tasks.filter((t) => t.assignee === u.id);
+                  const done = asgd.filter((t) => t.status === "done");
+                  const actv = asgd.filter((t) => t.status === "inprogress");
+                  const pct = asgd.length
+                    ? Math.round((done.length / asgd.length) * 100)
+                    : 0;
+                  return (
+                    <div
+                      key={u.id}
+                      className="card card-hover"
+                      style={{ padding: 20 }}
+                    >
+                      {/* Header */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                          marginBottom: 16,
+                        }}
+                      >
+                        <Av user={u} size={50} />
+                        <div>
+                          <p
+                            style={{
+                              fontWeight: 700,
+                              fontSize: 15,
+                              fontFamily: "Outfit,sans-serif",
+                              color: "#1e293b",
+                              margin: 0,
+                            }}
+                          >
+                            {u.name}
+                          </p>
+                          <p
+                            style={{
+                              fontSize: 12.5,
+                              color: "#64748b",
+                              margin: 0,
+                            }}
+                          >
+                            {u.role}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Stats */}
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr 1fr",
+                          gap: 8,
+                          marginBottom: 14,
+                        }}
+                      >
+                        {[
+                          {
+                            v: asgd.length,
+                            l: "Assigned",
+                            bg: "#f8fafc",
+                            c: "#1e293b",
+                          },
+                          {
+                            v: done.length,
+                            l: "Done",
+                            bg: "#f0fdf4",
+                            c: "#059669",
+                          },
+                          {
+                            v: actv.length,
+                            l: "Active",
+                            bg: "#eff6ff",
+                            c: "#2563eb",
+                          },
+                        ].map((s) => (
+                          <div
+                            key={s.l}
+                            style={{
+                              textAlign: "center",
+                              padding: "8px 4px",
+                              borderRadius: 10,
+                              background: s.bg,
+                            }}
+                          >
+                            <p
+                              style={{
+                                fontSize: 20,
+                                fontWeight: 800,
+                                fontFamily: "Outfit,sans-serif",
+                                color: s.c,
+                                margin: 0,
+                              }}
+                            >
+                              {s.v}
+                            </p>
+                            <p
+                              style={{
+                                fontSize: 11,
+                                color: "#94a3b8",
+                                margin: 0,
+                              }}
+                            >
+                              {s.l}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Productivity */}
+                      <div style={{ marginBottom: 12 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginBottom: 5,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 12.5,
+                              fontWeight: 600,
+                              color: "#64748b",
+                            }}
+                          >
+                            Productivity
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 800,
+                              color: u.color,
+                            }}
+                          >
+                            {pct}%
+                          </span>
+                        </div>
+                        <ProgBar pct={pct} color={u.color} h={8} />
+                      </div>
+
+                      {/* Active Tasks */}
+                      <div>
+                        <p
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            color: "#94a3b8",
+                            letterSpacing: ".5px",
+                            marginBottom: 6,
+                          }}
+                        >
+                          ACTIVE TASKS
+                        </p>
+                        {actv.slice(0, 2).map((t) => (
+                          <div
+                            key={t.id}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 6,
+                              marginBottom: 4,
+                            }}
+                          >
+                            <span
+                              style={{
+                                width: 6,
+                                height: 6,
+                                borderRadius: "50%",
+                                background: "#2563eb",
+                                flexShrink: 0,
+                              }}
+                            ></span>
+                            <span
+                              style={{
+                                fontSize: 12,
+                                color: "#475569",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {t.title}
+                            </span>
+                          </div>
+                        ))}
+                        {actv.length === 0 && (
+                          <p style={{ fontSize: 12, color: "#d1d5db" }}>
+                            No active tasks
+                          </p>
+                        )}
+                      </div>
+
+                      <div
+                        style={{
+                          marginTop: 12,
+                          paddingTop: 12,
+                          borderTop: "1px solid #f1f5f9",
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontSize: 11.5,
+                            color: "#94a3b8",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          ✉️ {u.email}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+
+            {/* Supervisor */}
+            <div className="card" style={{ padding: 20 }}>
+              <h3
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  fontFamily: "Outfit,sans-serif",
+                  color: "#1e293b",
+                  margin: "0 0 16px",
+                }}
+              >
+                👨‍🏫 Project Supervisor
+              </h3>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 16,
+                  flexWrap: "wrap",
+                }}
+              >
+                <Av user={users[4]} size={56} />
+                <div style={{ flex: 1 }}>
+                  <p
+                    style={{
+                      fontWeight: 800,
+                      fontSize: 16,
+                      fontFamily: "Outfit,sans-serif",
+                      color: "#1e293b",
+                      margin: 0,
+                    }}
+                  >
+                    Dr. Tariq Hassan
+                  </p>
+                  <p
+                    style={{ fontSize: 13, color: "#64748b", margin: "3px 0" }}
+                  >
+                    Associate Professor · Department of Computer Science
+                  </p>
+                  <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>
+                    tariq.hassan@cuiatd.edu.pk · Office: Block-B, Room 204 ·
+                    Office Hours: Mon/Wed 2–4 PM
+                  </p>
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  {[
+                    { v: "3", l: "Meetings", bg: "#f0fdf4", c: "#059669" },
+                    { v: "8", l: "Feedbacks", bg: "#eff6ff", c: "#2563eb" },
+                    { v: "4", l: "Approvals", bg: "#faf5ff", c: "#7c3aed" },
+                  ].map((s) => (
+                    <div
+                      key={s.l}
+                      style={{
+                        textAlign: "center",
+                        padding: "10px 16px",
+                        borderRadius: 12,
+                        background: s.bg,
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: 22,
+                          fontWeight: 800,
+                          fontFamily: "Outfit,sans-serif",
+                          color: s.c,
+                          margin: 0,
+                        }}
+                      >
+                        {s.v}
+                      </p>
+                      <p style={{ fontSize: 11, color: "#94a3b8", margin: 0 }}>
+                        {s.l}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Table */}
+            <div className="card" style={{ overflow: "hidden" }}>
+              <div
+                style={{
+                  padding: "16px 20px",
+                  borderBottom: "1px solid #f1f5f9",
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    fontFamily: "Outfit,sans-serif",
+                    color: "#1e293b",
+                    margin: 0,
+                  }}
+                >
+                  📊 Task Distribution Summary
+                </h3>
+              </div>
+              <div style={{ overflowX: "auto" }}>
+                <table>
+                  <thead>
+                    <tr style={{ background: "#f8fafc" }}>
+                      {[
+                        "Member",
+                        "Total",
+                        "Done",
+                        "In Progress",
+                        "Pending",
+                        "Completion",
+                      ].map((h) => (
+                        <th
+                          key={h}
+                          style={{
+                            padding: "11px 16px",
+                            fontSize: 11,
+                            fontWeight: 700,
+                            color: "#64748b",
+                            textTransform: "uppercase",
+                            letterSpacing: ".5px",
+                            borderBottom: "1px solid #edf0f4",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users
+                      .filter((u) => u.id !== 5)
+                      .map((u) => {
+                        const asgd = tasks.filter((t) => t.assignee === u.id);
+                        const done = asgd.filter(
+                          (t) => t.status === "done",
+                        ).length;
+                        const inP = asgd.filter(
+                          (t) => t.status === "inprogress",
+                        ).length;
+                        const pend = asgd.filter(
+                          (t) => t.status === "todo",
+                        ).length;
+                        const pct = asgd.length
+                          ? Math.round((done / asgd.length) * 100)
+                          : 0;
+                        return (
+                          <tr
+                            key={u.id}
+                            style={{
+                              borderBottom: "1px solid #f8fafc",
+                              transition: "background .1s",
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.background = "#f8faff")
+                            }
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.background = "transparent")
+                            }
+                          >
+                            <td style={{ padding: "12px 16px" }}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                }}
+                              >
+                                <Av user={u} size={30} />
+                                <div>
+                                  <p
+                                    style={{
+                                      fontWeight: 600,
+                                      fontSize: 13.5,
+                                      color: "#1e293b",
+                                      margin: 0,
+                                    }}
+                                  >
+                                    {u.name}
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: 11,
+                                      color: "#94a3b8",
+                                      margin: 0,
+                                    }}
+                                  >
+                                    {u.role}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td
+                              style={{
+                                padding: "12px 16px",
+                                fontWeight: 700,
+                                fontSize: 14,
+                                color: "#475569",
+                                textAlign: "center",
+                              }}
+                            >
+                              {asgd.length}
+                            </td>
+                            <td
+                              style={{
+                                padding: "12px 16px",
+                                fontWeight: 700,
+                                fontSize: 14,
+                                color: "#059669",
+                                textAlign: "center",
+                              }}
+                            >
+                              {done}
+                            </td>
+                            <td
+                              style={{
+                                padding: "12px 16px",
+                                fontWeight: 700,
+                                fontSize: 14,
+                                color: "#2563eb",
+                                textAlign: "center",
+                              }}
+                            >
+                              {inP}
+                            </td>
+                            <td
+                              style={{
+                                padding: "12px 16px",
+                                fontWeight: 700,
+                                fontSize: 14,
+                                color: "#d97706",
+                                textAlign: "center",
+                              }}
+                            >
+                              {pend}
+                            </td>
+                            <td style={{ padding: "12px 24px 12px 16px" }}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                }}
+                              >
+                                <div style={{ width: 100 }}>
+                                  <ProgBar pct={pct} color={u.color} h={7} />
+                                </div>
+                                <span
+                                  style={{
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    color: "#475569",
+                                    minWidth: 32,
+                                  }}
+                                >
+                                  {pct}%
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ═══════════════════════════════
+   ANALYTICS
+═══════════════════════════════ */
+      function Analytics({ tasks, users }) {
+        const pieRef = useRef(null);
+        const pieC = useRef(null);
+        const barRef = useRef(null);
+        const barC = useRef(null);
+        const lineRef = useRef(null);
+        const lineC = useRef(null);
+
+        useEffect(() => {
+          const todo = tasks.filter((t) => t.status === "todo").length;
+          const inp = tasks.filter((t) => t.status === "inprogress").length;
+          const rev = tasks.filter((t) => t.status === "review").length;
+          const done = tasks.filter((t) => t.status === "done").length;
+
+          if (pieRef.current) {
+            if (pieC.current) pieC.current.destroy();
+            pieC.current = new Chart(pieRef.current, {
+              type: "doughnut",
+              data: {
+                labels: ["Not Started", "In Progress", "Review", "Completed"],
+                datasets: [
+                  {
+                    data: [todo, inp, rev, done],
+                    backgroundColor: [
+                      "#94a3b8",
+                      "#3b82f6",
+                      "#a855f7",
+                      "#10b981",
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 10,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "68%",
+                plugins: {
+                  legend: {
+                    position: "bottom",
+                    labels: {
+                      padding: 14,
+                      font: { family: "DM Sans", size: 12 },
+                      boxWidth: 12,
+                    },
+                  },
+                },
+              },
+            });
+          }
+          if (barRef.current) {
+            if (barC.current) barC.current.destroy();
+            const mems = users.filter((u) => u.id !== 5);
+            barC.current = new Chart(barRef.current, {
+              type: "bar",
+              data: {
+                labels: mems.map((u) => u.name.split(" ")[0]),
+                datasets: [
+                  {
+                    label: "Assigned",
+                    data: mems.map(
+                      (u) => tasks.filter((t) => t.assignee === u.id).length,
+                    ),
+                    backgroundColor: "rgba(0,91,172,.15)",
+                    borderColor: "#005BAC",
+                    borderWidth: 2,
+                    borderRadius: 6,
+                  },
+                  {
+                    label: "Completed",
+                    data: mems.map(
+                      (u) =>
+                        tasks.filter(
+                          (t) => t.assignee === u.id && t.status === "done",
+                        ).length,
+                    ),
+                    backgroundColor: "rgba(16,185,129,.75)",
+                    borderRadius: 6,
+                    borderWidth: 0,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    labels: {
+                      font: { family: "DM Sans", size: 12 },
+                      boxWidth: 12,
+                    },
+                  },
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    grid: { color: "rgba(0,0,0,.04)" },
+                    ticks: { font: { family: "DM Sans" } },
+                  },
+                  x: {
+                    grid: { display: false },
+                    ticks: { font: { family: "DM Sans" } },
+                  },
+                },
+              },
+            });
+          }
+          if (lineRef.current) {
+            if (lineC.current) lineC.current.destroy();
+            lineC.current = new Chart(lineRef.current, {
+              type: "line",
+              data: {
+                labels: WEEKLY.map((w) => w.w),
+                datasets: [
+                  {
+                    label: "Assigned",
+                    data: WEEKLY.map((w) => w.assigned),
+                    borderColor: "#005BAC",
+                    backgroundColor: "rgba(0,91,172,.08)",
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: "#005BAC",
+                    pointRadius: 5,
+                  },
+                  {
+                    label: "Completed",
+                    data: WEEKLY.map((w) => w.done),
+                    borderColor: "#10b981",
+                    backgroundColor: "rgba(16,185,129,.08)",
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: "#10b981",
+                    pointRadius: 5,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    labels: {
+                      font: { family: "DM Sans", size: 12 },
+                      boxWidth: 12,
+                    },
+                  },
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    grid: { color: "rgba(0,0,0,.04)" },
+                    ticks: { font: { family: "DM Sans" } },
+                  },
+                  x: {
+                    grid: { display: false },
+                    ticks: { font: { family: "DM Sans" } },
+                  },
+                },
+              },
+            });
+          }
+          return () => {
+            pieC.current?.destroy();
+            barC.current?.destroy();
+            lineC.current?.destroy();
+          };
+        }, [tasks]);
+
+        const total = tasks.length;
+        const done = tasks.filter((t) => t.status === "done").length;
+
+        return (
+          <div
+            className="fade-in"
+            style={{ display: "flex", flexDirection: "column", gap: 24 }}
+          >
+            {/* KPIs */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))",
+                gap: 16,
+              }}
+            >
+              <StatCard
+                icon="📊"
+                title="Completion Rate"
+                value={`${Math.round((done / total) * 100)}%`}
+                sub="Overall project"
+                color="#005BAC"
+                bg="#eff6ff"
+              />
+              <StatCard
+                icon="🔥"
+                title="High Priority"
+                value={tasks.filter((t) => t.priority === "high").length}
+                sub={`${tasks.filter((t) => t.priority === "high" && t.status === "done").length} completed`}
+                color="#DC2626"
+                bg="#fef2f2"
+              />
+              <StatCard
+                icon="👥"
+                title="Active Members"
+                value="4"
+                sub="All contributing"
+                color="#7C3AED"
+                bg="#faf5ff"
+              />
+              <StatCard
+                icon="📅"
+                title="Days Remaining"
+                value="42"
+                sub="Until final submission"
+                color="#d97706"
+                bg="#fffbeb"
+              />
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 2fr",
+                gap: 20,
+              }}
+            >
+              {/* Pie */}
+              <div className="card" style={{ padding: 20 }}>
+                <h3
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 700,
+                    fontFamily: "Outfit,sans-serif",
+                    color: "#1e293b",
+                    margin: "0 0 4px",
+                  }}
+                >
+                  Task Status Distribution
+                </h3>
+                <p
+                  style={{ fontSize: 12, color: "#94a3b8", margin: "0 0 16px" }}
+                >
+                  Breakdown by current status
+                </p>
+                <div style={{ height: 260, position: "relative" }}>
+                  <canvas ref={pieRef}></canvas>
+                </div>
+              </div>
+              {/* Bar */}
+              <div className="card" style={{ padding: 20 }}>
+                <h3
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 700,
+                    fontFamily: "Outfit,sans-serif",
+                    color: "#1e293b",
+                    margin: "0 0 4px",
+                  }}
+                >
+                  Member Contribution
+                </h3>
+                <p
+                  style={{ fontSize: 12, color: "#94a3b8", margin: "0 0 16px" }}
+                >
+                  Tasks assigned vs completed per member
+                </p>
+                <div style={{ height: 260, position: "relative" }}>
+                  <canvas ref={barRef}></canvas>
+                </div>
+              </div>
+            </div>
+
+            {/* Line */}
+            <div className="card" style={{ padding: 20 }}>
+              <h3
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  fontFamily: "Outfit,sans-serif",
+                  color: "#1e293b",
+                  margin: "0 0 4px",
+                }}
+              >
+                Weekly Progress Trend
+              </h3>
+              <p style={{ fontSize: 12, color: "#94a3b8", margin: "0 0 16px" }}>
+                Task assignment vs completion over 8 weeks
+              </p>
+              <div style={{ height: 250, position: "relative" }}>
+                <canvas ref={lineRef}></canvas>
+              </div>
+            </div>
+
+            {/* Milestones */}
+            <div className="card" style={{ padding: 20 }}>
+              <h3
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  fontFamily: "Outfit,sans-serif",
+                  color: "#1e293b",
+                  margin: "0 0 20px",
+                }}
+              >
+                🏆 Milestone Completion
+              </h3>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 14 }}
+              >
+                {MILESTONES.map((m, i) => (
+                  <div
+                    key={m.id}
+                    style={{ display: "flex", alignItems: "center", gap: 14 }}
+                  >
+                    <div
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: "50%",
+                        background:
+                          m.pct === 100
+                            ? "#10b981"
+                            : m.pct > 0
+                              ? "#005BAC"
+                              : "#f1f5f9",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: m.pct > 0 ? "#fff" : "#94a3b8",
+                        fontWeight: 700,
+                        fontSize: 13,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {m.pct === 100 ? "✓" : i + 1}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          marginBottom: 6,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 13.5,
+                            fontWeight: 600,
+                            color: "#1e293b",
+                          }}
+                        >
+                          {m.title}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 800,
+                            color:
+                              m.pct === 100
+                                ? "#059669"
+                                : m.pct > 0
+                                  ? "#005BAC"
+                                  : "#94a3b8",
+                          }}
+                        >
+                          {m.pct}%
+                        </span>
+                      </div>
+                      <ProgBar
+                        pct={m.pct}
+                        color={m.pct === 100 ? "#10b981" : "#005BAC"}
+                        h={8}
+                      />
+                    </div>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        color: "#94a3b8",
+                        flexShrink: 0,
+                        width: 72,
+                        textAlign: "right",
+                      }}
+                    >
+                      {fmtDate(m.date)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ═══════════════════════════════
+   CALENDAR
+═══════════════════════════════ */
+      function CalendarPage({ tasks }) {
+        const [cur, setCur] = useState(new Date(2025, 1, 1));
+        const yr = cur.getFullYear(),
+          mo = cur.getMonth();
+        const first = new Date(yr, mo, 1).getDay();
+        const days = new Date(yr, mo + 1, 0).getDate();
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        const tasksOnDay = (d) => {
+          const s = `${yr}-${String(mo + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+          return tasks.filter((t) => t.due === s);
+        };
+
+        const upcomingMonth = [...tasks]
+          .filter((t) => {
+            const d = new Date(t.due);
+            return (
+              d.getMonth() === mo &&
+              d.getFullYear() === yr &&
+              t.status !== "done"
+            );
+          })
+          .sort((a, b) => new Date(a.due) - new Date(b.due));
+
+        return (
+          <div
+            className="fade-in"
+            style={{ display: "flex", flexDirection: "column", gap: 20 }}
+          >
+            <div className="card" style={{ overflow: "hidden" }}>
+              {/* Cal Header */}
+              <div
+                style={{
+                  background: "linear-gradient(135deg,#003d78,#005BAC)",
+                  padding: "16px 24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <h3
+                  style={{
+                    color: "#fff",
+                    fontSize: 20,
+                    fontWeight: 800,
+                    fontFamily: "Outfit,sans-serif",
+                    margin: 0,
+                  }}
+                >
+                  {cur.toLocaleString("default", { month: "long" })} {yr}
+                </h3>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {["◀", "▶"].map((ic, i) => (
+                    <button
+                      key={ic}
+                      onClick={() => setCur(new Date(yr, mo + (i ? 1 : -1), 1))}
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 10,
+                        background: "rgba(255,255,255,.15)",
+                        border: "none",
+                        color: "#fff",
+                        cursor: "pointer",
+                        fontSize: 14,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {ic}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Day headers */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(7,1fr)",
+                  borderBottom: "1px solid #edf0f4",
+                }}
+              >
+                {dayNames.map((d) => (
+                  <div
+                    key={d}
+                    style={{
+                      padding: "10px 0",
+                      textAlign: "center",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#94a3b8",
+                      letterSpacing: ".5px",
+                    }}
+                  >
+                    {d}
+                  </div>
+                ))}
+              </div>
+
+              {/* Grid */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(7,1fr)",
+                }}
+              >
+                {Array.from({ length: first }).map((_, i) => (
+                  <div
+                    key={`e${i}`}
+                    className="cal-day"
+                    style={{ background: "#fafbfc" }}
+                  ></div>
+                ))}
+                {Array.from({ length: days }).map((_, i) => {
+                  const d = i + 1;
+                  const dts = tasksOnDay(d);
+                  const today = new Date();
+                  const isT =
+                    today.getDate() === d &&
+                    today.getMonth() === mo &&
+                    today.getFullYear() === yr;
+                  return (
+                    <div key={d} className="cal-day">
+                      <div
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 13,
+                          fontWeight: isT ? 800 : 500,
+                          background: isT ? "#005BAC" : "transparent",
+                          color: isT ? "#fff" : "#475569",
+                          marginBottom: 4,
+                          fontFamily: isT ? "Outfit,sans-serif" : "inherit",
+                        }}
+                      >
+                        {d}
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                        }}
+                      >
+                        {dts.slice(0, 2).map((t) => (
+                          <div
+                            key={t.id}
+                            style={{
+                              fontSize: 10.5,
+                              padding: "2px 6px",
+                              borderRadius: 6,
+                              fontWeight: 600,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              background:
+                                t.priority === "high"
+                                  ? "#fee2e2"
+                                  : t.priority === "medium"
+                                    ? "#fef3c7"
+                                    : "#dbeafe",
+                              color:
+                                t.priority === "high"
+                                  ? "#b91c1c"
+                                  : t.priority === "medium"
+                                    ? "#92400e"
+                                    : "#1e40af",
+                            }}
+                          >
+                            {t.title}
+                          </div>
+                        ))}
+                        {dts.length > 2 && (
+                          <span
+                            style={{
+                              fontSize: 10,
+                              color: "#94a3b8",
+                              paddingLeft: 4,
+                            }}
+                          >
+                            +{dts.length - 2}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Upcoming list */}
+            <div className="card" style={{ padding: 20 }}>
+              <h3
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  fontFamily: "Outfit,sans-serif",
+                  color: "#1e293b",
+                  margin: "0 0 16px",
+                }}
+              >
+                📅 Deadlines This Month
+              </h3>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 10,
+                }}
+              >
+                {upcomingMonth.slice(0, 8).map((t) => {
+                  const d = new Date(t.due);
+                  const over = d < new Date();
+                  return (
+                    <div
+                      key={t.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        padding: "10px 14px",
+                        borderRadius: 12,
+                        border: "1px solid #edf0f4",
+                        background: over ? "#fef2f2" : "#fafbfc",
+                      }}
+                    >
+                      <div
+                        style={{
+                          textAlign: "center",
+                          width: 50,
+                          padding: "6px 0",
+                          borderRadius: 10,
+                          background: over ? "#fee2e2" : "#eff6ff",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontSize: 20,
+                            fontWeight: 800,
+                            fontFamily: "Outfit,sans-serif",
+                            color: over ? "#dc2626" : "#1d4ed8",
+                            margin: 0,
+                            lineHeight: 1,
+                          }}
+                        >
+                          {d.getDate()}
+                        </p>
+                        <p
+                          style={{ fontSize: 10, color: "#94a3b8", margin: 0 }}
+                        >
+                          {d.toLocaleString("default", { month: "short" })}
+                        </p>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 600,
+                            color: "#1e293b",
+                            margin: "0 0 5px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {t.title}
+                        </p>
+                        <div style={{ display: "flex", gap: 5 }}>
+                          <PriBadge p={t.priority} />
+                          <StBadge s={t.status} />
+                        </div>
+                      </div>
+                      {over && (
+                        <span
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 800,
+                            color: "#dc2626",
+                            background: "#fee2e2",
+                            padding: "3px 7px",
+                            borderRadius: 8,
+                            flexShrink: 0,
+                          }}
+                        >
+                          OVERDUE
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+                {upcomingMonth.length === 0 && (
+                  <div
+                    style={{
+                      gridColumn: "span 2",
+                      textAlign: "center",
+                      padding: 32,
+                      color: "#94a3b8",
+                    }}
+                  >
+                    <div style={{ fontSize: 40 }}>🎉</div>
+                    <p>No deadlines this month!</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ═══════════════════════════════
+   SUPERVISOR
+═══════════════════════════════ */
+      function Supervisor({ tasks, users }) {
+        const total = tasks.length;
+        const done = tasks.filter((t) => t.status === "done").length;
+        const overdue = tasks.filter(
+          (t) => t.due && isOverdue(t.due) && t.status !== "done",
+        );
+        const atRisk = tasks.filter(
+          (t) => t.status === "inprogress" && t.progress < 40,
+        );
+        const pct = Math.round((done / total) * 100);
+
+        return (
+          <div
+            className="fade-in"
+            style={{ display: "flex", flexDirection: "column", gap: 24 }}
+          >
+            {/* Hero */}
+            <div
+              style={{
+                background:
+                  "linear-gradient(135deg,#0f172a 0%,#1e3a5f 55%,#1a4a8c 100%)",
+                borderRadius: 20,
+                padding: "28px 32px",
+                color: "#fff",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  marginBottom: 20,
+                }}
+              >
+                <Av user={users[4]} size={54} />
+                <div>
+                  <h2
+                    style={{
+                      fontSize: 22,
+                      fontWeight: 800,
+                      fontFamily: "Outfit,sans-serif",
+                      margin: 0,
+                    }}
+                  >
+                    Supervisor Dashboard
+                  </h2>
+                  <p
+                    style={{
+                      color: "rgba(255,255,255,.6)",
+                      margin: 0,
+                      fontSize: 13,
+                    }}
+                  >
+                    Dr. Tariq Hassan · AI-Powered Recommendation System ·
+                    CIIT-F24-CS-001
+                  </p>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(4,1fr)",
+                  gap: 14,
+                }}
+              >
+                {[
+                  { ic: "📋", v: total, l: "Total Tasks" },
+                  { ic: "✅", v: done, l: "Completed" },
+                  { ic: "🔴", v: overdue.length, l: "Overdue" },
+                  { ic: "📊", v: `${pct}%`, l: "Progress" },
+                ].map((s) => (
+                  <div
+                    key={s.l}
+                    style={{
+                      background: "rgba(255,255,255,.1)",
+                      borderRadius: 14,
+                      padding: "14px 16px",
+                      textAlign: "center",
+                    }}
+                  >
+                    <p style={{ fontSize: 26, margin: "0 0 4px" }}>{s.ic}</p>
+                    <p
+                      style={{
+                        fontSize: 26,
+                        fontWeight: 800,
+                        fontFamily: "Outfit,sans-serif",
+                        margin: 0,
+                        lineHeight: 1,
+                      }}
+                    >
+                      {s.v}
+                    </p>
+                    <p
+                      style={{
+                        color: "rgba(255,255,255,.5)",
+                        fontSize: 12,
+                        margin: "4px 0 0",
+                      }}
+                    >
+                      {s.l}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 20,
+              }}
+            >
+              {/* Team Progress */}
+              <div className="card" style={{ padding: 20 }}>
+                <h3
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 700,
+                    fontFamily: "Outfit,sans-serif",
+                    color: "#1e293b",
+                    margin: "0 0 18px",
+                  }}
+                >
+                  👥 Team Progress
+                </h3>
+                {users
+                  .filter((u) => u.id !== 5)
+                  .map((u) => {
+                    const asgd = tasks.filter((t) => t.assignee === u.id);
+                    const dn = asgd.filter((t) => t.status === "done").length;
+                    const p = asgd.length
+                      ? Math.round((dn / asgd.length) * 100)
+                      : 0;
+                    return (
+                      <div
+                        key={u.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                          marginBottom: 16,
+                        }}
+                      >
+                        <Av user={u} size={36} />
+                        <div style={{ flex: 1 }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginBottom: 5,
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: 13.5,
+                                fontWeight: 600,
+                                color: "#1e293b",
+                              }}
+                            >
+                              {u.name}
+                            </span>
+                            <span
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 800,
+                                color: u.color,
+                              }}
+                            >
+                              {p}%
+                            </span>
+                          </div>
+                          <ProgBar pct={p} color={u.color} h={7} />
+                          <p
+                            style={{
+                              fontSize: 11,
+                              color: "#94a3b8",
+                              margin: "3px 0 0",
+                            }}
+                          >
+                            {dn}/{asgd.length} tasks done · {u.role}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+
+              {/* At-Risk Tasks */}
+              <div className="card" style={{ padding: 20 }}>
+                <h3
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 700,
+                    fontFamily: "Outfit,sans-serif",
+                    color: "#1e293b",
+                    margin: "0 0 16px",
+                  }}
+                >
+                  ⚠️ At-Risk Tasks
+                </h3>
+                {[...overdue, ...atRisk].length === 0 && (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: 32,
+                      color: "#94a3b8",
+                    }}
+                  >
+                    <div style={{ fontSize: 40 }}>🎉</div>
+                    <p style={{ fontSize: 14 }}>No at-risk tasks!</p>
+                  </div>
+                )}
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 10 }}
+                >
+                  {[...overdue, ...atRisk].slice(0, 7).map((t) => {
+                    const u = userById(t.assignee, users);
+                    const over = isOverdue(t.due) && t.status !== "done";
+                    return (
+                      <div
+                        key={t.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: 10,
+                          padding: "10px 12px",
+                          borderRadius: 12,
+                          background: "#fef2f2",
+                          border: "1px solid #fecaca",
+                        }}
+                      >
+                        <span style={{ fontSize: 18, flexShrink: 0 }}>
+                          {over ? "🔴" : "⚡"}
+                        </span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 600,
+                              color: "#1e293b",
+                              margin: 0,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {t.title}
+                          </p>
+                          <p
+                            style={{
+                              fontSize: 11,
+                              color: "#94a3b8",
+                              margin: "3px 0 0",
+                            }}
+                          >
+                            {u?.name} ·{" "}
+                            {over
+                              ? "Overdue"
+                              : "Low progress (" + t.progress + "%)"}
+                          </p>
+                        </div>
+                        <PriBadge p={t.priority} />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Feedback */}
+            <div className="card" style={{ padding: 20 }}>
+              <h3
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  fontFamily: "Outfit,sans-serif",
+                  color: "#1e293b",
+                  margin: "0 0 18px",
+                }}
+              >
+                💬 Supervisor Feedback Log
+              </h3>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 14,
+                }}
+              >
+                {FEEDBACKS.map((fb) => {
+                  const borderClr =
+                    fb.type === "positive"
+                      ? "#10b981"
+                      : fb.type === "revision"
+                        ? "#f59e0b"
+                        : "#3b82f6";
+                  const bgClr =
+                    fb.type === "positive"
+                      ? "#f0fdf4"
+                      : fb.type === "revision"
+                        ? "#fffbeb"
+                        : "#eff6ff";
+                  return (
+                    <div
+                      key={fb.id}
+                      style={{
+                        padding: "14px 16px",
+                        borderRadius: 14,
+                        borderLeft: `4px solid ${borderClr}`,
+                        background: bgClr,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: 8,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            color: "#64748b",
+                            letterSpacing: ".3px",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {fb.task}
+                        </span>
+                        <div style={{ display: "flex", gap: 2 }}>
+                          {[1, 2, 3, 4, 5].map((n) => (
+                            <span
+                              key={n}
+                              style={{
+                                fontSize: 13,
+                                color: n <= fb.rating ? "#f59e0b" : "#d1d5db",
+                              }}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <p
+                        style={{
+                          fontSize: 13,
+                          color: "#334155",
+                          lineHeight: 1.55,
+                          margin: "0 0 10px",
+                        }}
+                      >
+                        {fb.comment}
+                      </p>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: "#64748b",
+                          }}
+                        >
+                          Dr. Tariq Hassan
+                        </span>
+                        <span style={{ fontSize: 11, color: "#94a3b8" }}>
+                          {fb.date}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Milestone Status */}
+            <div className="card" style={{ padding: 20 }}>
+              <h3
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  fontFamily: "Outfit,sans-serif",
+                  color: "#1e293b",
+                  margin: "0 0 16px",
+                }}
+              >
+                🏆 Milestone Status
+              </h3>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 10,
+                }}
+              >
+                {MILESTONES.map((m) => (
+                  <div
+                    key={m.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: "12px 14px",
+                      borderRadius: 12,
+                      border: "1px solid #edf0f4",
+                      background:
+                        m.pct === 100
+                          ? "#f0fdf4"
+                          : m.pct > 0
+                            ? "#eff6ff"
+                            : "#fafbfc",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: "50%",
+                        background:
+                          m.pct === 100
+                            ? "#10b981"
+                            : m.pct > 0
+                              ? "#005BAC"
+                              : "#f1f5f9",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: m.pct > 0 ? "#fff" : "#94a3b8",
+                        fontWeight: 700,
+                        fontSize: 14,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {m.pct === 100 ? "✓" : m.pct > 0 ? "⟳" : "○"}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: "#1e293b",
+                          margin: "0 0 3px",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {m.title}
+                      </p>
+                      <p style={{ fontSize: 11, color: "#94a3b8", margin: 0 }}>
+                        {fmtDate(m.date)}
+                      </p>
+                    </div>
+                    <span
+                      style={{
+                        padding: "4px 10px",
+                        borderRadius: 20,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        background:
+                          m.pct === 100
+                            ? "#d1fae5"
+                            : m.pct > 0
+                              ? "#dbeafe"
+                              : "#f1f5f9",
+                        color:
+                          m.pct === 100
+                            ? "#065f46"
+                            : m.pct > 0
+                              ? "#1d4ed8"
+                              : "#94a3b8",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {m.pct === 100
+                        ? "Done"
+                        : m.pct > 0
+                          ? `${m.pct}%`
+                          : "Pending"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ═══════════════════════════════
+   ROOT APP
+═══════════════════════════════ */
+      function App() {
+        const [page, setPage] = useState("dashboard");
+        const [scollapsed, setSCollapsed] = useState(false);
+        const [tasks, setTasks] = useState(INIT_TASKS);
+        const [notifs, setNotifs] = useState(INIT_NOTIFS);
+        const [modal, setModal] = useState(false);
+        const [editing, setEditing] = useState(null);
+
+        const openAdd = () => {
+          setEditing(null);
+          setModal(true);
+        };
+        const openEdit = (t) => {
+          setEditing(t);
+          setModal(true);
+        };
+        const onSave = (d) => {
+          if (editing)
+            setTasks((p) =>
+              p.map((t) => (t.id === editing.id ? { ...editing, ...d } : t)),
+            );
+          else
+            setTasks((p) => [
+              ...p,
+              { ...d, id: Date.now(), tags: d.tags || [] },
+            ]);
+          setModal(false);
+          setEditing(null);
+        };
+        const onDelete = (id) => {
+          if (window.confirm("Delete this task?"))
+            setTasks((p) => p.filter((t) => t.id !== id));
+        };
+
+        const sw = scollapsed ? 68 : 264;
+
+        const pg = () => {
+          switch (page) {
+            case "dashboard":
+              return <Dashboard tasks={tasks} users={USERS} />;
+            case "kanban":
+              return (
+                <Kanban
+                  tasks={tasks}
+                  setTasks={setTasks}
+                  users={USERS}
+                  onEdit={openEdit}
+                  onDelete={onDelete}
+                />
+              );
+            case "team":
+              return <Team users={USERS} tasks={tasks} />;
+            case "analytics":
+              return <Analytics tasks={tasks} users={USERS} />;
+            case "calendar":
+              return <CalendarPage tasks={tasks} />;
+            case "supervisor":
+              return <Supervisor tasks={tasks} users={USERS} />;
+            default:
+              return <Dashboard tasks={tasks} users={USERS} />;
+          }
+        };
+
+        return (
+          <div style={{ display: "flex", fontFamily: "DM Sans,sans-serif" }}>
+            <Sidebar
+              page={page}
+              setPage={setPage}
+              collapsed={scollapsed}
+              setCollapsed={setSCollapsed}
+              tasks={tasks}
+            />
+            <div
+              style={{
+                marginLeft: sw,
+                flex: 1,
+                minHeight: "100vh",
+                transition: "margin-left .28s cubic-bezier(.4,0,.2,1)",
+                background: "#EEF2F7",
+              }}
+            >
+              <Navbar
+                page={page}
+                notifs={notifs}
+                setNotifs={setNotifs}
+                onAdd={openAdd}
+              />
+              <div style={{ padding: 24, maxWidth: 1400, margin: "0 auto" }}>
+                {pg()}
+              </div>
+            </div>
+            {modal && (
+              <TaskModal
+                task={editing}
+                users={USERS}
+                onSave={onSave}
+                onClose={() => {
+                  setModal(false);
+                  setEditing(null);
+                }}
+              />
+            )}
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
 </html>
