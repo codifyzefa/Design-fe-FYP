@@ -1,195 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Supervisor Dashboard — FYP Portal</title>
+  
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="../styles/tokens.css"/>
-  <link rel="stylesheet" href="../styles/dashboard.css"/>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+          colors: {
+            primary: '#1E3A8A',
+            secondary: '#2563EB',
+            lightbg: '#EFF6FF',
+            success: '#059669',
+            warning: '#D97706',
+            danger: '#DC2626',
+            pending: '#B45309'
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    :root{--color-portal:#5b21b6;--color-portal-light:#7c3aed;}
-    .sidebar{background:var(--color-portal);}
-    .sidebar .nav-item.active{background:var(--color-portal-light);box-shadow:0 4px 16px rgba(124,58,237,.4);}
-    .sidebar .sidebar-logo-icon{background:rgba(255,255,255,.14);}
-    .sidebar-role{color:rgba(255,255,255,.55)!important;}
-    .portal-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .6rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);border-radius:var(--radius-full);font-size:.6rem;font-weight:800;color:var(--color-portal);text-transform:uppercase;letter-spacing:.1em;}
-    .project-row{display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--color-border-light);transition:background var(--transition-fast);cursor:pointer;}
-    .project-row:last-child{border-bottom:none;}
-    .project-row:hover{background:var(--color-lightbg);}
-    .pr-avatar{width:44px;height:44px;background:rgba(91,33,182,.1);border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:var(--color-portal);flex-shrink:0;}
-    .pr-title{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);}
-    .pr-meta{font-size:.7rem;color:var(--color-text-faint);font-weight:600;margin-top:2px;}
-    .pr-progress{flex:1;max-width:120px;}
-    .pr-bar{height:5px;background:var(--color-border-light);border-radius:var(--radius-full);overflow:hidden;margin-bottom:2px;}
-    .pr-bar-fill{height:100%;background:linear-gradient(90deg,var(--color-portal),var(--color-portal-light));border-radius:var(--radius-full);}
-    .pr-pct{font-size:.6rem;font-weight:700;color:var(--color-portal);}
-    .pending-item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--color-border-light);transition:background var(--transition-fast);}
-    .pending-item:last-child{border-bottom:none;}
-    .pending-item:hover{background:var(--color-lightbg);}
-    .pi-icon{width:36px;height:36px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;}
-    .pi-title{font-size:var(--font-size-sm);font-weight:700;color:var(--color-text);}
-    .pi-meta{font-size:.65rem;color:var(--color-text-faint);font-weight:600;}
+    body { font-family: 'Poppins', sans-serif; }
+    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    .animate-fade-in-delay-1 { animation: fadeIn 0.4s ease-out 0.1s forwards; opacity: 0; }
+    .animate-fade-in-delay-2 { animation: fadeIn 0.4s ease-out 0.2s forwards; opacity: 0; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   </style>
 </head>
-<body class="dashboard-body">
-<script src="../scripts/auth.js"></script>
-<script>const user = AUTH.requireRole('supervisor'); if(user) initTopbar(user);</script>
+<body class="bg-lightbg text-slate-700 min-h-screen selection:bg-primary selection:text-white">
 
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-header"><div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="sidebar-logo-text" id="sidebarLogoText"><div class="sidebar-title">CUI DFYP</div><div class="sidebar-role">Supervisor Portal</div></div></div><button class="sidebar-collapse-btn" id="collapseBtn" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="collapseIcon"></i></button></div>
-  <nav class="sidebar-nav">
-    <div class="nav-group"><div class="nav-group-label">Overview</div>
-      <a href="dashboard.html" class="nav-item active" data-label="Dashboard"><i class="fas fa-home nav-item-icon"></i><span class="nav-item-label">Dashboard</span></a>
-    </div>
-    <div class="nav-group"><div class="nav-group-label">My Projects</div>
-      <a href="projects.html" class="nav-item" data-label="Assigned Projects"><i class="fas fa-project-diagram nav-item-icon"></i><span class="nav-item-label">Assigned Projects</span><span class="nav-badge nav-badge-warning">4</span></a>
-      <a href="logs.html" class="nav-item" data-label="Progress Logs"><i class="fas fa-list-check nav-item-icon"></i><span class="nav-item-label">Review Logs</span><span class="nav-badge nav-badge-danger">3</span></a>
-      <a href="feedback.html" class="nav-item" data-label="Feedback"><i class="fas fa-comment-alt nav-item-icon"></i><span class="nav-item-label">Give Feedback</span></a>
-    </div>
-    <div class="nav-group"><div class="nav-group-label">Evaluation</div>
-      <a href="evaluate.html" class="nav-item" data-label="Evaluate"><i class="fas fa-star nav-item-icon"></i><span class="nav-item-label">Evaluate Groups</span></a>
-      <a href="meetings.html" class="nav-item" data-label="Meetings"><i class="fas fa-calendar-alt nav-item-icon"></i><span class="nav-item-label">Meeting Requests</span><span class="nav-badge nav-badge-warning">2</span></a>
-    </div>
-  </nav>
-  <div class="sidebar-footer"><a href="#" class="nav-item nav-item-logout" onclick="doLogout(event)"><i class="fas fa-right-from-bracket nav-item-icon"></i><span class="nav-item-label">Logout</span></a></div>
-</aside>
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
-
-<div class="main-wrap" id="mainWrap">
-  <header class="topbar">
-    <div class="topbar-left"><button class="topbar-menu-btn" onclick="openMobileSidebar()"><i class="fas fa-bars"></i></button><div><div class="topbar-page-title">Supervisor Dashboard</div><div class="topbar-subtitle">CUI Abbottabad · <span id="currentDate"></span></div></div></div>
-    <div class="topbar-right">
-      <div class="portal-badge"><i class="fas fa-chalkboard-teacher"></i> Supervisor Portal</div>
-      <div class="topbar-icon-btn-wrap" id="notifWrap"><button class="topbar-icon-btn" onclick="toggleNotifications()"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
-        <div class="notifications-dropdown" id="notifDropdown">
-          <div class="dropdown-header"><span class="dropdown-header-title">Notifications</span><button class="dropdown-action-btn">Mark all read</button></div>
-          <div class="notif-list">
-            <div class="notif-item notif-unread"><div class="notif-icon notif-icon-warning"><i class="fas fa-file-alt"></i></div><div class="notif-body"><div class="notif-title">Progress Log Pending Review</div><div class="notif-msg">Group G-042 submitted Week 13 log — awaiting your review.</div><div class="notif-time">Today · 09:15 AM</div></div></div>
-            <div class="notif-item notif-unread"><div class="notif-icon notif-icon-info"><i class="fas fa-calendar"></i></div><div class="notif-body"><div class="notif-title">Meeting Request</div><div class="notif-msg">Ahmed Farooq (G-042) requests a meeting for May 6, 2026.</div><div class="notif-time">Yesterday</div></div></div>
-          </div>
-        </div>
+<div class="flex h-screen overflow-hidden relative bg-lightbg selection:bg-secondary/20">
+  
+  <!-- ================= SIDEBAR ================= -->
+  <div id="sidebar" class="bg-primary flex flex-col flex-shrink-0 transition-all duration-300 overflow-hidden fixed lg:relative z-[50] h-full -translate-x-full lg:translate-x-0 w-64">
+    <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10">
+      <div class="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0">
+        <i class="fas fa-chalkboard-teacher text-white text-sm"></i>
       </div>
-      <div class="topbar-icon-btn-wrap" id="userWrap"><button class="user-btn" onclick="toggleUserMenu()"><div class="user-avatar">--</div><div class="user-info hidden-sm"><div class="user-name">Loading…</div><div class="user-role">Supervisor</div></div><i class="fas fa-chevron-down user-chevron hidden-sm"></i></button>
-        <div class="user-dropdown" id="userDropdown"><hr class="dropdown-divider"/><a href="#" class="user-dropdown-item user-dropdown-item-danger" onclick="doLogout(event)"><i class="fas fa-power-off"></i> Sign Out</a></div>
+      <div class="overflow-hidden">
+        <div class="text-white text-sm font-bold whitespace-nowrap">CUI DFYP</div>
+        <div class="text-white/60 text-xs whitespace-nowrap leading-tight">Supervisor Portal</div>
+      </div>
+      <button onclick="toggleMobileSidebar()" class="ml-auto lg:hidden bg-transparent border-0 text-white cursor-pointer p-1 rounded-lg hover:bg-white/15 transition-colors">
+        <i class="fas fa-times text-lg"></i>
+      </button>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto p-2 mt-2" style="scrollbar-width: none;">
+      <!-- Overview -->
+      <div class="mb-1">
+        <div class="text-[0.6rem] font-bold uppercase tracking-widest text-white/30 px-3 mb-1">Overview</div>
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold">
+          <i class="fas fa-home text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="text-sm font-medium whitespace-nowrap flex-1">Dashboard</span>
+        </a>
+      </div>
+
+      <!-- My Projects -->
+      <div class="mb-1 mt-4">
+        <div class="text-[0.6rem] font-bold uppercase tracking-widest text-white/30 px-3 mb-1">My Projects</div>
+        <a href="projects.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/90 hover:bg-white/15 hover:text-white">
+          <i class="fas fa-project-diagram text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="text-sm font-medium flex-1">Assigned Projects</span>
+          <span class="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">4</span>
+        </a>
+        <a href="logs.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/90 hover:bg-white/15 hover:text-white">
+          <i class="fas fa-list-check text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="text-sm font-medium flex-1">Review Logs</span>
+          <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">3</span>
+        </a>
+        <a href="feedback.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/90 hover:bg-white/15 hover:text-white">
+          <i class="fas fa-comment-alt text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="text-sm font-medium flex-1">Give Feedback</span>
+        </a>
+      </div>
+
+      <!-- Evaluation -->
+      <div class="mb-1 mt-4">
+        <div class="text-[0.6rem] font-bold uppercase tracking-widest text-white/30 px-3 mb-1">Evaluation</div>
+        <a href="evaluate.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/90 hover:bg-white/15 hover:text-white">
+          <i class="fas fa-star text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="text-sm font-medium flex-1">Evaluate Groups</span>
+        </a>
+        <a href="meetings.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/90 hover:bg-white/15 hover:text-white">
+          <i class="fas fa-calendar-alt text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="text-sm font-medium flex-1">Meeting Requests</span>
+          <span class="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">2</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="p-2 border-t border-white/10">
+      <div onclick="doLogout(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-white/90 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200">
+        <i class="fas fa-right-from-bracket text-sm w-5 text-center flex-shrink-0"></i>
+        <span class="text-sm font-medium">Logout</span>
       </div>
     </div>
-  </header>
+  </div>
 
-  <main class="content-area">
-    <!-- Welcome -->
-    <div class="welcome-banner animate-fade-in" style="background:linear-gradient(135deg,#5b21b6,#7c3aed)">
-      <div class="welcome-banner-info">
-        <div class="welcome-banner-title">Welcome, Dr. Hassan! 👋</div>
-        <div class="welcome-banner-subtitle">You have 3 progress logs pending review and 2 meeting requests.</div>
-      </div>
-      <a href="logs.html" class="btn welcome-banner-cta" style="background:white;color:#5b21b6">Review Logs <i class="fas fa-arrow-right"></i></a>
-    </div>
+  <div id="mobileOverlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-[40] lg:hidden backdrop-blur-sm hidden"></div>
 
-    <!-- Stats -->
-    <div class="stats-row animate-fade-in-delay-1">
-      <div class="stat-card"><div class="stat-card-icon" style="background:#f5f3ff;color:#7c3aed"><i class="fas fa-layer-group"></i></div><div class="stat-card-body"><div class="stat-card-label">Assigned Groups</div><div class="stat-card-value">4</div><div class="stat-card-sub"><span class="chip chip-info"><span class="chip-dot"></span>Active</span></div></div></div>
-      <div class="stat-card"><div class="stat-card-icon" style="background:#fef2f2;color:var(--color-danger)"><i class="fas fa-hourglass-half"></i></div><div class="stat-card-body"><div class="stat-card-label">Logs Pending</div><div class="stat-card-value">3</div><div class="stat-card-sub"><span class="chip chip-danger"><span class="chip-dot"></span>Needs Review</span></div></div></div>
-      <div class="stat-card"><div class="stat-card-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-star"></i></div><div class="stat-card-body"><div class="stat-card-label">Evaluations Done</div><div class="stat-card-value">2 / 4</div><div class="stat-card-sub"><span class="chip chip-success"><span class="chip-dot"></span>50%</span></div></div></div>
-      <div class="stat-card"><div class="stat-card-icon" style="background:#fffbeb;color:#d97706"><i class="fas fa-calendar-check"></i></div><div class="stat-card-body"><div class="stat-card-label">Meetings Pending</div><div class="stat-card-value">2</div><div class="stat-card-sub"><span class="chip chip-warning"><span class="chip-dot"></span>Requests</span></div></div></div>
-    </div>
-
-    <!-- Main Grid -->
-    <div class="dashboard-grid animate-fade-in-delay-2">
-
-      <!-- Assigned Projects -->
-      <div class="card">
-        <div class="card-header"><div><div class="card-title">Assigned FYP Groups</div><div class="card-subtitle">Spring 2026</div></div><a href="projects.html" class="btn btn-outline btn-sm">View All</a></div>
-        <div>
-          <div class="project-row">
-            <div class="pr-avatar">AF</div>
-            <div style="flex:1;min-width:0"><div class="pr-title">AI-Powered Traffic Management System</div><div class="pr-meta">G-042 · Ahmed Farooq + 2 · 3 members</div></div>
-            <div class="pr-progress"><div class="pr-bar"><div class="pr-bar-fill" style="width:25%"></div></div><div class="pr-pct">25% Complete</div></div>
-            <span class="chip chip-warning"><span class="chip-dot"></span>Proposal</span>
-          </div>
-          <div class="project-row">
-            <div class="pr-avatar">ZA</div>
-            <div style="flex:1;min-width:0"><div class="pr-title">Smart Healthcare Monitoring System Using IoT</div><div class="pr-meta">G-038 · Zara Ahmad + 3 · 4 members</div></div>
-            <div class="pr-progress"><div class="pr-bar"><div class="pr-bar-fill" style="width:60%"></div></div><div class="pr-pct">60% Complete</div></div>
-            <span class="chip chip-info"><span class="chip-dot"></span>Mid-Term</span>
-          </div>
-          <div class="project-row">
-            <div class="pr-avatar">HK</div>
-            <div style="flex:1;min-width:0"><div class="pr-title">E-Learning Platform with Adaptive Content</div><div class="pr-meta">G-055 · Hassan Khan + 1 · 2 members</div></div>
-            <div class="pr-progress"><div class="pr-bar"><div class="pr-bar-fill" style="width:45%"></div></div><div class="pr-pct">45% Complete</div></div>
-            <span class="chip chip-info"><span class="chip-dot"></span>Mid-Term</span>
-          </div>
-          <div class="project-row">
-            <div class="pr-avatar">MR</div>
-            <div style="flex:1;min-width:0"><div class="pr-title">Blockchain-Based Student Credential System</div><div class="pr-meta">G-061 · Maria Rashid + 2 · 3 members</div></div>
-            <div class="pr-progress"><div class="pr-bar"><div class="pr-bar-fill" style="width:80%"></div></div><div class="pr-pct">80% Complete</div></div>
-            <span class="chip chip-success"><span class="chip-dot"></span>Final Phase</span>
-          </div>
+  <!-- ================= MAIN CONTENT WRAPPER ================= -->
+  <div class="flex-1 flex flex-col overflow-hidden w-full transition-all duration-300 ease-in-out">
+    
+    <div class="bg-white border-b border-gray-100 px-3 md:px-6 h-14 md:h-16 flex items-center justify-between shadow-sm flex-shrink-0 z-[30] gap-3">
+      <div class="flex items-center gap-2 md:gap-3 min-w-0">
+        <button onclick="toggleMobileSidebar()" class="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 lg:hidden flex-shrink-0">
+          <i class="fas fa-bars text-sm"></i>
+        </button>
+        <div class="min-w-0">
+          <h2 class="text-sm md:text-base font-bold text-primary leading-tight truncate">Supervisor Dashboard</h2>
+          <p class="text-[10px] text-gray-400 leading-tight hidden sm:block">CUI Abbottabad · <span id="currentDate"></span></p>
         </div>
       </div>
 
-      <!-- Right Panel -->
-      <div style="display:flex;flex-direction:column;gap:var(--space-5);">
+      <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+        
+        <div class="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-xl text-xs font-bold text-purple-700 whitespace-nowrap uppercase tracking-wider">
+          <i class="fas fa-chalkboard-teacher"></i> Supervisor Portal
+        </div>
 
-        <!-- Pending Actions -->
-        <div class="card">
-          <div class="card-header"><div class="card-title">Pending Actions</div></div>
+        <div class="relative">
+          <button class="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-blue-50 hover:text-secondary transition-all">
+            <i class="fas fa-bell text-sm"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+          </button>
+        </div>
+
+        <div class="relative">
+          <button class="flex items-center gap-2 p-1 md:px-2.5 md:py-1.5 bg-gray-50 rounded-xl cursor-pointer border border-gray-100 hover:bg-blue-50 hover:border-blue-100 transition-all">
+            <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-xs font-bold shadow-sm flex-shrink-0">
+              <span id="navAvatar">--</span>
+            </div>
+            <div class="text-left hidden sm:block">
+              <div id="navName" class="text-xs font-bold text-gray-800 leading-tight truncate max-w-28">Loading...</div>
+              <div class="text-[10px] text-gray-400 leading-tight font-bold">Supervisor</div>
+            </div>
+            <i class="fas fa-chevron-down text-gray-400 ml-0.5 hidden sm:block text-[9px]"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MAIN CONTENT AREA ================= -->
+    <main class="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 lg:p-6 bg-lightbg scroll-smooth">
+      <div class="max-w-[1600px] mx-auto w-full">
+        
+        <!-- Welcome Banner -->
+        <div class="rounded-2xl shadow-sm p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center animate-fade-in gap-4" style="background:linear-gradient(135deg,#5b21b6,#7c3aed)">
           <div>
-            <div class="pending-item">
-              <div class="pi-icon" style="background:#fef2f2;color:var(--color-danger)"><i class="fas fa-file-alt"></i></div>
-              <div style="flex:1"><div class="pi-title">Review Week 13 Log — G-042</div><div class="pi-meta">Ahmed Farooq · Submitted May 3</div></div>
-              <button class="btn btn-primary btn-sm" onclick="window.location.href='logs.html'">Review</button>
+            <h1 class="text-2xl font-black text-white mb-1">Welcome, Dr. Hassan! 👋</h1>
+            <p class="text-sm text-white/80 font-medium">You have 3 progress logs pending review and 2 meeting requests.</p>
+          </div>
+          <a href="logs.html" class="bg-white text-[#5b21b6] hover:bg-gray-50 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center whitespace-nowrap">
+            Review Logs <i class="fas fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 animate-fade-in-delay-1">
+          <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0 bg-purple-50 text-purple-600"><i class="fas fa-layer-group"></i></div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 truncate">Assigned Groups</div>
+              <div class="flex items-end gap-2">
+                <span class="text-2xl font-black text-gray-800 leading-none">4</span>
+                <span class="bg-blue-50 text-secondary text-[10px] font-bold px-1.5 py-0.5 rounded-md mb-0.5 flex items-center gap-1"><span class="w-1 h-1 bg-secondary rounded-full"></span>Active</span>
+              </div>
             </div>
-            <div class="pending-item">
-              <div class="pi-icon" style="background:#fffbeb;color:#d97706"><i class="fas fa-file-alt"></i></div>
-              <div style="flex:1"><div class="pi-title">Review Week 12 Log — G-038</div><div class="pi-meta">Zara Ahmad · Submitted May 2</div></div>
-              <button class="btn btn-primary btn-sm">Review</button>
+          </div>
+          <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0 bg-red-50 text-red-600"><i class="fas fa-hourglass-half"></i></div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 truncate">Logs Pending</div>
+              <div class="flex items-end gap-2">
+                <span class="text-2xl font-black text-gray-800 leading-none">3</span>
+                <span class="bg-red-50 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md mb-0.5 flex items-center gap-1"><span class="w-1 h-1 bg-red-600 rounded-full"></span>Needs Review</span>
+              </div>
             </div>
-            <div class="pending-item">
-              <div class="pi-icon" style="background:#eff6ff;color:var(--color-secondary)"><i class="fas fa-calendar"></i></div>
-              <div style="flex:1"><div class="pi-title">Meeting Request — G-042</div><div class="pi-meta">May 6, 2026 · 10:00 AM</div></div>
-              <div style="display:flex;gap:.4rem"><button class="btn btn-outline btn-sm">Decline</button><button class="btn btn-primary btn-sm" onclick="alert('Meeting confirmed for May 6!')">Confirm</button></div>
+          </div>
+          <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0 bg-emerald-50 text-emerald-600"><i class="fas fa-star"></i></div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 truncate">Evaluations Done</div>
+              <div class="flex items-end gap-2">
+                <span class="text-2xl font-black text-gray-800 leading-none">2 / 4</span>
+                <span class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md mb-0.5 flex items-center gap-1"><span class="w-1 h-1 bg-emerald-600 rounded-full"></span>50%</span>
+              </div>
             </div>
-            <div class="pending-item">
-              <div class="pi-icon" style="background:#ecfdf5;color:#059669"><i class="fas fa-star"></i></div>
-              <div style="flex:1"><div class="pi-title">Submit Mid-Term Score — G-055</div><div class="pi-meta">Deadline: Jul 20, 2026</div></div>
-              <button class="btn btn-outline btn-sm" onclick="window.location.href='evaluate.html'">Evaluate</button>
+          </div>
+          <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0 bg-amber-50 text-amber-600"><i class="fas fa-calendar-check"></i></div>
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5 truncate">Meetings Pending</div>
+              <div class="flex items-end gap-2">
+                <span class="text-2xl font-black text-gray-800 leading-none">2</span>
+                <span class="bg-amber-50 text-amber-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md mb-0.5 flex items-center gap-1"><span class="w-1 h-1 bg-amber-600 rounded-full"></span>Requests</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Recent Activity -->
-        <div class="card">
-          <div class="card-header"><div class="card-title">Recent Activity</div></div>
-          <div style="display:flex;flex-direction:column;gap:var(--space-2);">
-            <div style="display:flex;gap:.75rem;align-items:flex-start;padding:.5rem 0;border-bottom:1px solid var(--color-border-light);">
-              <div style="width:28px;height:28px;background:#ecfdf5;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:#059669;font-size:.7rem;flex-shrink:0"><i class="fas fa-check"></i></div>
-              <div><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Approved Week 12 Log — G-042</div><div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600">Apr 28 · 11:30 AM</div></div>
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-5 animate-fade-in-delay-2 items-start">
+          
+          <!-- Assigned Projects -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <div>
+                <h3 class="text-base font-bold text-gray-800 leading-tight">Assigned FYP Groups</h3>
+                <p class="text-xs text-gray-500 font-medium mt-0.5">Spring 2026</p>
+              </div>
+              <a href="projects.html" class="border border-gray-200 text-gray-600 hover:border-secondary hover:text-secondary px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white">View All</a>
             </div>
-            <div style="display:flex;gap:.75rem;align-items:flex-start;padding:.5rem 0;border-bottom:1px solid var(--color-border-light);">
-              <div style="width:28px;height:28px;background:#f5f3ff;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:#7c3aed;font-size:.7rem;flex-shrink:0"><i class="fas fa-comment-alt"></i></div>
-              <div><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Added feedback — G-042</div><div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600">Apr 22 · 02:00 PM</div></div>
-            </div>
-            <div style="display:flex;gap:.75rem;align-items:flex-start;padding:.5rem 0;">
-              <div style="width:28px;height:28px;background:#fffbeb;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:#d97706;font-size:.7rem;flex-shrink:0"><i class="fas fa-star"></i></div>
-              <div><div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-text)">Submitted evaluation — G-038</div><div style="font-size:.65rem;color:var(--color-text-faint);font-weight:600">Jul 16 · 10:00 AM</div></div>
+            <div class="divide-y divide-gray-100">
+              
+              <!-- Project Row -->
+              <div class="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4 cursor-pointer">
+                <div class="w-11 h-11 bg-purple-50 text-purple-700 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0">AF</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-bold text-gray-800 truncate">AI-Powered Traffic Management System</div>
+                  <div class="text-xs text-gray-500 font-medium mt-0.5 truncate">G-042 · Ahmed Farooq + 2 · 3 members</div>
+                </div>
+                <div class="hidden sm:block w-32">
+                  <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-1"><div class="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full" style="width:25%"></div></div>
+                  <div class="text-[10px] font-bold text-purple-700 text-right">25% Complete</div>
+                </div>
+                <span class="bg-amber-50 border border-amber-200 text-amber-600 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>Proposal</span>
+              </div>
+
+              <!-- Project Row -->
+              <div class="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4 cursor-pointer">
+                <div class="w-11 h-11 bg-purple-50 text-purple-700 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0">ZA</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-bold text-gray-800 truncate">Smart Healthcare Monitoring System Using IoT</div>
+                  <div class="text-xs text-gray-500 font-medium mt-0.5 truncate">G-038 · Zara Ahmad + 3 · 4 members</div>
+                </div>
+                <div class="hidden sm:block w-32">
+                  <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-1"><div class="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full" style="width:60%"></div></div>
+                  <div class="text-[10px] font-bold text-purple-700 text-right">60% Complete</div>
+                </div>
+                <span class="bg-blue-50 border border-blue-200 text-secondary text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>Mid-Term</span>
+              </div>
+
+              <!-- Project Row -->
+              <div class="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4 cursor-pointer">
+                <div class="w-11 h-11 bg-purple-50 text-purple-700 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0">HK</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-bold text-gray-800 truncate">E-Learning Platform with Adaptive Content</div>
+                  <div class="text-xs text-gray-500 font-medium mt-0.5 truncate">G-055 · Hassan Khan + 1 · 2 members</div>
+                </div>
+                <div class="hidden sm:block w-32">
+                  <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-1"><div class="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full" style="width:45%"></div></div>
+                  <div class="text-[10px] font-bold text-purple-700 text-right">45% Complete</div>
+                </div>
+                <span class="bg-blue-50 border border-blue-200 text-secondary text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>Mid-Term</span>
+              </div>
+
+              <!-- Project Row -->
+              <div class="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4 cursor-pointer">
+                <div class="w-11 h-11 bg-purple-50 text-purple-700 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0">MR</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-bold text-gray-800 truncate">Blockchain-Based Student Credential System</div>
+                  <div class="text-xs text-gray-500 font-medium mt-0.5 truncate">G-061 · Maria Rashid + 2 · 3 members</div>
+                </div>
+                <div class="hidden sm:block w-32">
+                  <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-1"><div class="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full" style="width:80%"></div></div>
+                  <div class="text-[10px] font-bold text-purple-700 text-right">80% Complete</div>
+                </div>
+                <span class="bg-emerald-50 border border-emerald-200 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>Final Phase</span>
+              </div>
+
             </div>
           </div>
+
+          <!-- Right Column -->
+          <div class="flex flex-col gap-5">
+            
+            <!-- Pending Actions -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div class="p-4 border-b border-gray-100 bg-gray-50/50">
+                <h3 class="text-sm font-bold text-gray-800">Pending Actions</h3>
+              </div>
+              <div class="divide-y divide-gray-100">
+                
+                <div class="p-3.5 hover:bg-gray-50 transition-colors flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-sm flex-shrink-0"><i class="fas fa-file-alt"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-gray-800 truncate">Review Week 13 Log — G-042</div>
+                    <div class="text-[10px] text-gray-500 font-medium mt-0.5 truncate">Ahmed Farooq · Submitted May 3</div>
+                  </div>
+                  <button class="bg-secondary hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Review</button>
+                </div>
+
+                <div class="p-3.5 hover:bg-gray-50 transition-colors flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm flex-shrink-0"><i class="fas fa-file-alt"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-gray-800 truncate">Review Week 12 Log — G-038</div>
+                    <div class="text-[10px] text-gray-500 font-medium mt-0.5 truncate">Zara Ahmad · Submitted May 2</div>
+                  </div>
+                  <button class="bg-secondary hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Review</button>
+                </div>
+
+                <div class="p-3.5 hover:bg-gray-50 transition-colors flex flex-col gap-2">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-blue-50 text-secondary flex items-center justify-center text-sm flex-shrink-0"><i class="fas fa-calendar"></i></div>
+                    <div class="flex-1 min-w-0">
+                      <div class="text-xs font-bold text-gray-800 truncate">Meeting Request — G-042</div>
+                      <div class="text-[10px] text-gray-500 font-medium mt-0.5 truncate">May 6, 2026 · 10:00 AM</div>
+                    </div>
+                  </div>
+                  <div class="flex gap-2 pl-12">
+                    <button class="border border-gray-200 text-gray-600 hover:bg-gray-50 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-colors flex-1">Decline</button>
+                    <button class="bg-secondary hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-colors flex-1" onclick="alert('Meeting confirmed!')">Confirm</button>
+                  </div>
+                </div>
+
+                <div class="p-3.5 hover:bg-gray-50 transition-colors flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm flex-shrink-0"><i class="fas fa-star"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-gray-800 truncate">Submit Score — G-055</div>
+                    <div class="text-[10px] text-gray-500 font-medium mt-0.5 truncate">Deadline: Jul 20, 2026</div>
+                  </div>
+                  <button class="border border-gray-200 text-gray-600 hover:border-secondary hover:text-secondary px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white">Evaluate</button>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden p-5">
+              <h3 class="text-sm font-bold text-gray-800 mb-4">Recent Activity</h3>
+              <div class="flex flex-col gap-3">
+                <div class="flex gap-3 items-start pb-3 border-b border-gray-50">
+                  <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5"><i class="fas fa-check"></i></div>
+                  <div>
+                    <div class="text-xs font-bold text-gray-800">Approved Week 12 Log — G-042</div>
+                    <div class="text-[10px] text-gray-400 font-bold mt-0.5">Apr 28 · 11:30 AM</div>
+                  </div>
+                </div>
+                <div class="flex gap-3 items-start pb-3 border-b border-gray-50">
+                  <div class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5"><i class="fas fa-comment-alt"></i></div>
+                  <div>
+                    <div class="text-xs font-bold text-gray-800">Added feedback — G-042</div>
+                    <div class="text-[10px] text-gray-400 font-bold mt-0.5">Apr 22 · 02:00 PM</div>
+                  </div>
+                </div>
+                <div class="flex gap-3 items-start pb-1">
+                  <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5"><i class="fas fa-star"></i></div>
+                  <div>
+                    <div class="text-xs font-bold text-gray-800">Submitted evaluation — G-038</div>
+                    <div class="text-[10px] text-gray-400 font-bold mt-0.5">Jul 16 · 10:00 AM</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
+
       </div>
-    </div>
-  </main>
+    </main>
+  </div>
 </div>
 
+<script src="../scripts/auth.js"></script>
 <script>
-let _collapsed=false;
-window.toggleSidebar=function(){_collapsed=!_collapsed;document.getElementById('sidebar')?.classList.toggle('collapsed',_collapsed);document.getElementById('mainWrap')?.classList.toggle('expanded',_collapsed);const ico=document.getElementById('collapseIcon');if(ico)ico.className=_collapsed?'fas fa-chevron-right':'fas fa-chevron-left';const lt=document.getElementById('sidebarLogoText');if(lt)lt.style.display=_collapsed?'none':'';};
-window.openMobileSidebar=function(){document.getElementById('sidebar')?.classList.add('mobile-open');document.getElementById('sidebarOverlay')?.classList.add('show');document.body.style.overflow='hidden';};
-window.closeMobileSidebar=function(){document.getElementById('sidebar')?.classList.remove('mobile-open');document.getElementById('sidebarOverlay')?.classList.remove('show');document.body.style.overflow='';};
-window.toggleNotifications=function(){document.getElementById('notifDropdown')?.classList.toggle('open');document.getElementById('userDropdown')?.classList.remove('open');};
-window.toggleUserMenu=function(){document.getElementById('userDropdown')?.classList.toggle('open');document.getElementById('notifDropdown')?.classList.remove('open');};
-document.addEventListener('click',e=>{if(!document.getElementById('notifWrap')?.contains(e.target))document.getElementById('notifDropdown')?.classList.remove('open');if(!document.getElementById('userWrap')?.contains(e.target))document.getElementById('userDropdown')?.classList.remove('open');});
-const _d=document.getElementById('currentDate');if(_d)_d.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' });
+  
+  function toggleMobileSidebar() {
+    const sb = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    sb.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+  }
+
+  function doLogout(e) {
+    e.preventDefault();
+    if(typeof AUTH !== 'undefined') AUTH.logout();
+    window.location.href = '../login.html';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if(typeof AUTH !== 'undefined') {
+      const user = AUTH.requireRole('Supervisor');
+      if(user) {
+        document.getElementById('navName').textContent = user.name || 'Dr. Hassan';
+        document.getElementById('navAvatar').textContent = (user.name || 'DH').slice(0,2).toUpperCase();
+      }
+    }
+  });
 </script>
 </body>
 </html>

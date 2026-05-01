@@ -131,8 +131,8 @@ const AUTH = {
     const u = this.getUser();
     if (!u) return;
     
-    if (u.role === 'Student' && !u.profileCompleted) {
-        window.location.replace('student/profile.html');
+    if (u.role === 'Student') {
+        window.location.replace('student/dashboard.html');
         return;
     }
 
