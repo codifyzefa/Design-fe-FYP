@@ -67,6 +67,20 @@
       if(typeof AUTH !== 'undefined') AUTH.logout();
       window.location.href = '../login.html';
     }
+
+    function toggleDesktopSidebar() {
+      const sb = document.getElementById('sidebar');
+      const icon = document.getElementById('desktopCollapseIcon');
+      if (!sb) return;
+      const isCollapsed = sb.style.width === '0px';
+      if (isCollapsed) {
+        sb.style.width = '256px';
+        if (icon) { icon.classList.remove('fa-chevron-right'); icon.classList.add('fa-chevron-left'); }
+      } else {
+        sb.style.width = '0px';
+        if (icon) { icon.classList.remove('fa-chevron-left'); icon.classList.add('fa-chevron-right'); }
+      }
+    }
   </script>
 
   <style>
@@ -106,13 +120,13 @@
     .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
     .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(30, 58, 138, 0.12); }
     .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; }
-    .badge-high { background: #fee2e2; color: #c62828; }
-    .badge-medium { background: #fff3cd; color: #b45309; }
-    .badge-low { background: #dcfce7; color: #166534; }
-    .badge-todo { background: #f1f5f9; color: #475569; }
-    .badge-inprogress { background: #dbeafe; color: #1d4ed8; }
-    .badge-review { background: #ede9fe; color: #7c3aed; }
-    .badge-done { background: #d1fae5; color: #065f46; }
+    .badge-high { background: #fef2f2; color: #DC2626; }
+    .badge-medium { background: #fffbeb; color: #D97706; }
+    .badge-low { background: #ecfdf5; color: #059669; }
+    .badge-todo { background: #f9fafb; color: #475569; }
+    .badge-inprogress { background: #eff6ff; color: #2563EB; }
+    .badge-review { background: #fffbeb; color: #D97706; }
+    .badge-done { background: #ecfdf5; color: #059669; }
     
     .task-card { background: #fff; border-radius: 12px; padding: 12px; cursor: grab; user-select: none; border: 1.5px solid #edf0f4; transition: box-shadow 0.15s, border-color 0.15s; }
     .task-card:hover { box-shadow: 0 6px 18px rgba(30, 58, 138, 0.1); border-color: #c5d6ee; }
@@ -347,10 +361,10 @@
     // -- DATA --
     const USERS = [
       { id: 1, name: "Ahmed Raza", role: "Team Lead", initials: "AR", color: "#1E3A8A", email: "ahmed.raza@cuiatd.edu.pk" },
-      { id: 2, name: "Fatima Khan", role: "Frontend Dev", initials: "FK", color: "#7C3AED", email: "fatima.khan@cuiatd.edu.pk" },
-      { id: 3, name: "Usman Ali", role: "Backend Dev", initials: "UA", color: "#059669", email: "usman.ali@cuiatd.edu.pk" },
-      { id: 4, name: "Ayesha Malik", role: "ML Engineer", initials: "AM", color: "#DC2626", email: "ayesha.malik@cuiatd.edu.pk" },
-      { id: 5, name: "Dr. Tariq Hassan", role: "Supervisor", initials: "TH", color: "#B45309", email: "tariq.hassan@cuiatd.edu.pk" },
+      { id: 2, name: "Fatima Khan", role: "Frontend Dev", initials: "FK", color: "#374151", email: "fatima.khan@cuiatd.edu.pk" },
+      { id: 3, name: "Usman Ali", role: "Backend Dev", initials: "UA", color: "#2563EB", email: "usman.ali@cuiatd.edu.pk" },
+      { id: 4, name: "Ayesha Malik", role: "ML Engineer", initials: "AM", color: "#1e40af", email: "ayesha.malik@cuiatd.edu.pk" },
+      { id: 5, name: "Dr. Tariq Hassan", role: "Supervisor", initials: "TH", color: "#1E3A8A", email: "tariq.hassan@cuiatd.edu.pk" },
     ];
 
     let TASKS = [
@@ -415,6 +429,7 @@
     const isOverdue = (s) => s && new Date(s) < new Date();
     const userById = (id) => USERS.find((u) => u.id === id);
     const priClass = (p) => ({ high: "badge-high", medium: "badge-medium", low: "badge-low" })[p] || "badge-low";
+    const getPriBg = (p) => ({ high: 'bg-[#e0ecfb]', medium: 'bg-[#eff6ff]', low: 'bg-[#f8fafc]' })[p] || 'bg-white';
     const stClass = (s) => ({ todo: "badge-todo", inprogress: "badge-inprogress", review: "badge-review", done: "badge-done" })[s];
     const stLabel = (s) => ({ todo: "Not Started", inprogress: "In Progress", review: "Review", done: "Completed" })[s];
 
@@ -448,7 +463,7 @@
       document.getElementById('notif-badge').style.display = unread > 0 ? 'flex' : 'none';
       document.getElementById('notif-badge').innerText = unread;
       
-      const emoji = (t) => ({ deadline: "⏰", done: "✅", overdue: "🔴", comment: "💬", assigned: "📌" })[t] || "🔔";
+      const emoji = (t) => ({ deadline: '<i class="fas fa-clock text-amber-500"></i>', done: '<i class="fas fa-check-circle text-emerald-500"></i>', overdue: '<i class="fas fa-exclamation-circle text-red-500"></i>', comment: '<i class="fas fa-comment-dots text-blue-500"></i>', assigned: '<i class="fas fa-thumbtack text-purple-500"></i>' })[t] || '<i class="fas fa-bell text-gray-500"></i>';
       document.getElementById('notif-list').innerHTML = NOTIFS.map(n => 
         '<div class="flex items-start gap-2.5 p-2.5 border-b border-[#f8fafc] '+(n.read ? '' : 'bg-[#eff6ff]')+' cursor-pointer" onclick="NOTIFS.find(x=>x.id=='+n.id+').read=true; renderNotifs();">'+
           '<span class="text-lg shrink-0 mt-0.5">'+emoji(n.type)+'</span>'+
@@ -491,7 +506,7 @@
               '<div class="flex items-center gap-3 mb-3">'+
                 '<div class="avatar" style="width: 44px; height: 44px; background: rgba(255,255,255,0.2); font-size: 14px;">AR</div>'+
                 '<div>'+
-                  '<h2 class="text-[22px] font-extrabold m-0 font-poppins">Welcome back, Ahmed! 👋</h2>'+
+                  '<h2 class="text-[22px] font-extrabold m-0 font-poppins flex items-center gap-2">Welcome back, Ahmed! <i class="fas fa-hand-sparkles text-amber-300"></i></h2>'+
                   '<p class="text-white/60 m-0 text-[13px]">AI-Powered Recommendation System · Sprint 2 of 4</p>'+
                 '</div>'+
               '</div>'+
@@ -507,27 +522,27 @@
                   '<p class="text-white/55 text-[12px] m-0">'+done+' of '+total+' tasks completed</p>'+
                 '</div>'+
                 '<div class="flex gap-4">'+
-                  '<div class="text-center"><p class="text-[22px] m-0">🔥</p><p class="text-[22px] font-extrabold m-0">'+inProg+'</p><p class="text-[11px] text-white/50 m-0">Active</p></div>'+
-                  '<div class="text-center"><p class="text-[22px] m-0">👁️</p><p class="text-[22px] font-extrabold m-0">'+review+'</p><p class="text-[11px] text-white/50 m-0">Review</p></div>'+
-                  '<div class="text-center"><p class="text-[22px] m-0">📋</p><p class="text-[22px] font-extrabold m-0">'+todo+'</p><p class="text-[11px] text-white/50 m-0">Pending</p></div>'+
+                  '<div class="text-center"><p class="text-[22px] m-0 text-white/80"><i class="fas fa-bolt"></i></p><p class="text-[22px] font-extrabold m-0">'+inProg+'</p><p class="text-[11px] text-white/50 m-0">Active</p></div>'+
+                  '<div class="text-center"><p class="text-[22px] m-0 text-white/80"><i class="fas fa-eye"></i></p><p class="text-[22px] font-extrabold m-0">'+review+'</p><p class="text-[11px] text-white/50 m-0">Review</p></div>'+
+                  '<div class="text-center"><p class="text-[22px] m-0 text-white/80"><i class="fas fa-clipboard-list"></i></p><p class="text-[22px] font-extrabold m-0">'+todo+'</p><p class="text-[11px] text-white/50 m-0">Pending</p></div>'+
                 '</div>'+
               '</div>'+
             '</div>'+
           '</div>'+
           '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">'+
-            '<div class="card card-hover p-5 flex items-start justify-between"><div><p class="text-[13px] text-[#64748b] font-semibold mb-1">Total Tasks</p><p class="text-[32px] font-extrabold text-[#1E3A8A] leading-none m-0 font-outfit">'+total+'</p><p class="text-[12px] text-[#94a3b8] mt-1 m-0">All tasks in project</p></div><div class="bg-[#eff6ff] rounded-xl p-2.5 text-[22px]">📋</div></div>'+
-            '<div class="card card-hover p-5 flex items-start justify-between"><div><p class="text-[13px] text-[#64748b] font-semibold mb-1">Completed</p><p class="text-[32px] font-extrabold text-[#059669] leading-none m-0 font-outfit">'+done+'</p><p class="text-[12px] text-[#94a3b8] mt-1 m-0">'+pct+'% completion rate</p></div><div class="bg-[#f0fdf4] rounded-xl p-2.5 text-[22px]">✅</div></div>'+
-            '<div class="card card-hover p-5 flex items-start justify-between"><div><p class="text-[13px] text-[#64748b] font-semibold mb-1">In Progress</p><p class="text-[32px] font-extrabold text-[#2563eb] leading-none m-0 font-outfit">'+inProg+'</p><p class="text-[12px] text-[#94a3b8] mt-1 m-0">Currently active</p></div><div class="bg-[#eff6ff] rounded-xl p-2.5 text-[22px]">⚡</div></div>'+
-            '<div class="card card-hover p-5 flex items-start justify-between"><div><p class="text-[13px] text-[#64748b] font-semibold mb-1">Pending</p><p class="text-[32px] font-extrabold text-[#d97706] leading-none m-0 font-outfit">'+todo+'</p><p class="text-[12px] text-[#94a3b8] mt-1 m-0">'+review+' in review</p></div><div class="bg-[#fffbeb] rounded-xl p-2.5 text-[22px]">⏳</div></div>'+
+            '<div class="card card-hover p-5 flex items-start justify-between"><div><p class="text-[13px] text-[#64748b] font-semibold mb-1">Total Tasks</p><p class="text-[32px] font-extrabold text-[#1E3A8A] leading-none m-0 font-outfit">'+total+'</p><p class="text-[12px] text-[#94a3b8] mt-1 m-0">All tasks in project</p></div><div class="bg-[#eff6ff] rounded-xl p-2.5 text-[22px] text-blue-500"><i class="fas fa-clipboard-list"></i></div></div>'+
+            '<div class="card card-hover p-5 flex items-start justify-between"><div><p class="text-[13px] text-[#64748b] font-semibold mb-1">Completed</p><p class="text-[32px] font-extrabold text-[#059669] leading-none m-0 font-outfit">'+done+'</p><p class="text-[12px] text-[#94a3b8] mt-1 m-0">'+pct+'% completion rate</p></div><div class="bg-[#f0fdf4] rounded-xl p-2.5 text-[22px] text-emerald-500"><i class="fas fa-check-circle"></i></div></div>'+
+            '<div class="card card-hover p-5 flex items-start justify-between"><div><p class="text-[13px] text-[#64748b] font-semibold mb-1">In Progress</p><p class="text-[32px] font-extrabold text-[#2563eb] leading-none m-0 font-outfit">'+inProg+'</p><p class="text-[12px] text-[#94a3b8] mt-1 m-0">Currently active</p></div><div class="bg-[#eff6ff] rounded-xl p-2.5 text-[22px] text-blue-600"><i class="fas fa-bolt"></i></div></div>'+
+            '<div class="card card-hover p-5 flex items-start justify-between"><div><p class="text-[13px] text-[#64748b] font-semibold mb-1">Pending</p><p class="text-[32px] font-extrabold text-[#d97706] leading-none m-0 font-outfit">'+todo+'</p><p class="text-[12px] text-[#94a3b8] mt-1 m-0">'+review+' in review</p></div><div class="bg-[#fffbeb] rounded-xl p-2.5 text-[22px] text-amber-500"><i class="fas fa-hourglass-half"></i></div></div>'+
           '</div>'+
           '<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">'+
             '<div class="card p-5 lg:col-span-2">'+
-              '<h3 class="text-[16px] font-bold text-[#1e293b] font-poppins m-0 mb-4">⏰ Upcoming Deadlines</h3>'+
+              '<h3 class="text-[16px] font-bold text-[#1e293b] font-poppins m-0 mb-4 flex items-center gap-2"><i class="fas fa-clock text-primary"></i> Upcoming Deadlines</h3>'+
               '<div class="flex flex-col gap-2.5">'+
                 upcoming.map(t => {
                   const u = userById(t.assignee); const over = isOverdue(t.due);
-                  return '<div class="flex items-center gap-3 p-2.5 rounded-xl border border-[#edf0f4] '+(over ? 'bg-[#fef2f2]' : 'bg-[#fafbfc]')+'">'+
-                    '<div class="w-[3px] h-10 rounded-full shrink-0 '+(over ? 'bg-[#ef4444]' : t.priority === 'high' ? 'bg-[#f97316]' : 'bg-[#1E3A8A]')+'"></div>'+
+                  return '<div class="flex items-center gap-3 p-2.5 rounded-xl border border-[#edf0f4] '+(over ? 'bg-[#fef2f2]' : getPriBg(t.priority))+'">'+
+                    '<div class="w-[3px] h-10 rounded-full shrink-0 '+(over ? 'bg-[#DC2626]' : t.priority === 'high' ? 'bg-[#D97706]' : 'bg-[#1E3A8A]')+'"></div>'+
                     '<div class="flex-1 min-w-0">'+
                       '<p class="text-[13.5px] font-semibold text-[#1e293b] m-0 mb-1 truncate">'+t.title+'</p>'+
                       '<div class="flex items-center gap-2">'+
@@ -544,7 +559,7 @@
               '</div>'+
             '</div>'+
             '<div class="card p-5">'+
-              '<h3 class="text-[16px] font-bold text-[#1e293b] font-poppins m-0 mb-4">🔄 Recent Activity</h3>'+
+              '<h3 class="text-[16px] font-bold text-[#1e293b] font-poppins m-0 mb-4 flex items-center gap-2"><i class="fas fa-history text-primary"></i> Recent Activity</h3>'+
               '<div class="flex flex-col gap-3.5">'+
                 ACTIVITY.map(a => {
                   const u = userById(a.user);
@@ -570,20 +585,20 @@
         return true;
       });
       const cols = [
-        { id: "todo", label: "Not Started", color: "#64748b", bg: "#f8fafc", icon: "📋" },
-        { id: "inprogress", label: "In Progress", color: "#2563eb", bg: "#eff6ff", icon: "⚡" },
-        { id: "review", label: "Review", color: "#7c3aed", bg: "#faf5ff", icon: "👁️" },
-        { id: "done", label: "Completed", color: "#16a34a", bg: "#f0fdf4", icon: "✅" }
+        { id: "todo", label: "Not Started", color: "#475569", bg: "#f8fafc", icon: '<i class="fas fa-clipboard-list"></i>' },
+        { id: "inprogress", label: "In Progress", color: "#2563EB", bg: "#eff6ff", icon: '<i class="fas fa-bolt"></i>' },
+        { id: "review", label: "Review", color: "#D97706", bg: "#fffbeb", icon: '<i class="fas fa-eye"></i>' },
+        { id: "done", label: "Completed", color: "#059669", bg: "#f0fdf4", icon: '<i class="fas fa-check-circle"></i>' }
       ];
 
       return '<div class="fade-in">'+
           '<div class="flex gap-2.5 mb-5 flex-wrap items-center">'+
-            '<input type="text" placeholder="🔍 Search tasks…" value="'+kanbanFilter.search+'" oninput="kanbanFilter.search=this.value; renderApp()" class="tm-input px-3.5 py-2 border-[1.5px] border-[#e2e8f0] rounded-xl text-[13px] bg-white flex-1 min-w-[180px] max-w-[260px]"/>'+
-            '<select onchange="kanbanFilter.pri=this.value; renderApp()" class="tm-select px-3.5 py-2 border-[1.5px] border-[#e2e8f0] rounded-xl text-[13px] bg-white cursor-pointer">'+
+            '<div class="relative flex-1 min-w-[180px] max-w-[260px]"><i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] text-[12px]"></i><input type="text" placeholder="Search tasks…" value="'+kanbanFilter.search+'" oninput="kanbanFilter.search=this.value; renderApp()" class="tm-input pl-9 pr-3.5 py-2 border-[1.5px] border-[#e2e8f0] rounded-xl text-[13px] bg-white w-full"/></div>'+
+            '<select onchange="kanbanFilter.pri=this.value; renderApp()" class="tm-select px-3.5 py-2 border-[1.5px] border-[#e2e8f0] rounded-xl text-[13px] bg-white cursor-pointer font-medium text-[#475569]">'+
               '<option value="all" '+(kanbanFilter.pri=='all'?'selected':'')+'>All Priorities</option>'+
-              '<option value="high" '+(kanbanFilter.pri=='high'?'selected':'')+'>🔴 High</option>'+
-              '<option value="medium" '+(kanbanFilter.pri=='medium'?'selected':'')+'>🟡 Medium</option>'+
-              '<option value="low" '+(kanbanFilter.pri=='low'?'selected':'')+'>🟢 Low</option>'+
+              '<option value="high" '+(kanbanFilter.pri=='high'?'selected':'')+'>High Priority</option>'+
+              '<option value="medium" '+(kanbanFilter.pri=='medium'?'selected':'')+'>Medium Priority</option>'+
+              '<option value="low" '+(kanbanFilter.pri=='low'?'selected':'')+'>Low Priority</option>'+
             '</select>'+
             '<select onchange="kanbanFilter.mem=this.value; renderApp()" class="tm-select px-3.5 py-2 border-[1.5px] border-[#e2e8f0] rounded-xl text-[13px] bg-white cursor-pointer">'+
               '<option value="all" '+(kanbanFilter.mem=='all'?'selected':'')+'>All Members</option>'+
@@ -601,12 +616,12 @@
                 '<div class="flex flex-col gap-2.5 flex-1 kb-dropzone" data-status="'+c.id+'">'+
                   colTasks.map(t => {
                     const u = userById(t.assignee); const over = isOverdue(t.due) && t.status !== 'done';
-                    return '<div class="task-card" draggable="true" data-id="'+t.id+'">'+
+                    return '<div class="task-card '+(over ? 'bg-[#fef2f2]' : getPriBg(t.priority))+'" draggable="true" data-id="'+t.id+'">'+
                       (t.tags?.length ? '<div class="flex gap-1 mb-2 flex-wrap">'+t.tags.slice(0,2).map(g=>'<span class="tag">'+g+'</span>').join('')+'</div>' : '')+
                       '<p class="text-[13.5px] font-semibold text-[#1e293b] mb-2 leading-snug">'+t.title+'</p>'+
                       '<div class="flex items-center justify-between mb-2">'+
                         '<span class="badge '+priClass(t.priority)+'">'+t.priority+'</span>'+
-                        (t.due ? '<span class="text-[11px] font-semibold '+(over ? 'text-[#dc2626]' : 'text-[#94a3b8]')+'">📅 '+fmtDate(t.due)+(over?' ⚠️':'')+'</span>' : '')+
+                        (t.due ? '<span class="text-[11px] font-semibold '+(over ? 'text-[#DC2626]' : 'text-[#94a3b8]')+'"><i class="fas fa-calendar-day mr-1"></i> '+fmtDate(t.due)+(over?' <i class="fas fa-exclamation-circle ml-1"></i>':'')+' </span>' : '')+
                       '</div>'+
                       (t.progress > 0 ? '<div class="mb-2">'+
                         '<div class="flex justify-between mb-1"><span class="text-[11px] text-[#94a3b8]">Progress</span><span class="text-[11px] font-bold text-[#475569]">'+t.progress+'%</span></div>'+
@@ -615,8 +630,8 @@
                       '<div class="flex items-center justify-between mt-2">'+
                         (u ? '<div class="avatar" style="width:26px; height:26px; background:'+u.color+'; font-size:9px;">'+u.initials+'</div>' : '<div></div>')+
                         '<div class="flex gap-1">'+
-                          '<button onclick="openModal('+t.id+')" class="w-7 h-7 rounded-lg border border-[#e2e8f0] bg-white cursor-pointer flex items-center justify-center hover:bg-gray-50 transition-colors">✏️</button>'+
-                          '<button onclick="deleteTask('+t.id+')" class="w-7 h-7 rounded-lg border border-[#fee2e2] bg-[#fff5f5] cursor-pointer flex items-center justify-center hover:bg-red-50 transition-colors">🗑️</button>'+
+                          '<button onclick="openModal('+t.id+')" class="w-7 h-7 rounded-lg border border-[#e2e8f0] bg-white cursor-pointer flex items-center justify-center hover:bg-gray-50 transition-colors text-blue-500"><i class="fas fa-pen text-[11px]"></i></button>'+
+                          '<button onclick="deleteTask('+t.id+')" class="w-7 h-7 rounded-lg border border-[#fee2e2] bg-[#fff5f5] cursor-pointer flex items-center justify-center hover:bg-red-50 transition-colors text-red-400"><i class="fas fa-trash text-[11px]"></i></button>'+
                         '</div>'+
                       '</div>'+
                     '</div>'
@@ -690,7 +705,7 @@
             }).join('')+
           '</div>'+
           '<div class="card p-5">'+
-            '<h3 class="text-[16px] font-bold font-poppins text-[#1e293b] m-0 mb-4">👨‍🏫 Project Supervisor</h3>'+
+            '<h3 class="text-[16px] font-bold font-poppins text-[#1e293b] m-0 mb-4 flex items-center gap-2"><i class="fas fa-chalkboard-teacher text-primary"></i> Project Supervisor</h3>'+
             '<div class="flex items-center gap-4 flex-wrap">'+
               '<div class="avatar shrink-0" style="width:56px; height:56px; background:'+USERS[4].color+'; font-size:20px;">'+USERS[4].initials+'</div>'+
               '<div class="flex-1 min-w-[200px]">'+
@@ -719,23 +734,23 @@
       const done = TASKS.filter(t=>t.status==='done').length;
       
       charts.push(new Chart(document.getElementById('pieChart'), {
-        type: 'doughnut', data: { labels: ['Not Started', 'In Progress', 'Review', 'Completed'], datasets: [{ data: [todo, inp, rev, done], backgroundColor: ['#94a3b8', '#3b82f6', '#a855f7', '#10b981'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { position: 'bottom' } } }
+        type: 'doughnut', data: { labels: ['Not Started', 'In Progress', 'Review', 'Completed'], datasets: [{ data: [todo, inp, rev, done], backgroundColor: ['#94a3b8', '#2563EB', '#D97706', '#059669'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { position: 'bottom' } } }
       }));
       
       const mems = USERS.filter(u=>u.id!==5);
       charts.push(new Chart(document.getElementById('barChart'), {
-        type: 'bar', data: { labels: mems.map(u=>u.name.split(' ')[0]), datasets: [{ label: 'Assigned', data: mems.map(u=>TASKS.filter(t=>t.assignee===u.id).length), backgroundColor: 'rgba(30,58,138,.15)' }, { label: 'Completed', data: mems.map(u=>TASKS.filter(t=>t.assignee===u.id && t.status==='done').length), backgroundColor: '#10b981' }] }, options: { responsive: true, maintainAspectRatio: false }
+        type: 'bar', data: { labels: mems.map(u=>u.name.split(' ')[0]), datasets: [{ label: 'Assigned', data: mems.map(u=>TASKS.filter(t=>t.assignee===u.id).length), backgroundColor: 'rgba(30,58,138,.15)' }, { label: 'Completed', data: mems.map(u=>TASKS.filter(t=>t.assignee===u.id && t.status==='done').length), backgroundColor: '#1E3A8A' }] }, options: { responsive: true, maintainAspectRatio: false }
       }));
     }
 
     function getCalendarHTML() {
       const upcoming = [...TASKS].filter(t=>t.status!=='done'&&t.due).sort((a,b)=>new Date(a.due)-new Date(b.due));
       return '<div class="fade-in card p-5">'+
-          '<h3 class="text-[16px] font-bold font-poppins text-[#1e293b] m-0 mb-4">📅 Deadlines List</h3>'+
+          '<h3 class="text-[16px] font-bold font-poppins text-[#1e293b] m-0 mb-4 flex items-center gap-2"><i class="fas fa-calendar-alt text-primary"></i> Deadlines List</h3>'+
           '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">'+
             upcoming.slice(0,10).map(t=>{
               const d=new Date(t.due); const over=isOverdue(t.due);
-              return '<div class="flex items-center gap-3 p-3 rounded-xl border border-[#edf0f4] '+(over?'bg-[#fef2f2]':'bg-[#fafbfc]')+'">'+
+              return '<div class="flex items-center gap-3 p-3 rounded-xl border border-[#edf0f4] '+(over?'bg-[#fef2f2]':getPriBg(t.priority))+'">'+
                 '<div class="text-center w-[50px] py-1.5 rounded-lg shrink-0 '+(over?'bg-[#fee2e2] text-[#dc2626]':'bg-[#eff6ff] text-[#1d4ed8]')+'"><p class="text-[20px] font-extrabold font-poppins m-0 leading-none">'+d.getDate()+'</p><p class="text-[10px] m-0 opacity-80">'+d.toLocaleString('default',{month:'short'})+'</p></div>'+
                 '<div class="flex-1 min-w-0"><p class="text-[13px] font-semibold text-[#1e293b] m-0 mb-1 truncate">'+t.title+'</p><span class="badge '+priClass(t.priority)+'">'+t.priority+'</span></div>'+
                 (over?'<span class="text-[10px] font-extrabold text-[#dc2626] bg-[#fee2e2] px-2 py-1 rounded-lg">OVERDUE</span>':'')+
@@ -757,7 +772,7 @@
       document.getElementById('modal-container').innerHTML = '<div class="modal-overlay" onclick="if(event.target===this) document.getElementById(\'modal-container\').innerHTML=\'\'">'+
           '<div class="modal-box">'+
             '<div class="bg-gradient-to-br from-[#1E3A8A] to-[#2563EB] px-6 py-4 flex items-center justify-between">'+
-              '<h2 class="text-white text-[17px] font-bold m-0">'+(isNew ? '➕ New Task' : '✏️ Edit Task')+'</h2>'+
+              '<h2 class="text-white text-[17px] font-bold m-0 flex items-center">'+(isNew ? '<i class="fas fa-plus mr-2"></i> New Task' : '<i class="fas fa-edit mr-2"></i> Edit Task')+'</h2>'+
               '<button onclick="document.getElementById(\'modal-container\').innerHTML=\'\'" class="w-7 h-7 rounded-lg bg-white/15 border-none text-white font-bold cursor-pointer hover:bg-white/25">×</button>'+
             '</div>'+
             '<div class="p-6 flex flex-col gap-4">'+
@@ -809,47 +824,6 @@
     // INITIALIZE
     renderNotifs();
     setPage('dashboard');
-
-    // -- PORTAL SIDEBAR FUNCTIONS --
-    function navigateSPA(e, targetId) {
-      if (e) e.preventDefault();
-      const map = {
-        'view-dashboard': 'dashboard.html',
-        'view-profile': 'dashboard.html',
-        'view-new-request': 'partners.html',
-        'view-incoming-requests': 'partners.html',
-        'view-supervisor': 'supervisor.html',
-        'view-new-idea': 'idea.html',
-        'view-approved-ideas': 'idea.html'
-      };
-      if (map[targetId]) {
-        window.location.href = map[targetId];
-      } else {
-        window.location.href = 'dashboard.html';
-      }
-    }
-    
-    function toggleMobileSidebar() {
-      const sb = document.getElementById('sidebar');
-      const overlay = document.getElementById('mobileOverlay');
-      if (sb) sb.classList.toggle('-translate-x-full');
-      if (overlay) overlay.classList.toggle('hidden');
-    }
-    
-    function toggleDropdown(id) {
-      const el = document.getElementById(id);
-      const icon = document.getElementById('icon-' + id);
-      if (el) el.classList.toggle('hidden');
-      if (icon && !icon.classList.contains('lg:hidden')){
-        icon.classList.toggle('rotate-180');
-      }
-    }
-    
-    function confirmLogout(e) {
-      e.preventDefault();
-      if(typeof AUTH !== 'undefined') AUTH.logout();
-      window.location.href = '../login.html';
-    }
   </script>
 
   </div>
