@@ -99,6 +99,12 @@
 
     <!-- Main Grid -->
     <div class="dashboard-grid animate-fade-in-delay-2">
+      <!-- Grievances & Re-evals -->
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Recent Student Requests</div><div class="card-subtitle">Grievances & Re-evaluation requests</div></div><a href="proposals.html" class="btn btn-outline btn-sm">Manage</a></div>
+        <div id="requestsList" style="max-height:240px;overflow:auto;padding:0.5rem 0;"></div>
+      </div>
+
       <!-- Pending Proposals -->
       <div class="card">
         <div class="card-header"><div><div class="card-title">Pending Proposals</div><div class="card-subtitle">Awaiting coordinator review</div></div><a href="proposals.html" class="btn btn-primary btn-sm">Review All</a></div>
@@ -188,7 +194,6 @@
   </main>
 </div>
 
-<<<<<<< HEAD
 <script>
 let _collapsed=false;
 window.toggleSidebar=function(){_collapsed=!_collapsed;document.getElementById('sidebar')?.classList.toggle('collapsed',_collapsed);document.getElementById('mainWrap')?.classList.toggle('expanded',_collapsed);const ico=document.getElementById('collapseIcon');if(ico)ico.className=_collapsed?'fas fa-chevron-right':'fas fa-chevron-left';const lt=document.getElementById('sidebarLogoText');if(lt)lt.style.display=_collapsed?'none':'';};
@@ -200,17 +205,26 @@ document.addEventListener('click',e=>{if(!document.getElementById('notifWrap')?.
 const _d=document.getElementById('currentDate');if(_d)_d.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
 
 function approveProposal(btn, groupId) {
-  const row = btn.closest('.proposal-row');
-  btn.parentElement.innerHTML = '<span class="chip chip-success"><span class="chip-dot"></span>Approved</span>';
-  alert(`✅ Proposal for ${groupId} approved! Supervisor assignment will be notified.`);
-=======
-<script src="../scripts/coordinator.js"></script>
-<script>
-function approveProposal(btn, groupId) {
   btn.parentElement.innerHTML = '<span class="chip chip-success"><span class="chip-dot"></span>Approved</span>';
   showToast(`✅ Proposal for ${groupId} approved! Group has been notified.`, 'success');
->>>>>>> a0526ac (Change Design)
 }
+
+// Load Requests manager and populate recent items
+(function(){
+  const s = document.createElement('script'); s.src = '../scripts/requests.js'; document.body.appendChild(s);
+  s.onload = () => {
+    setTimeout(()=>{
+      const el = document.getElementById('requestsList');
+      if(!el || !window.Requests) return;
+      const gs = Requests.getGrievances().slice(0,6);
+      const rs = Requests.getReevals().slice(0,6);
+      const lines = [];
+      gs.forEach(g=> lines.push(`<div style="padding:.7rem 1rem;border-bottom:1px solid var(--color-border-light);"><div style="font-weight:700">Grievance: ${g.studentId || 'Unknown'}</div><div style="font-size:.85rem;color:var(--color-text-muted);">${g.category} · ${new Date(g.timestamp).toLocaleString()}</div><div style="margin-top:.4rem;color:var(--color-text);">${g.description.substring(0,140)}${g.description.length>140?'…':''}</div></div>`));
+      rs.forEach(r=> lines.push(`<div style="padding:.7rem 1rem;border-bottom:1px solid var(--color-border-light);"><div style="font-weight:700">Re-eval (${r.type}): ${r.studentId || 'Unknown'}</div><div style="font-size:.85rem;color:var(--color-text-muted);">${r.type==='proposal'?('Proposal '+(r.groupId||'')):('Eval '+(r.evaluationId||''))} · ${new Date(r.timestamp).toLocaleString()}</div><div style="margin-top:.4rem;color:var(--color-text);">${(r.reason||'No reason provided').substring(0,140)}${(r.reason||'').length>140?'…':''}</div></div>`));
+      el.innerHTML = lines.join('') || '<div style="padding:1rem;color:var(--color-text-faint);">No recent requests</div>';
+    },150);
+  };
+})();
 </script>
 </body>
 </html>

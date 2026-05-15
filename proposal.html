@@ -659,6 +659,7 @@
           <div class="form-actions">
             <button class="btn btn-outline" onclick="saveDraft()"><i class="fas fa-save"></i> Save as Draft</button>
             <button class="btn btn-primary" onclick="submitProposal()"><i class="fas fa-paper-plane"></i> Submit Proposal</button>
+            <button id="reqReevalBtn" class="btn btn-outline" onclick="requestProposalReeval()" title="Request re-evaluation if your proposal was rejected"><i class="fas fa-redo"></i> Request Re-evaluation</button>
           </div>
         </div>
 
@@ -716,6 +717,9 @@
                   <option>Dr. Kamran Raza (IoT)</option>
                 </select>
                 <p class="form-hint" style="margin-top: var(--space-2);">Supervisor assignment is at coordinator's discretion. Your preference will be considered if the supervisor has capacity.</p>
+                <div style="margin-top:var(--space-3);display:flex;gap:.5rem;">
+                  <button id="reqMeetBtn" class="btn btn-outline btn-sm" onclick="requestSupervisorMeeting()"><i class="fas fa-calendar-plus"></i> Request Meeting</button>
+                </div>
               </div>
             </div>
           </div>
@@ -753,8 +757,12 @@
     </main>
   </div>
 
+  <script src="scripts/auth.js"></script>
+  <script src="scripts/notifications.js"></script>
+  <script src="scripts/requests.js"></script>
   <script src="scripts/dashboard.js"></script>
   <script>
+    // Save draft helper
     function saveDraft() {
       const btn = event.target;
       const orig = btn.innerHTML;
@@ -767,11 +775,93 @@
       }, 800);
     }
 
-    function submitProposal() {
-      const confirmed = confirm('Submit this proposal for coordinator review? You cannot edit after submission.');
-      if (confirmed) {
-        alert('✅ Proposal submitted successfully! You will be notified once the coordinator reviews it.');
+    // Enforce RULE: submissions only allowed before deadline and before project assignment
+    function _checkProposalSubmissionAvailability() {
+      const submitBtn = document.querySelector('.form-actions .btn-primary');
+      if (!submitBtn) return;
+      const deadlineEl = document.querySelector('.deadline-date');
+      let closedReason = null;
+      if (deadlineEl) {
+        const dtext = deadlineEl.textContent.trim();
+        const d = new Date(dtext);
+        if (!isNaN(d) && new Date() > d) closedReason = 'Submission closed — deadline passed.';
       }
+      const user = AUTH.getUser && AUTH.getUser();
+      if (!closedReason && user && user.group && user.group.supervisor) {
+        closedReason = 'Submission closed — a supervisor/project has already been assigned.';
+      }
+      if (closedReason) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submission Closed';
+        submitBtn.classList.remove('btn-primary');
+        submitBtn.classList.add('btn-outline');
+        // show a small inline note
+        let note = document.getElementById('submissionNote');
+        if (!note) {
+          note = document.createElement('div');
+          note.id = 'submissionNote';
+          note.style.marginTop = '0.6rem';
+          note.style.fontSize = '0.9rem';
+          note.style.color = 'var(--color-text-muted)';
+          submitBtn.closest('.form-actions')?.appendChild(note);
+        }
+        note.textContent = closedReason;
+      }
+    }
+
+    // Request meeting with preferred supervisor — notifies the supervisor if found
+    function requestSupervisorMeeting() {
+      const sel = document.getElementById('prefSupervisor');
+      const choice = sel ? sel.value : '';
+      if (!choice) { showToast('Please select a preferred supervisor or supply a preference first.', 'error'); return; }
+      const name = choice.split('(')[0].trim();
+      // find supervisor in demo users
+      const sup = (window.FYP_USERS || []).find(u => u.name === name && (u.role || '').toLowerCase().includes('supervisor'));
+      const me = AUTH.getUser && AUTH.getUser();
+      const studentName = me ? me.name : 'A student';
+      if (sup) {
+        Notifications.add({ title: 'Meeting Request', message: `${studentName} has requested a meeting regarding their proposal.`, recipientId: sup.id });
+        showToast(`✅ Meeting request sent to ${sup.name}.`, 'success');
+      } else {
+        // fallback: send to coordinator audience
+        Notifications.add({ title: 'Meeting Request', message: `${studentName} requests a supervisor meeting (preferred: ${choice}).`, audience: ['FYP Office'] });
+        showToast('✅ Meeting request sent to the FYP office.', 'success');
+      }
+    }
+
+    // Override submitProposal to enforce rule checks
+    function submitProposal() {
+      // availability check
+      const submitBtn = document.querySelector('.form-actions .btn-primary');
+      const deadlineEl = document.querySelector('.deadline-date');
+      if (deadlineEl) {
+        const d = new Date(deadlineEl.textContent.trim());
+        if (!isNaN(d) && new Date() > d) { showToast('Cannot submit — the submission deadline has passed.', 'error'); return; }
+      }
+      const user = AUTH.getUser && AUTH.getUser();
+      if (user && user.group && user.group.supervisor) { showToast('Cannot submit — a supervisor/project has already been assigned to your group.', 'error'); return; }
+
+      const title = document.getElementById('projectTitle')?.value.trim();
+      const abstract = document.getElementById('abstract')?.value.trim();
+      if (!title || !abstract) { showToast('Please fill in all required fields before submitting.', 'error'); return; }
+      if (confirm('Submit your FYP proposal? This will be sent to the coordinator for review.')) {
+        Notifications.notifyProposalStatus(user ? user.id : null, 'Submitted');
+        showToast('✅ Proposal submitted! The coordinator will review it shortly.', 'success');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+      }
+    }
+
+    // run availability check on load
+    document.addEventListener('DOMContentLoaded', () => { setTimeout(_checkProposalSubmissionAvailability, 120); });
+
+    // Request proposal re-evaluation (simple prompt flow)
+    function requestProposalReeval() {
+      const me = AUTH.getUser && AUTH.getUser();
+      const gid = me && me.group && me.group.id ? me.group.id : prompt('Enter group id (e.g. G-042)');
+      const reason = prompt('Enter reason for re-evaluation (min 10 chars)');
+      const res = Requests.submitProposalReeval(gid, me ? me.id : null, reason);
+      if (res && res.error) return showToast(res.error, 'error');
+      showToast('✅ Re-evaluation request submitted.', 'success');
     }
   </script>
 </body>

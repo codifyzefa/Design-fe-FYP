@@ -108,5 +108,9 @@ window.renderStudentShell = function({ activePage = 'dashboard', pageTitle = 'Da
   `);
 
   // Close the main-wrap/main after content
-  document.addEventListener('DOMContentLoaded', () => {});
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.Notifications && typeof window.Notifications.init === 'function') {
+      window.Notifications.init();
+    }
+  });
 };

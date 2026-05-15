@@ -37,6 +37,27 @@ const TaskManager = {
     this.tasks.push(task);
     this.saveTasks();
     this.renderBoard();
+    // Notify assignees (if notifications module available)
+    try {
+      if (window.Notifications) {
+        const assignees = task.assignees || [];
+        assignees.forEach(a => {
+          let targeted = false;
+          try {
+            if (typeof FYP_USERS !== 'undefined' && Array.isArray(FYP_USERS)) {
+              const found = FYP_USERS.find(u => u.id === a || u.avatar === a || (u.name && u.name.split(' ')[0] === a));
+              if (found && found.id) {
+                window.Notifications.add({ title: 'New task assigned', message: `Task "${task.title}" has been assigned to you. Due: ${task.due || 'N/A'}.`, type: 'task', recipientId: found.id, meta: { taskId: task.id } });
+                targeted = true;
+              }
+            }
+          } catch (e) { /* ignore mapping errors */ }
+          if (!targeted) {
+            window.Notifications.add({ title: 'New task assigned', message: `Task "${task.title}" has been assigned to you. Due: ${task.due || 'N/A'}.`, type: 'task', audience: ['Students'], meta: { taskId: task.id } });
+          }
+        });
+      }
+    } catch (e) { /* ignore */ }
   },
 
   updateTask(id, updates) {

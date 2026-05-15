@@ -549,6 +549,7 @@
 
   <script src="../scripts/auth.js"></script>
   <script src="../scripts/taskManager.js"></script>
+  <script src="../scripts/notifications.js"></script>
   <script>
     let activeUser = null;
 
@@ -772,6 +773,7 @@
         }
       }
     });
+    if (window.Notifications && typeof Notifications.init === 'function') Notifications.init();
   </script>
 </body>
 </html>

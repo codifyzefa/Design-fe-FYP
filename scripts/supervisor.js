@@ -93,6 +93,37 @@ if (_supDateEl) {
   });
 }
 
+// ── Notification Helpers (resolve group → student ids and notify)
+function notifyUserIds(ids, note) {
+  if (!window.Notifications) return;
+  if (!Array.isArray(ids) || ids.length === 0) return;
+  ids.forEach(id => {
+    const n = { ...note, recipientId: id };
+    window.Notifications.add(n);
+  });
+}
+
+function notifyGroupMembers(groupId, note) {
+  try {
+    if (typeof FYP_USERS === 'undefined' || !Array.isArray(FYP_USERS)) return;
+    const members = FYP_USERS.filter(u => u.group && u.group.id === groupId && u.role && u.role.toLowerCase().includes('student'));
+    const ids = members.map(m => m.id).filter(Boolean);
+    if (ids.length) notifyUserIds(ids, note);
+  } catch (e) { /* ignore */ }
+}
+
+function getRecipientsFromIdOrGroup(idOrGroup) {
+  if (!idOrGroup) return [];
+  // group ids use prefix 'G-' in demo users, otherwise treat as user id
+  if (typeof idOrGroup === 'string' && idOrGroup.startsWith('G-')) {
+    try {
+      if (typeof FYP_USERS === 'undefined') return [];
+      return FYP_USERS.filter(u => u.group && u.group.id === idOrGroup && u.role && u.role.toLowerCase().includes('student')).map(u => u.id);
+    } catch (e) { return []; }
+  }
+  return [idOrGroup];
+}
+
 // ── Page-Specific Logic ──────────────────────────────────────
 const _supPage = window.location.pathname.split('/').pop();
 
@@ -117,6 +148,14 @@ if (_supPage === 'dashboard.html' || _supPage === '') {
     row.innerHTML = '';
     row.appendChild(badge);
     showToast(`✅ ${type} for ${id} approved!`, 'success');
+    try {
+      const recipients = getRecipientsFromIdOrGroup(id);
+      if (recipients && recipients.length) {
+        notifyUserIds(recipients, { title: `${type} Approved`, message: `${type} for ${id} has been approved.`, type: 'approval' });
+      } else if (window.Notifications) {
+        window.Notifications.add({ title: `${type} Approved`, message: `${type} for ${id} has been approved.`, type: 'approval', audience: ['Students'] });
+      }
+    } catch (e) { /* ignore */ }
   };
 
   window.quickReject = function (btn, type, id) {
@@ -128,6 +167,14 @@ if (_supPage === 'dashboard.html' || _supPage === '') {
       row.innerHTML = '';
       row.appendChild(badge);
       showToast(`${type} for ${id} rejected.`, 'error');
+      try {
+        const recipients = getRecipientsFromIdOrGroup(id);
+        if (recipients && recipients.length) {
+          notifyUserIds(recipients, { title: `${type} Rejected`, message: `${type} for ${id} has been rejected.`, type: 'rejection' });
+        } else if (window.Notifications) {
+          window.Notifications.add({ title: `${type} Rejected`, message: `${type} for ${id} has been rejected.`, type: 'rejection', audience: ['Students'] });
+        }
+      } catch (e) { /* ignore */ }
     });
   };
 }
@@ -158,6 +205,7 @@ if (_supPage === 'logs.html') {
         <i class="fas fa-check-circle"></i> Approved by you — ${new Date().toLocaleDateString()}
       </div>`;
     showToast(`✅ Week ${week} log for ${groupId} approved!`, 'success');
+    try { notifyGroupMembers(groupId, { title: 'Progress Log Approved', message: `Week ${week} progress log has been approved.`, type: 'log' }); } catch (e) {}
   };
 
   // Request revision on a log
@@ -167,6 +215,10 @@ if (_supPage === 'logs.html') {
     const card = btn.closest('.log-review-card');
     if (card) { card.style.background = '#fffbeb'; card.style.borderColor = '#fde68a'; }
     showToast(`↩️ Revision requested for ${groupId} Week ${week}. Student notified.`, 'warning');
+    try {
+      const fb = feedback || 'Please revise and resubmit your progress log.';
+      notifyGroupMembers(groupId, { title: 'Revision Requested', message: `Revision requested for Week ${week}: ${fb}`, type: 'log_revision' });
+    } catch (e) {}
   };
 
   // Filter logs by group
@@ -215,6 +267,15 @@ if (_supPage === 'evaluate.html') {
     if (total === 0) { showToast('Please score at least one criterion.', 'error'); return; }
     if (confirm(`Submit evaluation with score ${total}/100 (${scoreToGrade(total)})? This cannot be undone.`)) {
       showToast(`✅ Evaluation submitted — Score: ${total}/100. Coordinator notified.`, 'success');
+        try {
+          // Attempt to notify a specific student if evaluation form includes a hidden student id
+          const sid = document.getElementById('evalStudentId')?.value;
+          if (sid) {
+            notifyUserIds([sid], { title: 'Evaluation Submitted', message: `Your evaluation: ${total}/100. Remarks: ${remarks || '—'}`, type: 'evaluation' });
+          } else if (window.Notifications) {
+            window.Notifications.add({ title: 'Evaluation Submitted', message: `An evaluation has been submitted with score ${total}/100.`, type: 'evaluation', audience: ['Students'] });
+          }
+        } catch (e) { /* ignore */ }
       setTimeout(() => window.location.href = 'dashboard.html', 2200);
     }
   };
@@ -228,12 +289,14 @@ if (_supPage === 'meetings.html') {
   window.confirmMeeting = function (btn, group) {
     btn.parentElement.innerHTML = `<span class="chip chip-success"><span class="chip-dot"></span>Confirmed</span>`;
     showToast(`✅ Meeting with ${group} confirmed!`, 'success');
+    try { notifyGroupMembers(group, { title: 'Meeting Confirmed', message: `Meeting with ${group} has been confirmed by your supervisor.`, type: 'meeting' }); } catch (e) {}
   };
 
   window.declineMeeting = function (btn, group) {
     confirmAction(`Decline meeting request from ${group}?`, () => {
       btn.parentElement.innerHTML = `<span class="chip chip-danger"><span class="chip-dot"></span>Declined</span>`;
       showToast(`Meeting request from ${group} declined.`, 'info');
+      try { notifyGroupMembers(group, { title: 'Meeting Declined', message: `Meeting request from ${group} has been declined by your supervisor.`, type: 'meeting' }); } catch (e) {}
     });
   };
 
@@ -244,6 +307,7 @@ if (_supPage === 'meetings.html') {
     if (!group || !date) { showToast('Please select group and date.', 'error'); return; }
     closeModal('newMeetingModal');
     showToast(`✅ Meeting scheduled with ${group} on ${date}${time ? ' at ' + time : ''}.`, 'success');
+    try { notifyGroupMembers(group, { title: 'Meeting Scheduled', message: `Meeting scheduled with ${group} on ${date}${time ? ' at ' + time : ''}.`, type: 'meeting' }); } catch (e) {}
   };
 }
 
