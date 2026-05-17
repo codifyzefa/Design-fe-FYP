@@ -161,11 +161,18 @@ const AUTH = {
 
   /** Compute relative root path based on current URL depth */
   _rootPath() {
+    const path = window.location.pathname;
     if (
-      window.location.pathname.includes('/supervisor/') ||
-      window.location.pathname.includes('/coordinator/') ||
-      window.location.pathname.includes('/evaluator/') ||
-      window.location.pathname.includes('/student/')
+      path.includes('/supervisor/') ||
+      path.includes('/coordinator/') ||
+      path.includes('/evaluator/') ||
+      path.includes('/student/') ||
+      path.includes('/faculty/') ||
+      path.includes('/fyp_office_assistant/') ||
+      path.includes('/fyp_office_incharge/') ||
+      path.includes('/hod/') ||
+      path.includes('/admin/') ||
+      path.includes('/industry/')
     ) return '../';
     return '';
   }

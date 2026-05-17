@@ -1,29 +1,4 @@
 // ============================================================
-<<<<<<< HEAD
-// FYP PORTAL — Shared Dashboard JS (Student portal)
-// ============================================================
-
-// ── Auth Guard ────────────────────────────
-const _user = AUTH.requireRole('student');
-if (_user) initTopbar(_user);
-
-// ── Sidebar Collapse ─────────────────────
-let _collapsed = false;
-window.toggleSidebar = function() {
-  _collapsed = !_collapsed;
-  const s   = document.getElementById('sidebar');
-  const mw  = document.getElementById('mainWrap');
-  const ico = document.getElementById('collapseIcon');
-  const lt  = document.getElementById('sidebarLogoText');
-  [s,mw].forEach(el => el?.classList.toggle('collapsed', _collapsed));
-  mw?.classList.toggle('expanded', _collapsed);
-  if (ico) ico.className = _collapsed ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
-  if (lt)  lt.style.display = _collapsed ? 'none' : '';
-};
-
-// ── Mobile Sidebar ───────────────────────
-window.openMobileSidebar = function() {
-=======
 // FYP PORTAL — Student Portal JavaScript
 // Covers: dashboard, proposal, supervisor, progress,
 //         milestones, evaluation, submissions, reports
@@ -47,36 +22,22 @@ window.toggleSidebar = function () {
 };
 
 window.openMobileSidebar = function () {
->>>>>>> a0526ac (Change Design)
   document.getElementById('sidebar')?.classList.add('mobile-open');
   document.getElementById('sidebarOverlay')?.classList.add('show');
   document.body.style.overflow = 'hidden';
 };
-<<<<<<< HEAD
-window.closeMobileSidebar = function() {
-=======
 window.closeMobileSidebar = function () {
->>>>>>> a0526ac (Change Design)
   document.getElementById('sidebar')?.classList.remove('mobile-open');
   document.getElementById('sidebarOverlay')?.classList.remove('show');
   document.body.style.overflow = '';
 };
 
-<<<<<<< HEAD
-// ── Dropdowns ────────────────────────────
-window.toggleNotifications = function() {
-  document.getElementById('notifDropdown')?.classList.toggle('open');
-  document.getElementById('userDropdown')?.classList.remove('open');
-};
-window.toggleUserMenu = function() {
-=======
 // ── Dropdowns ────────────────────────────────────────────────
 window.toggleNotifications = function () {
   document.getElementById('notifDropdown')?.classList.toggle('open');
   document.getElementById('userDropdown')?.classList.remove('open');
 };
 window.toggleUserMenu = function () {
->>>>>>> a0526ac (Change Design)
   document.getElementById('userDropdown')?.classList.toggle('open');
   document.getElementById('notifDropdown')?.classList.remove('open');
 };
@@ -87,14 +48,12 @@ document.addEventListener('click', e => {
     document.getElementById('userDropdown')?.classList.remove('open');
 });
 
-<<<<<<< HEAD
 // ── Logout ────────────────────────────────
 window.confirmLogout = function(e) { e.preventDefault(); if(confirm('Sign out?')) AUTH.logout(); };
 
 // ── Current Date ──────────────────────────
 const _d = document.getElementById('currentDate');
 if (_d) _d.textContent = new Date().toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
-=======
 // ── Logout ───────────────────────────────────────────────────
 window.confirmLogout = function (e) {
   if (e) e.preventDefault();
@@ -395,4 +354,3 @@ if (_page === 'reports.html') {
     showToast(`📥 Downloading "${name}"…`, 'info');
   };
 }
->>>>>>> a0526ac (Change Design)
