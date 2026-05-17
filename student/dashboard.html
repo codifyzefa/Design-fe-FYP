@@ -561,32 +561,14 @@
       const sb = document.getElementById('sidebar');
       const icon = document.getElementById('desktopCollapseIcon');
       
-      sb.classList.toggle('lg:w-64');
-      sb.classList.toggle('lg:w-[68px]');
-      
-      // Toggle labels
-      document.querySelectorAll('.nav-label').forEach(el => el.classList.toggle('lg:hidden'));
-      document.querySelectorAll('.nav-section-label').forEach(el => el.classList.toggle('lg:hidden'));
-      
-      // Toggle header text
-      const headerText = document.getElementById('sidebarHeaderText');
-      if (headerText) headerText.classList.toggle('lg:hidden');
+      sb.classList.toggle('sidebar-collapsed');
 
-      // Toggle dropdown icons
-      const pIcon = document.getElementById('icon-dd-partners');
-      if (pIcon) pIcon.classList.toggle('lg:hidden');
-      const iIcon = document.getElementById('icon-dd-ideas');
-      if (iIcon) iIcon.classList.toggle('lg:hidden');
-
-      // Update toggle icon
-      if (sb.classList.contains('lg:w-[68px]')) {
+      if (sb.classList.contains('sidebar-collapsed')) {
         icon.classList.remove('fa-chevron-left');
         icon.classList.add('fa-chevron-right');
-        document.getElementById('sidebarRoleText').classList.add('hidden');
       } else {
         icon.classList.add('fa-chevron-left');
         icon.classList.remove('fa-chevron-right');
-        document.getElementById('sidebarRoleText').classList.remove('hidden');
       }
     }
 

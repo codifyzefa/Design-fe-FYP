@@ -128,7 +128,7 @@
           </div>
           <a
             href="dashboard.html"
-            class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold"
+            class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white"
           >
             <i
               class="fas fa-chalkboard-teacher text-sm w-5 text-center flex-shrink-0"
@@ -191,7 +191,7 @@
           </a>
           <a
             href="messaging.html"
-            class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white"
+            class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold"
           >
             <i
               class="fas fa-comments text-sm w-5 text-center flex-shrink-0"
@@ -272,7 +272,7 @@
                 id="pageTitle"
                 class="text-base font-black text-primary leading-tight truncate"
               >
-                Faculty Dashboard
+                Student Messaging
               </h2>
               <p
                 class="text-[11px] text-gray-400 leading-tight hidden sm:block font-medium"
@@ -407,241 +407,146 @@
           class="flex-1 overflow-y-auto p-4 md:p-6 bg-lightbg scroll-smooth relative"
         >
           <div class="max-w-[1600px] mx-auto w-full">
-            <div id="view-dashboard" class="animate-in fade-in duration-300">
-              <!-- Welcome Banner -->
-              <div
-                class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-[fadeIn_0.4s_ease-out]"
-                style="background: linear-gradient(135deg, #2b3990, #2563eb)"
-              >
-                <div class="text-white">
-                  <h1
-                    class="text-2xl sm:text-3xl font-black mb-2 tracking-tight"
-                  >
-                    Welcome, Dr. Ali Hassan! 🎓
-                  </h1>
-                  <p
-                    class="text-sm text-white/80 font-medium max-w-2xl leading-relaxed"
-                  >
-                    Here is your academic supervision and committee management
-                    dashboard. Track active student groups, review pending
-                    project proposals, and input committee evaluation scores.
-                  </p>
-                </div>
-                <div class="flex gap-3 flex-wrap">
-                  <button
-                    onclick="navigateSPA(event, 'view-proposals')"
-                    class="bg-white text-primary hover:bg-gray-50 px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <i class="fas fa-file-signature"></i> Pending Proposals (1)
-                  </button>
-                  <button
-                    onclick="navigateSPA(event, 'view-evaluations')"
-                    class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <i class="fas fa-star"></i> Defenses (2)
-                  </button>
-                </div>
+            <div id="view-messaging" class="animate-in fade-in duration-300">
+              <div class="border-b border-gray-100 pb-4 mb-6">
+                <h2 class="text-xl font-black text-gray-800">
+                  Student Group Messaging & Announcements
+                </h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">
+                  Direct communication interface with supervised groups. Send
+                  announcements, share files/links, and maintain consultation
+                  logs.
+                </p>
               </div>
-              <!-- Stats Grid -->
-              <div
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8"
-              >
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
+                <!-- Groups List -->
                 <div
-                  class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all"
+                  class="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden"
                 >
                   <div
-                    class="w-14 h-14 rounded-2xl bg-blue-50 text-secondary flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"
+                    class="p-4 bg-gray-50 border-b border-gray-100 font-black text-gray-800 text-sm"
                   >
-                    <i class="fas fa-project-diagram"></i>
+                    Supervised Groups
                   </div>
-                  <div class="min-w-0 flex-1">
+                  <div class="flex-1 overflow-y-auto divide-y divide-gray-50">
                     <div
-                      class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate"
+                      class="p-4 bg-blue-50/50 border-l-4 border-secondary cursor-pointer flex justify-between items-center"
                     >
-                      Supervised Groups
+                      <div>
+                        <span class="font-bold text-gray-900 block text-xs"
+                          >G-042: AI Traffic Management</span
+                        ><span class="text-[11px] text-gray-500"
+                          >Ahmed Farooq</span
+                        >
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-secondary"></span>
                     </div>
-                    <div class="flex items-baseline justify-between">
-                      <span class="text-3xl font-black text-gray-800">4</span>
-                      <span
-                        class="text-xs font-bold text-secondary bg-blue-50 px-2 py-0.5 rounded-lg"
-                        >Full Cap (4/4)</span
-                      >
+                    <div
+                      class="p-4 hover:bg-gray-50 cursor-pointer flex justify-between items-center"
+                    >
+                      <div>
+                        <span class="font-bold text-gray-900 block text-xs"
+                          >G-088: Smart Agriculture IoT</span
+                        ><span class="text-[11px] text-gray-500"
+                          >Hamza Khan</span
+                        >
+                      </div>
                     </div>
                   </div>
                 </div>
+                <!-- Chat Box -->
                 <div
-                  class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all"
+                  class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden"
                 >
                   <div
-                    class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"
+                    class="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center"
                   >
-                    <i class="fas fa-file-signature"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div
-                      class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate"
+                    <span class="font-black text-gray-800 text-sm"
+                      >Conversation: G-042 (AI Traffic Management)</span
                     >
-                      Pending Proposals
-                    </div>
-                    <div class="flex items-baseline justify-between">
-                      <span class="text-3xl font-black text-gray-800">1</span>
-                      <span
-                        class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-lg"
-                        >Requires Review</span
-                      >
-                    </div>
+                    <span
+                      class="text-xs font-bold text-secondary bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200"
+                      >3 Students</span
+                    >
                   </div>
-                </div>
-                <div
-                  class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all"
-                >
                   <div
-                    class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"
+                    class="flex-1 overflow-y-auto p-6 space-y-4 bg-lightbg/50"
+                    id="chatMessages"
                   >
-                    <i class="fas fa-calendar-check"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div
-                      class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate"
-                    >
-                      Weekly Log Approvals
-                    </div>
-                    <div class="flex items-baseline justify-between">
-                      <span class="text-3xl font-black text-gray-800"
-                        >100%</span
+                    <div class="flex gap-3 items-start">
+                      <div
+                        class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs flex-shrink-0"
                       >
-                      <span
-                        class="text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-lg"
-                        >Up to date</span
+                        AF
+                      </div>
+                      <div
+                        class="bg-white p-4 rounded-2xl border border-gray-100 max-w-md shadow-sm"
                       >
+                        <span class="font-bold text-gray-900 text-xs block mb-1"
+                          >Ahmed Farooq</span
+                        >
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                          "Assalam-o-Alaikum Sir, we have updated the YOLOv8
+                          weights file as discussed in yesterday's meeting.
+                          Please review the attached log."
+                        </p>
+                        <span
+                          class="text-[10px] text-gray-400 mt-2 block font-bold"
+                          >Yesterday, 14:20</span
+                        >
+                      </div>
+                    </div>
+                    <div class="flex gap-3 items-start flex-row-reverse">
+                      <div
+                        class="w-8 h-8 rounded-xl bg-blue-100 text-secondary flex items-center justify-center font-bold text-xs flex-shrink-0"
+                      >
+                        AH
+                      </div>
+                      <div
+                        class="bg-primary text-white p-4 rounded-2xl max-w-md shadow-sm"
+                      >
+                        <span class="font-bold text-white text-xs block mb-1"
+                          >Dr. Ali Hassan (You)</span
+                        >
+                        <p class="text-xs text-white/90 leading-relaxed">
+                          "Walaikum Assalam. Excellent progress. Make sure to
+                          prepare the presentation slides for the upcoming
+                          committee defense."
+                        </p>
+                        <span
+                          class="text-[10px] text-white/60 mt-2 block font-bold text-right"
+                          >Yesterday, 15:45</span
+                        >
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div
-                  class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all"
-                >
-                  <div
-                    class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"
+                  <form
+                    onsubmit="handleSendMessage(event)"
+                    class="p-4 bg-white border-t border-gray-100 flex gap-3 items-center"
                   >
-                    <i class="fas fa-crown"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div
-                      class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate"
+                    <button
+                      type="button"
+                      onclick="
+                        showToast('Attachment dialog opened...', 'success')
+                      "
+                      class="w-10 h-10 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-500 flex items-center justify-center border border-gray-200 transition-all cursor-pointer flex-shrink-0"
                     >
-                      Committee Head Status
-                    </div>
-                    <div class="flex items-baseline justify-between">
-                      <span class="text-3xl font-black text-gray-800"
-                        >PEC-1</span
-                      >
-                      <span
-                        class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg"
-                        >Active Head</span
-                      >
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Quick Access Grid -->
-              <div
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-              >
-                <div
-                  onclick="navigateSPA(event, 'view-proposals')"
-                  class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-                >
-                  <div class="flex justify-between items-center mb-4">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold"
+                      <i class="fas fa-paperclip"></i>
+                    </button>
+                    <input
+                      type="text"
+                      id="msgInput"
+                      placeholder="Type your message or announcement to Group G-042..."
+                      class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary transition-all"
+                      required
+                    />
+                    <button
+                      type="submit"
+                      class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all cursor-pointer flex-shrink-0 flex items-center gap-2"
                     >
-                      <i class="fas fa-file-signature text-base"></i>
-                    </div>
-                    <i
-                      class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"
-                    ></i>
-                  </div>
-                  <div>
-                    <h3 class="font-bold text-gray-800 text-base mb-1">
-                      Student Proposals
-                    </h3>
-                    <p class="text-xs text-gray-500 font-medium">
-                      Review incoming project proposals and request mandatory
-                      revisions.
-                    </p>
-                  </div>
-                </div>
-                <div
-                  onclick="navigateSPA(event, 'view-supervision')"
-                  class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-                >
-                  <div class="flex justify-between items-center mb-4">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-blue-50 text-secondary flex items-center justify-center font-bold"
-                    >
-                      <i class="fas fa-project-diagram text-base"></i>
-                    </div>
-                    <i
-                      class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"
-                    ></i>
-                  </div>
-                  <div>
-                    <h3 class="font-bold text-gray-800 text-base mb-1">
-                      Project Supervision
-                    </h3>
-                    <p class="text-xs text-gray-500 font-medium">
-                      Track weekly log submissions and review draft thesis
-                      chapters.
-                    </p>
-                  </div>
-                </div>
-                <div
-                  onclick="navigateSPA(event, 'view-evaluations')"
-                  class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-                >
-                  <div class="flex justify-between items-center mb-4">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold"
-                    >
-                      <i class="fas fa-star text-base"></i>
-                    </div>
-                    <i
-                      class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"
-                    ></i>
-                  </div>
-                  <div>
-                    <h3 class="font-bold text-gray-800 text-base mb-1">
-                      Committee Evaluations
-                    </h3>
-                    <p class="text-xs text-gray-500 font-medium">
-                      Input scores per CLO criteria and submit locked evaluation
-                      scorecards.
-                    </p>
-                  </div>
-                </div>
-                <div
-                  onclick="navigateSPA(event, 'view-head-duties')"
-                  class="bg-white p-6 rounded-2xl border border-amber-200 shadow-sm hover:border-amber-500 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between bg-amber-50/10"
-                >
-                  <div class="flex justify-between items-center mb-4">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold"
-                    >
-                      <i class="fas fa-crown text-base"></i>
-                    </div>
-                    <i
-                      class="fas fa-arrow-right text-gray-300 group-hover:text-amber-600 group-hover:translate-x-1 transition-all"
-                    ></i>
-                  </div>
-                  <div>
-                    <h3 class="font-bold text-gray-900 text-base mb-1">
-                      Committee Head Duties
-                    </h3>
-                    <p class="text-xs text-gray-600 font-medium">
-                      Consolidate member evaluations and publish final consensus
-                      scores.
-                    </p>
-                  </div>
+                      <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>

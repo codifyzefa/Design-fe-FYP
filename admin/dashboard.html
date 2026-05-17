@@ -38,6 +38,39 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Sidebar Collapsed State */
+    #sidebar.sidebar-collapsed {
+      width: 68px !important;
+    }
+    
+    #sidebar.sidebar-collapsed #sidebarHeaderText {
+      display: none !important;
+    }
+
+    /* Hide section category labels */
+    #sidebar.sidebar-collapsed > nav > div[class*="text-[10px]"] {
+      display: none !important;
+    }
+
+    /* Hide nav item text labels */
+    #sidebar.sidebar-collapsed .nav-label {
+      display: none !important;
+    }
+
+    /* Style nav buttons to show only icons */
+    #sidebar.sidebar-collapsed .nav-btn {
+      width: 44px;
+      height: 44px;
+      padding: 10px !important;
+      justify-content: center;
+      margin: 0 auto;
+      flex: none;
+    }
+
+    #sidebar.sidebar-collapsed .nav-btn i {
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body class="bg-lightbg text-slate-700 min-h-screen selection:bg-primary selection:text-white">
@@ -639,15 +672,10 @@
     function toggleDesktopSidebar() {
       const sb = document.getElementById('sidebar');
       const icon = document.getElementById('desktopCollapseIcon');
-      sb.classList.toggle('lg:w-64');
-      sb.classList.toggle('lg:w-[68px]');
       
-      document.querySelectorAll('.nav-label').forEach(el => el.classList.toggle('lg:hidden'));
-      document.querySelectorAll('.nav-section-label').forEach(el => el.classList.toggle('lg:hidden'));
-      const headerText = document.getElementById('sidebarHeaderText');
-      if (headerText) headerText.classList.toggle('lg:hidden');
+      sb.classList.toggle('sidebar-collapsed');
 
-      if (sb.classList.contains('lg:w-[68px]')) {
+      if (sb.classList.contains('sidebar-collapsed')) {
         icon.classList.remove('fa-chevron-left');
         icon.classList.add('fa-chevron-right');
       } else {

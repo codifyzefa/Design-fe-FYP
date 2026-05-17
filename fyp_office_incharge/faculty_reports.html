@@ -34,6 +34,39 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Sidebar Collapsed State */
+    #sidebar.sidebar-collapsed {
+      width: 68px !important;
+    }
+    
+    #sidebar.sidebar-collapsed #sidebarHeaderText {
+      display: none !important;
+    }
+
+    /* Hide section category labels */
+    #sidebar.sidebar-collapsed > nav > div[class*="text-[10px]"] {
+      display: none !important;
+    }
+
+    /* Hide nav item text labels */
+    #sidebar.sidebar-collapsed .nav-label {
+      display: none !important;
+    }
+
+    /* Style nav buttons to show only icons */
+    #sidebar.sidebar-collapsed .nav-btn {
+      width: 44px;
+      height: 44px;
+      padding: 10px !important;
+      justify-content: center;
+      margin: 0 auto;
+      flex: none;
+    }
+
+    #sidebar.sidebar-collapsed .nav-btn i {
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body class="bg-lightbg text-slate-700 min-h-screen selection:bg-primary selection:text-white">
@@ -98,6 +131,9 @@
         <div class="flex items-center gap-3 min-w-0">
           <button onclick="toggleMobileSidebar()" class="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 lg:hidden flex-shrink-0">
             <i class="fas fa-bars text-sm"></i>
+          </button>
+          <button onclick="toggleDesktopSidebar()" class="hidden lg:flex w-9 h-9 rounded-xl bg-gray-50 items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 flex-shrink-0 cursor-pointer">
+            <i class="fas fa-chevron-left text-sm" id="desktopCollapseIcon"></i>
           </button>
           <div class="min-w-0">
             <h2 class="text-base font-black text-primary leading-tight truncate">Faculty Supervision Reports</h2>
@@ -253,6 +289,21 @@
       const overlay = document.getElementById('mobileOverlay');
       sb.classList.toggle('-translate-x-full');
       overlay.classList.toggle('hidden');
+    }
+
+    function toggleDesktopSidebar() {
+      const sb = document.getElementById('sidebar');
+      const icon = document.getElementById('desktopCollapseIcon');
+      
+      sb.classList.toggle('sidebar-collapsed');
+
+      if (sb.classList.contains('sidebar-collapsed')) {
+        icon.classList.remove('fa-chevron-left');
+        icon.classList.add('fa-chevron-right');
+      } else {
+        icon.classList.add('fa-chevron-left');
+        icon.classList.remove('fa-chevron-right');
+      }
     }
 
     function showToast(msg, type = 'success') {

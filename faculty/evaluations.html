@@ -128,7 +128,7 @@
           </div>
           <a
             href="dashboard.html"
-            class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold"
+            class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white"
           >
             <i
               class="fas fa-chalkboard-teacher text-sm w-5 text-center flex-shrink-0"
@@ -207,7 +207,7 @@
           </div>
           <a
             href="evaluations.html"
-            class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white"
+            class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold"
           >
             <i class="fas fa-star text-sm w-5 text-center flex-shrink-0"></i>
             <span class="nav-label text-sm font-medium whitespace-nowrap flex-1"
@@ -272,7 +272,7 @@
                 id="pageTitle"
                 class="text-base font-black text-primary leading-tight truncate"
               >
-                Faculty Dashboard
+                Committee Evaluations
               </h2>
               <p
                 class="text-[11px] text-gray-400 leading-tight hidden sm:block font-medium"
@@ -407,242 +407,166 @@
           class="flex-1 overflow-y-auto p-4 md:p-6 bg-lightbg scroll-smooth relative"
         >
           <div class="max-w-[1600px] mx-auto w-full">
-            <div id="view-dashboard" class="animate-in fade-in duration-300">
-              <!-- Welcome Banner -->
-              <div
-                class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-[fadeIn_0.4s_ease-out]"
-                style="background: linear-gradient(135deg, #2b3990, #2563eb)"
-              >
-                <div class="text-white">
-                  <h1
-                    class="text-2xl sm:text-3xl font-black mb-2 tracking-tight"
-                  >
-                    Welcome, Dr. Ali Hassan! 🎓
-                  </h1>
-                  <p
-                    class="text-sm text-white/80 font-medium max-w-2xl leading-relaxed"
-                  >
-                    Here is your academic supervision and committee management
-                    dashboard. Track active student groups, review pending
-                    project proposals, and input committee evaluation scores.
-                  </p>
-                </div>
-                <div class="flex gap-3 flex-wrap">
-                  <button
-                    onclick="navigateSPA(event, 'view-proposals')"
-                    class="bg-white text-primary hover:bg-gray-50 px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <i class="fas fa-file-signature"></i> Pending Proposals (1)
-                  </button>
-                  <button
-                    onclick="navigateSPA(event, 'view-evaluations')"
-                    class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <i class="fas fa-star"></i> Defenses (2)
-                  </button>
-                </div>
+            <div id="view-evaluations" class="animate-in fade-in duration-300">
+              <div class="border-b border-gray-100 pb-4 mb-6">
+                <h2 class="text-xl font-black text-gray-800">
+                  Committee Defense Evaluations & Rubric Scoring
+                </h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">
+                  Input scores per CLO criteria for scheduled student defenses
+                  and submit locked evaluation scorecards
+                </p>
               </div>
-              <!-- Stats Grid -->
+              <!-- Scheduled Defenses -->
               <div
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8"
+                class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8 mb-8"
               >
                 <div
-                  class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all"
+                  class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-6 border-b border-gray-100 gap-4"
                 >
-                  <div
-                    class="w-14 h-14 rounded-2xl bg-blue-50 text-secondary flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"
-                  >
-                    <i class="fas fa-project-diagram"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div
-                      class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate"
-                    >
-                      Supervised Groups
-                    </div>
-                    <div class="flex items-baseline justify-between">
-                      <span class="text-3xl font-black text-gray-800">4</span>
-                      <span
-                        class="text-xs font-bold text-secondary bg-blue-50 px-2 py-0.5 rounded-lg"
-                        >Full Cap (4/4)</span
-                      >
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all"
-                >
-                  <div
-                    class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"
-                  >
-                    <i class="fas fa-file-signature"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div
-                      class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate"
-                    >
-                      Pending Proposals
-                    </div>
-                    <div class="flex items-baseline justify-between">
-                      <span class="text-3xl font-black text-gray-800">1</span>
-                      <span
-                        class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-lg"
-                        >Requires Review</span
-                      >
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all"
-                >
-                  <div
-                    class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"
-                  >
-                    <i class="fas fa-calendar-check"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div
-                      class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate"
-                    >
-                      Weekly Log Approvals
-                    </div>
-                    <div class="flex items-baseline justify-between">
-                      <span class="text-3xl font-black text-gray-800"
-                        >100%</span
+                  <div>
+                    <div class="flex items-center gap-3 mb-1">
+                      <span class="font-black text-gray-900 text-lg"
+                        >Group G-042: AI Traffic Management</span
                       >
                       <span
-                        class="text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-lg"
-                        >Up to date</span
+                        class="bg-secondary/10 text-secondary font-bold text-xs px-3 py-1 rounded-xl border border-blue-200 shadow-sm"
+                        >PEC-1 Defense Panel</span
                       >
                     </div>
+                    <p class="text-xs text-gray-500 font-bold">
+                      Scheduled: May 20, 2026 · 10:00 AM (Room 104)
+                    </p>
                   </div>
-                </div>
-                <div
-                  class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all"
-                >
                   <div
-                    class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"
+                    class="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-2xl border border-gray-200"
                   >
-                    <i class="fas fa-crown"></i>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <div
-                      class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate"
+                    <span class="text-xs font-bold text-gray-500"
+                      >Evaluation Rubric:</span
+                    ><span class="text-xs font-black text-primary"
+                      >Official Proposal Rubric v4.0</span
                     >
-                      Committee Head Status
-                    </div>
-                    <div class="flex items-baseline justify-between">
-                      <span class="text-3xl font-black text-gray-800"
-                        >PEC-1</span
-                      >
-                      <span
-                        class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg"
-                        >Active Head</span
-                      >
-                    </div>
                   </div>
                 </div>
-              </div>
-              <!-- Quick Access Grid -->
-              <div
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-              >
-                <div
-                  onclick="navigateSPA(event, 'view-proposals')"
-                  class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
+                <!-- Rubric Scoring Form -->
+                <form
+                  onsubmit="handleEvaluationSubmit(event)"
+                  class="space-y-6"
                 >
-                  <div class="flex justify-between items-center mb-4">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold"
+                  <div class="space-y-4">
+                    <span
+                      class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2"
+                      >CLO Criteria Scorecard Input</span
                     >
-                      <i class="fas fa-file-signature text-base"></i>
+                    <div
+                      class="grid grid-cols-1 sm:grid-cols-3 gap-6 p-5 bg-gray-50 rounded-2xl border border-gray-200 items-center"
+                    >
+                      <div>
+                        <span
+                          class="block font-black text-gray-800 text-xs mb-1"
+                          >Problem Statement & Relevance</span
+                        ><span
+                          class="text-[10px] font-bold text-secondary bg-blue-50 px-2 py-0.5 rounded border border-blue-100"
+                          >CLO-1 (Weight: 30%)</span
+                        >
+                      </div>
+                      <div class="sm:col-span-2 flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="0"
+                          max="30"
+                          value="25"
+                          oninput="
+                            this.nextElementSibling.textContent =
+                              this.value + ' / 30'
+                          "
+                          class="w-full accent-secondary cursor-pointer"
+                        /><span
+                          class="font-black text-gray-800 text-sm w-16 text-right"
+                          >25 / 30</span
+                        >
+                      </div>
                     </div>
-                    <i
-                      class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"
-                    ></i>
+                    <div
+                      class="grid grid-cols-1 sm:grid-cols-3 gap-6 p-5 bg-gray-50 rounded-2xl border border-gray-200 items-center"
+                    >
+                      <div>
+                        <span
+                          class="block font-black text-gray-800 text-xs mb-1"
+                          >Literature Review & Methodology</span
+                        ><span
+                          class="text-[10px] font-bold text-secondary bg-blue-50 px-2 py-0.5 rounded border border-blue-100"
+                          >CLO-2 (Weight: 40%)</span
+                        >
+                      </div>
+                      <div class="sm:col-span-2 flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="0"
+                          max="40"
+                          value="35"
+                          oninput="
+                            this.nextElementSibling.textContent =
+                              this.value + ' / 40'
+                          "
+                          class="w-full accent-secondary cursor-pointer"
+                        /><span
+                          class="font-black text-gray-800 text-sm w-16 text-right"
+                          >35 / 40</span
+                        >
+                      </div>
+                    </div>
+                    <div
+                      class="grid grid-cols-1 sm:grid-cols-3 gap-6 p-5 bg-gray-50 rounded-2xl border border-gray-200 items-center"
+                    >
+                      <div>
+                        <span
+                          class="block font-black text-gray-800 text-xs mb-1"
+                          >Expected Outcomes & Deliverables</span
+                        ><span
+                          class="text-[10px] font-bold text-secondary bg-blue-50 px-2 py-0.5 rounded border border-blue-100"
+                          >CLO-3 (Weight: 30%)</span
+                        >
+                      </div>
+                      <div class="sm:col-span-2 flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="0"
+                          max="30"
+                          value="28"
+                          oninput="
+                            this.nextElementSibling.textContent =
+                              this.value + ' / 30'
+                          "
+                          class="w-full accent-secondary cursor-pointer"
+                        /><span
+                          class="font-black text-gray-800 text-sm w-16 text-right"
+                          >28 / 30</span
+                        >
+                      </div>
+                    </div>
                   </div>
                   <div>
-                    <h3 class="font-bold text-gray-800 text-base mb-1">
-                      Student Proposals
-                    </h3>
-                    <p class="text-xs text-gray-500 font-medium">
-                      Review incoming project proposals and request mandatory
-                      revisions.
-                    </p>
-                  </div>
-                </div>
-                <div
-                  onclick="navigateSPA(event, 'view-supervision')"
-                  class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-                >
-                  <div class="flex justify-between items-center mb-4">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-blue-50 text-secondary flex items-center justify-center font-bold"
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5"
+                      >Committee Member Remarks & Recommendations</label
                     >
-                      <i class="fas fa-project-diagram text-base"></i>
-                    </div>
-                    <i
-                      class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"
-                    ></i>
+                    <textarea
+                      placeholder="Provide specific feedback regarding the defense presentation and deliverable quality..."
+                      class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-secondary focus:bg-white transition-all h-28"
+                      required
+                    ></textarea>
                   </div>
-                  <div>
-                    <h3 class="font-bold text-gray-800 text-base mb-1">
-                      Project Supervision
-                    </h3>
-                    <p class="text-xs text-gray-500 font-medium">
-                      Track weekly log submissions and review draft thesis
-                      chapters.
-                    </p>
-                  </div>
-                </div>
-                <div
-                  onclick="navigateSPA(event, 'view-evaluations')"
-                  class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
-                >
-                  <div class="flex justify-between items-center mb-4">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold"
+                  <div
+                    class="pt-4 border-t border-gray-100 flex justify-end gap-3"
+                  >
+                    <button
+                      type="submit"
+                      class="bg-secondary hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all cursor-pointer flex items-center gap-2"
                     >
-                      <i class="fas fa-star text-base"></i>
-                    </div>
-                    <i
-                      class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"
-                    ></i>
+                      <i class="fas fa-lock"></i> Submit Locked Scorecard
+                    </button>
                   </div>
-                  <div>
-                    <h3 class="font-bold text-gray-800 text-base mb-1">
-                      Committee Evaluations
-                    </h3>
-                    <p class="text-xs text-gray-500 font-medium">
-                      Input scores per CLO criteria and submit locked evaluation
-                      scorecards.
-                    </p>
-                  </div>
-                </div>
-                <div
-                  onclick="navigateSPA(event, 'view-head-duties')"
-                  class="bg-white p-6 rounded-2xl border border-amber-200 shadow-sm hover:border-amber-500 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between bg-amber-50/10"
-                >
-                  <div class="flex justify-between items-center mb-4">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold"
-                    >
-                      <i class="fas fa-crown text-base"></i>
-                    </div>
-                    <i
-                      class="fas fa-arrow-right text-gray-300 group-hover:text-amber-600 group-hover:translate-x-1 transition-all"
-                    ></i>
-                  </div>
-                  <div>
-                    <h3 class="font-bold text-gray-900 text-base mb-1">
-                      Committee Head Duties
-                    </h3>
-                    <p class="text-xs text-gray-600 font-medium">
-                      Consolidate member evaluations and publish final consensus
-                      scores.
-                    </p>
-                  </div>
-                </div>
+                </form>
               </div>
             </div>
           </div>
