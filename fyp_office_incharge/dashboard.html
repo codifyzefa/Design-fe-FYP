@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FYP Office In-charge Portal — CUI Abbottabad</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+          colors: {
+            primary: '#2B3990',
+            secondary: '#2563EB',
+            lightbg: '#EFF6FF',
+            success: '#059669',
+            warning: '#D97706',
+            danger: '#DC2626',
+            pending: '#B45309'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .app-view { display: none; animation: fadeIn 0.3s ease-out; }
+    .app-view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .has-tooltip { position: relative; }
+    .has-tooltip:hover .custom-tooltip { display: block; }
+    .custom-tooltip {
+      display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+      background: #1e293b; color: white; padding: 6px 12px; border-radius: 8px; font-size: 11px;
+      font-weight: 600; white-space: normal; width: max-content; max-width: 260px; z-index: 100;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); margin-bottom: 6px;
+    }
+    .custom-tooltip::after {
+      content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border-width: 5px; border-style: solid; border-color: #1e293b transparent transparent transparent;
+    }
+  </style>
+</head>
+<body class="bg-lightbg text-slate-700 min-h-screen selection:bg-primary selection:text-white">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-[200] bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 pointer-events-none border border-white/10">
+    <i id="toastIcon" class="fas fa-check-circle text-success text-lg"></i>
+    <span id="toastMsg" class="text-sm font-bold">Action completed successfully!</span>
+  </div>
+
+  <div class="flex h-screen overflow-hidden relative bg-lightbg">
+    
+    <!-- ================= SIDEBAR ================= -->
+    <div id="sidebar" class="bg-primary flex flex-col flex-shrink-0 transition-all duration-300 overflow-hidden fixed lg:relative z-[50] h-full -translate-x-full lg:translate-x-0 w-64 lg:w-64 border-r border-white/10 shadow-2xl lg:shadow-none">
+      
+      <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10 relative">
+        <div class="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+          <i class="fas fa-university text-white text-sm"></i>
+        </div>
+        <div id="sidebarHeaderText" class="overflow-hidden transition-all duration-300">
+          <div class="text-white text-sm font-black whitespace-nowrap tracking-wide">CUI ABBOTTABAD</div>
+          <div class="text-white/60 text-[11px] whitespace-nowrap leading-tight font-semibold">FYP Office In-charge</div>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="ml-auto lg:hidden bg-transparent border-0 text-white cursor-pointer p-1 rounded-lg hover:bg-white/15 transition-colors absolute right-4">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto p-3 space-y-1" style="scrollbar-width: none;">
+        
+        <div class="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-2">Overview</div>
+        <div onclick="navigateSPA(event, 'view-dashboard')" data-title="Dashboard" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold">
+          <i class="fas fa-home text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Dashboard</span>
+        </div>
+
+        <div class="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">Curriculum & Sessions</div>
+        <div onclick="navigateSPA(event, 'view-rubrics')" data-title="Rubric Management" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-tasks text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Rubric Builder</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-sessions')" data-title="Academic Session Management" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-calendar-alt text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Academic Sessions</span>
+        </div>
+
+        <div class="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">Governance & Oversight</div>
+        <div onclick="navigateSPA(event, 'view-supervision-requests')" data-title="Supervision Requests" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-user-plus text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Supervision Requests</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-committee-oversight')" data-title="Committee Oversight" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-users text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Committee Oversight</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-grievances')" data-title="Grievance Management" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-balance-scale text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Grievances & SLAs</span>
+        </div>
+
+        <div class="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">Analytics & Logs</div>
+        <div onclick="window.location.href='faculty_reports.html'" data-title="Faculty Reports" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-chart-bar text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Faculty Reports</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-student-reports')" data-title="Student Reports" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-user-graduate text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Student Reports</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-audit-log')" data-title="Audit Log Viewer" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-history text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">System Audit Logs</span>
+        </div>
+
+      </nav>
+
+      <div class="p-3 border-t border-white/10 bg-black/10">
+        <div onclick="doLogout(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-white/80 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200 font-bold" title="Logout">
+          <i class="fas fa-right-from-bracket text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm">Logout</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div id="mobileOverlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-[40] lg:hidden backdrop-blur-sm hidden"></div>
+
+    <!-- ================= MAIN CONTENT WRAPPER ================= -->
+    <div class="flex-1 flex flex-col overflow-hidden w-full transition-all duration-300 ease-in-out">
+      
+      <!-- ================= TOPBAR ================= -->
+      <div class="bg-white border-b border-gray-100 px-4 md:px-6 h-16 flex items-center justify-between shadow-sm flex-shrink-0 z-[30] gap-3">
+        
+        <div class="flex items-center gap-3 min-w-0">
+          <button onclick="toggleMobileSidebar()" class="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 lg:hidden flex-shrink-0">
+            <i class="fas fa-bars text-sm"></i>
+          </button>
+          <button onclick="toggleDesktopSidebar()" class="hidden lg:flex w-9 h-9 rounded-xl bg-gray-50 items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 flex-shrink-0 cursor-pointer">
+            <i class="fas fa-chevron-left text-sm" id="desktopCollapseIcon"></i>
+          </button>
+          <div class="min-w-0">
+            <h2 id="pageTitle" class="text-base font-black text-primary leading-tight truncate">Dashboard</h2>
+            <p class="text-[11px] text-gray-400 leading-tight hidden sm:block font-medium">COMSATS University Islamabad, Abbottabad Campus</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          
+          <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-xl text-xs font-bold text-purple-700 whitespace-nowrap shadow-sm">
+            <i class="fas fa-user-tie text-purple-600"></i>
+            <span>FYP Office In-charge</span>
+          </div>
+
+          <!-- Notification Center -->
+          <div class="relative" id="notifWrap">
+            <button onclick="toggleNotifications()" class="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-50 hover:text-secondary transition-all cursor-pointer relative">
+              <i class="fas fa-bell text-sm"></i>
+              <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-50 rounded-full border-2 border-white animate-pulse"></span>
+            </button>
+            
+            <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100] animate-in fade-in-50 duration-200">
+              <div class="p-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+                <span class="text-sm font-black text-gray-800">Notifications</span>
+                <button onclick="markAllRead()" class="text-xs font-bold text-secondary hover:underline cursor-pointer">Mark all as read</button>
+              </div>
+              <div class="max-h-80 overflow-y-auto divide-y divide-gray-50" id="notifList">
+                <div class="p-4 hover:bg-red-50/50 transition-colors flex gap-3 items-start border-l-4 border-red-500 bg-red-50/20">
+                  <div class="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-xs flex-shrink-0 mt-0.5"><i class="fas fa-exclamation-circle"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-gray-900">Grievance SLA Breach Warning</div>
+                    <div class="text-[11px] text-gray-600 mt-0.5">Grievance #GRV-089 (Evaluation Dispute) has exceeded the 14-day resolution window.</div>
+                    <div class="text-[10px] text-gray-400 mt-1 font-bold">1 hour ago</div>
+                  </div>
+                </div>
+                <div class="p-4 hover:bg-blue-50/50 transition-colors flex gap-3 items-start border-l-4 border-secondary bg-blue-50/20">
+                  <div class="w-8 h-8 rounded-xl bg-blue-100 text-secondary flex items-center justify-center text-xs flex-shrink-0 mt-0.5"><i class="fas fa-user-plus"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-gray-900">Additional Supervision Request</div>
+                    <div class="text-[11px] text-gray-600 mt-0.5">Dr. Ali Hassan requested permission for 1 additional supervision slot.</div>
+                    <div class="text-[10px] text-gray-400 mt-1 font-bold">3 hours ago</div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                <button onclick="alert('Navigating to full notifications page...')" class="text-xs font-bold text-gray-600 hover:text-primary transition-colors cursor-pointer">View All Notifications</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Menu -->
+          <div class="relative">
+            <button class="flex items-center gap-2 p-1 md:px-2.5 md:py-1.5 bg-gray-50 rounded-xl cursor-pointer border border-gray-100 hover:bg-blue-50 hover:border-blue-100 transition-all">
+              <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-700 text-xs font-bold shadow-sm flex-shrink-0">
+                <span id="navAvatar">SM</span>
+              </div>
+              <div class="text-left hidden sm:block">
+                <div id="navName" class="text-xs font-bold text-gray-800 leading-tight truncate max-w-28">Dr. Sara Malik</div>
+                <div class="text-[10px] text-gray-400 leading-tight font-bold">In-charge</div>
+              </div>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= MAIN CONTENT AREA ================= -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-lightbg scroll-smooth relative">
+        <div class="max-w-[1600px] mx-auto w-full">
+          
+          <!-- VIEW: DASHBOARD -->
+          <div id="view-dashboard" class="app-view active">
+            
+            <!-- Welcome Banner -->
+            <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-[fadeIn_0.4s_ease-out]" style="background: linear-gradient(135deg, #2B3990, #1E3A8A);">
+              <div class="text-white">
+                <h1 class="text-2xl sm:text-3xl font-black mb-2 tracking-tight">Welcome back, Dr. Malik! 🌟</h1>
+                <p class="text-sm text-white/80 font-medium max-w-2xl leading-relaxed">Here is the executive oversight panel for the Spring 2026 academic session. Monitor grievance SLAs, review supervision requests, and manage curriculum rubrics.</p>
+              </div>
+              <div class="flex gap-3 flex-wrap">
+                <button onclick="navigateSPA(event, 'view-supervision-requests')" class="bg-white text-primary hover:bg-gray-50 px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer">
+                  <i class="fas fa-user-plus"></i> Pending Requests (2)
+                </button>
+                <button onclick="navigateSPA(event, 'view-grievances')" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer">
+                  <i class="fas fa-balance-scale"></i> Grievances (1)
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-tasks"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Active Rubrics</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">4</span>
+                    <span class="text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-lg">Validated</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 text-secondary flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-user-plus"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Supervision Req</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">2</span>
+                    <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-lg">Pending</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-balance-scale-right"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Open Grievances</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">3</span>
+                    <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-lg">1 SLA Breach</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-calendar-check"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Active Session</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">SP26</span>
+                    <span class="text-xs font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-lg flex items-center gap-1"><i class="fas fa-lock text-xs"></i> Locked</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Access Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div onclick="navigateSPA(event, 'view-rubrics')" class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold"><i class="fas fa-tasks text-base"></i></div>
+                  <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div><h3 class="font-bold text-gray-800 text-base mb-1">Rubric Builder</h3><p class="text-xs text-gray-500 font-medium">Design proposal & CLO evaluation rubrics with 100% weight validation.</p></div>
+              </div>
+              <div onclick="navigateSPA(event, 'view-sessions')" class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-blue-50 text-secondary flex items-center justify-center font-bold"><i class="fas fa-calendar-alt text-base"></i></div>
+                  <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div><h3 class="font-bold text-gray-800 text-base mb-1">Academic Sessions</h3><p class="text-xs text-gray-500 font-medium">Configure milestone deadlines and handle FYP-1 repeat registrations.</p></div>
+              </div>
+              <div onclick="navigateSPA(event, 'view-committee-oversight')" class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold"><i class="fas fa-users text-base"></i></div>
+                  <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div><h3 class="font-bold text-gray-800 text-base mb-1">Committee Oversight</h3><p class="text-xs text-gray-500 font-medium">Monitor active boards, manage head change requests, and trigger re-evaluations.</p></div>
+              </div>
+              <div onclick="navigateSPA(event, 'view-grievances')" class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold"><i class="fas fa-balance-scale text-base"></i></div>
+                  <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div><h3 class="font-bold text-gray-800 text-base mb-1">Grievance & SLAs</h3><p class="text-xs text-gray-500 font-medium">Resolve student disputes, monitor SLA windows, and escalate critical issues.</p></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- VIEW: RUBRIC MANAGEMENT -->
+          <div id="view-rubrics" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Rubric Builder & Validation</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Create Proposal and CLO-based FYP Evaluation rubrics. The system enforces exactly 100% total weight accumulation.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+              <!-- Rubric Builder Form -->
+              <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+                  <h3 class="text-base font-black text-gray-800">Design Rubric Schema</h3>
+                  <div class="flex gap-2">
+                    <button onclick="toggleRubricType('proposal')" id="btnRubProp" class="px-4 py-1.5 rounded-xl bg-primary text-white text-xs font-bold transition-all cursor-pointer shadow-md">Proposal Rubric</button>
+                    <button onclick="toggleRubricType('fyp')" id="btnRubFyp" class="px-4 py-1.5 rounded-xl bg-gray-100 text-gray-600 text-xs font-bold transition-all cursor-pointer hover:bg-gray-200">FYP Evaluation Rubric</button>
+                  </div>
+                </div>
+
+                <form onsubmit="handleRubricSubmit(event)" class="space-y-6">
+                  <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5">Rubric Title</label>
+                    <input type="text" id="rubTitle" value="Official Proposal Evaluation Rubric v4.0" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary transition-all" required />
+                  </div>
+
+                  <div class="space-y-4" id="criteriaContainer">
+                    <div class="flex justify-between items-center"><span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Evaluation Criteria & Weights</span><button type="button" onclick="addCriterion()" class="text-xs font-bold text-secondary hover:underline cursor-pointer"><i class="fas fa-plus mr-1"></i> Add Criterion</button></div>
+                    
+                    <div class="grid grid-cols-12 gap-3 items-center p-4 bg-gray-50 rounded-2xl border border-gray-200 criterion-row">
+                      <div class="col-span-6"><label class="block text-[10px] font-bold text-gray-500 mb-1">Criterion Title</label><input type="text" value="Problem Statement & Relevance" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary" required /></div>
+                      <div class="col-span-4"><label class="block text-[10px] font-bold text-gray-500 mb-1">Mapped CLO</label><input type="text" value="CLO-1 (Problem Identification)" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary" required /></div>
+                      <div class="col-span-2"><label class="block text-[10px] font-bold text-gray-500 mb-1">Weight (%)</label><input type="number" value="30" oninput="calculateRubricTotal()" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary rubric-weight" min="1" max="100" required /></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-3 items-center p-4 bg-gray-50 rounded-2xl border border-gray-200 criterion-row">
+                      <div class="col-span-6"><label class="block text-[10px] font-bold text-gray-500 mb-1">Criterion Title</label><input type="text" value="Literature Review & Methodology" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary" required /></div>
+                      <div class="col-span-4"><label class="block text-[10px] font-bold text-gray-500 mb-1">Mapped CLO</label><input type="text" value="CLO-2 (Design & Methodology)" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary" required /></div>
+                      <div class="col-span-2"><label class="block text-[10px] font-bold text-gray-500 mb-1">Weight (%)</label><input type="number" value="40" oninput="calculateRubricTotal()" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary rubric-weight" min="1" max="100" required /></div>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-3 items-center p-4 bg-gray-50 rounded-2xl border border-gray-200 criterion-row">
+                      <div class="col-span-6"><label class="block text-[10px] font-bold text-gray-500 mb-1">Criterion Title</label><input type="text" value="Expected Outcomes & Deliverables" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary" required /></div>
+                      <div class="col-span-4"><label class="block text-[10px] font-bold text-gray-500 mb-1">Mapped CLO</label><input type="text" value="CLO-3 (Modern Tool Usage)" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary" required /></div>
+                      <div class="col-span-2"><label class="block text-[10px] font-bold text-gray-500 mb-1">Weight (%)</label><input type="number" value="30" oninput="calculateRubricTotal()" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary rubric-weight" min="1" max="100" required /></div>
+                    </div>
+                  </div>
+
+                  <!-- 100% Validation Box -->
+                  <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 flex justify-between items-center">
+                    <span class="text-xs font-bold text-gray-600">Total Accumulation Weight:</span>
+                    <div class="flex items-center gap-3">
+                      <span id="rubTotalText" class="text-xl font-black text-success">100%</span>
+                      <span id="rubValidBadge" class="bg-success/10 text-success font-bold text-xs px-3 py-1 rounded-lg border border-success/20">Valid Schema</span>
+                    </div>
+                  </div>
+
+                  <div class="pt-4 border-t border-gray-50 flex justify-end">
+                    <button type="submit" id="saveRubBtn" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all cursor-pointer">
+                      Publish Rubric Schema
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Read-only Version History -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+                <h3 class="text-base font-black text-gray-800 pb-3 border-b border-gray-50">Rubric Version History</h3>
+                <div class="space-y-3">
+                  <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex justify-between items-center text-xs"><div><span class="font-bold text-gray-800 block">Proposal Rubric v3.0</span><span class="text-[11px] text-gray-500">Published: Jan 10, 2026</span></div><span class="bg-gray-200 text-gray-600 font-bold text-[10px] px-2.5 py-1 rounded-lg">Archived</span></div>
+                  <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex justify-between items-center text-xs"><div><span class="font-bold text-gray-800 block">FYP Evaluation Rubric v2.1</span><span class="text-[11px] text-gray-500">Published: Sep 15, 2025</span></div><span class="bg-gray-200 text-gray-600 font-bold text-[10px] px-2.5 py-1 rounded-lg">Archived</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: ACADEMIC SESSION MANAGEMENT -->
+          <div id="view-sessions" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Academic Session Management & Repeat Registrations</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Configure session timelines, lock active session structures, and manage FYP-1 repeat enrollments</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+              <!-- Session Creation Form -->
+              <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+                  <h3 class="text-base font-black text-gray-800">Configure Academic Session</h3>
+                  <div class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200">
+                    <i class="fas fa-lock text-gray-600 text-xs"></i>
+                    <span class="text-xs font-bold text-gray-700">Active Session Locked</span>
+                  </div>
+                </div>
+
+                <form onsubmit="handleSessionSubmit(event)" class="space-y-5">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div><label class="block text-xs font-bold text-gray-700 mb-1.5">Session Name</label><input type="text" value="Spring 2026 (SP26)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary" required /></div>
+                    <div><label class="block text-xs font-bold text-gray-700 mb-1.5">Session Duration</label><input type="text" value="Feb 01, 2026 – Jul 15, 2026" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary" required /></div>
+                  </div>
+
+                  <div class="space-y-3 pt-2">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Milestone Deadlines</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div><label class="block text-[10px] font-bold text-gray-500 mb-1">Proposal Submission</label><input type="date" value="2026-03-01" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer" required /></div>
+                      <div><label class="block text-[10px] font-bold text-gray-500 mb-1">Mid-Term Defense (30%)</label><input type="date" value="2026-05-18" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer" required /></div>
+                      <div><label class="block text-[10px] font-bold text-gray-500 mb-1">Final Defense (100%)</label><input type="date" value="2026-07-05" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer" required /></div>
+                    </div>
+                  </div>
+
+                  <div class="pt-4 border-t border-gray-50 flex justify-end">
+                    <button type="submit" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all cursor-pointer">Save Session Configuration</button>
+                  </div>
+                </form>
+
+                <!-- FYP-1 Repeat Management Table -->
+                <div class="mt-10 pt-6 border-t border-gray-100">
+                  <h3 class="text-base font-black text-gray-800 mb-4">FYP-1 Repeat Management</h3>
+                  <div class="overflow-x-auto border border-gray-100 rounded-2xl">
+                    <table class="w-full text-left border-collapse">
+                      <thead>
+                        <tr class="bg-gray-50 text-[11px] font-black text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                          <th class="py-3 px-4">Student Name</th>
+                          <th class="py-3 px-4">Reg Number</th>
+                          <th class="py-3 px-4">Previous Status</th>
+                          <th class="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-gray-100 text-xs font-bold text-gray-700">
+                        <tr class="hover:bg-gray-50/50">
+                          <td class="py-3 px-4 font-black text-gray-900">Faizan Ali</td>
+                          <td class="py-3 px-4 text-gray-500 font-mono">SP21-BCS-031</td>
+                          <td class="py-3 px-4"><span class="bg-red-50 text-red-600 px-2 py-0.5 rounded-lg border border-red-100">Failing Grade (FYP-1)</span></td>
+                          <td class="py-3 px-4 text-right space-x-1">
+                            <button onclick="confirmAction('clear student Faizan Ali for re-registration', () => showToast('Student cleared for re-registration!', 'success'))" class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-all cursor-pointer">Clear</button>
+                            <button onclick="showToast('Student enrolled in new group G-088!', 'success')" class="px-2.5 py-1 rounded-lg bg-blue-50 text-secondary hover:bg-blue-100 border border-blue-200 transition-all cursor-pointer">Enroll</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Active Session Details -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+                <h3 class="text-base font-black text-gray-800 pb-3 border-b border-gray-50">Session Integrity Lock</h3>
+                <div class="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 flex items-start gap-3">
+                  <i class="fas fa-shield-alt text-secondary text-xl mt-0.5"></i>
+                  <div class="text-xs">
+                    <span class="block font-black text-gray-900 mb-1">Padlock Protection Active</span>
+                    <p class="text-gray-600 leading-relaxed">Major structural changes (such as altering rubric criteria weights or deleting active student records) are locked during an ongoing semester to ensure academic compliance.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: SUPERVISION REQUESTS -->
+          <div id="view-supervision-requests" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Faculty Additional Supervision Requests</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Review and approve or reject faculty requests for exceeding standard supervision slot caps</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Request Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between hover:border-secondary transition-all">
+                <div>
+                  <div class="flex justify-between items-start mb-4 pb-4 border-b border-gray-50">
+                    <div class="flex items-center gap-4">
+                      <div class="w-12 h-12 rounded-xl bg-blue-50 text-secondary flex items-center justify-center font-black text-xl border border-blue-100">AH</div>
+                      <div><h3 class="font-black text-gray-900 text-base">Dr. Ali Hassan</h3><p class="text-xs text-gray-500 font-medium">Associate Professor</p></div>
+                    </div>
+                    <span class="bg-amber-50 text-amber-600 font-bold text-xs px-2.5 py-1 rounded-lg border border-amber-200">Pending Review</span>
+                  </div>
+                  <div class="space-y-2 text-xs mb-6">
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">Current Load:</span><span class="font-black text-gray-800">4 / 4 Slots Used</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">Requested Slots:</span><span class="font-black text-secondary">+1 Additional Slot</span></div>
+                    <div class="mt-2 bg-gray-50 p-3 rounded-xl border border-gray-100"><span class="font-bold text-gray-600 block mb-1">Faculty Justification:</span><p class="text-gray-500 italic">"An exceptional student group proposed an AI traffic signal optimization project that aligns perfectly with my active HEC research grant."</p></div>
+                  </div>
+                </div>
+                <div class="flex gap-2 pt-4 border-t border-gray-50">
+                  <button onclick="confirmAction('approve additional supervision slot for Dr. Ali Hassan', () => showToast('Supervision request approved!', 'success'))" class="flex-1 py-2.5 bg-success hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20"><i class="fas fa-check"></i> Approve</button>
+                  <button onclick="openModal('rejectRequestModal')" class="px-5 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2"><i class="fas fa-times"></i> Reject</button>
+                </div>
+              </div>
+
+              <!-- Request Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between hover:border-secondary transition-all">
+                <div>
+                  <div class="flex justify-between items-start mb-4 pb-4 border-b border-gray-50">
+                    <div class="flex items-center gap-4">
+                      <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-black text-xl border border-purple-200">FK</div>
+                      <div><h3 class="font-black text-gray-900 text-base">Dr. Fatima Khan</h3><p class="text-xs text-gray-500 font-medium">Assistant Professor</p></div>
+                    </div>
+                    <span class="bg-amber-50 text-amber-600 font-bold text-xs px-2.5 py-1 rounded-lg border border-amber-200">Pending Review</span>
+                  </div>
+                  <div class="space-y-2 text-xs mb-6">
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">Current Load:</span><span class="font-black text-gray-800">4 / 4 Slots Used</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">Requested Slots:</span><span class="font-black text-secondary">+2 Additional Slots</span></div>
+                    <div class="mt-2 bg-gray-50 p-3 rounded-xl border border-gray-100"><span class="font-bold text-gray-600 block mb-1">Faculty Justification:</span><p class="text-gray-500 italic">"Requesting extension to accommodate two cybersecurity groups transferred from departing faculty."</p></div>
+                  </div>
+                </div>
+                <div class="flex gap-2 pt-4 border-t border-gray-50">
+                  <button onclick="confirmAction('approve additional supervision slots for Dr. Fatima', () => showToast('Supervision request approved!', 'success'))" class="flex-1 py-2.5 bg-success hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20"><i class="fas fa-check"></i> Approve</button>
+                  <button onclick="openModal('rejectRequestModal')" class="px-5 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2"><i class="fas fa-times"></i> Reject</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: COMMITTEE OVERSIGHT -->
+          <div id="view-committee-oversight" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Committee Governance & Oversight</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Monitor evaluation boards, manage committee head change requests, and trigger formal re-evaluations</p>
+            </div>
+
+            <!-- Committees Table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
+              <div class="p-5 bg-gray-50 border-b border-gray-100"><h3 class="text-base font-black text-gray-800">Active Boards Overview</h3></div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6">Committee Name</th>
+                      <th class="py-3.5 px-6">Committee Head</th>
+                      <th class="py-3.5 px-6">Active Members</th>
+                      <th class="py-3.5 px-6">Evaluation Schedule</th>
+                      <th class="py-3.5 px-6 text-right">Governance Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">PEC-1 (AI & Vision)</td>
+                      <td class="py-4 px-6 text-gray-600 font-bold">Dr. Ali Hassan</td>
+                      <td class="py-4 px-6 text-gray-600">4 Members</td>
+                      <td class="py-4 px-6 text-gray-600 text-xs font-mono">Published (May 15)</td>
+                      <td class="py-4 px-6 text-right space-x-1">
+                        <button onclick="confirmAction('trigger formal re-evaluation for PEC-1', () => showToast('Re-evaluation workflow initiated!', 'warning'))" class="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold transition-all cursor-pointer">Request Re-eval</button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">FEC-FYP2-B</td>
+                      <td class="py-4 px-6 text-gray-600 font-bold">Dr. Sara Malik</td>
+                      <td class="py-4 px-6 text-gray-600">3 Members</td>
+                      <td class="py-4 px-6 text-gray-600 text-xs font-mono">Upcoming (Jun 10)</td>
+                      <td class="py-4 px-6 text-right space-x-1">
+                        <button onclick="confirmAction('trigger formal re-evaluation for FEC-FYP2-B', () => showToast('Re-evaluation workflow initiated!', 'warning'))" class="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold transition-all cursor-pointer">Request Re-eval</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Committee Head Change Requests -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <h3 class="text-base font-black text-gray-800 mb-6 pb-3 border-b border-gray-50">Committee Head Change Requests</h3>
+              <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <div class="flex items-center gap-3 mb-1">
+                    <span class="font-black text-gray-900 text-sm">FEC-FYP2-B Head Re-assignment</span>
+                    <span class="bg-amber-50 text-amber-600 font-bold text-[10px] px-2.5 py-0.5 rounded-lg border border-amber-200">Pending Approval</span>
+                  </div>
+                  <p class="text-xs text-gray-600 font-medium max-w-2xl leading-relaxed">Request from Dr. Sara Malik to transfer committee head responsibilities to Dr. Fatima Khan due to upcoming maternity leave.</p>
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
+                  <button onclick="confirmAction('approve committee head transfer', () => showToast('Committee head reassigned successfully!', 'success'))" class="px-4 py-2 bg-success hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm"><i class="fas fa-check mr-1"></i> Approve</button>
+                  <button onclick="openModal('rejectRequestModal')" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition-all cursor-pointer"><i class="fas fa-times mr-1"></i> Reject</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: GRIEVANCE MANAGEMENT -->
+          <div id="view-grievances" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Grievance Management & SLA Monitoring</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Review student disputes, monitor strict SLA deadlines (3-day acknowledgment, 14-day resolution), and escalate critical issues</p>
+            </div>
+
+            <div class="space-y-6">
+              <!-- Grievance Card -->
+              <div class="bg-white rounded-2xl border border-red-200 shadow-sm p-6 hover:shadow-md transition-all relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-red-600"></div>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-4 border-b border-gray-50 gap-4 pl-4">
+                  <div>
+                    <div class="flex items-center gap-3 mb-1">
+                      <span class="font-black text-gray-900 text-base">Ahmed Farooq (SP21-BCS-001)</span>
+                      <span class="bg-red-50 text-red-600 font-bold text-xs px-2.5 py-1 rounded-lg border border-red-200"><i class="fas fa-exclamation-circle mr-1"></i> SLA Breach (15 Days)</span>
+                    </div>
+                    <p class="text-xs text-gray-500 font-bold">Category: Evaluation Dispute · Filed: May 02, 2026</p>
+                  </div>
+                  <span class="bg-amber-50 text-amber-600 font-bold text-xs px-3 py-1.5 rounded-xl border border-amber-200 shadow-sm">Under Investigation</span>
+                </div>
+
+                <div class="pl-4 space-y-4 text-xs">
+                  <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100"><span class="font-bold text-gray-700 block mb-1">Grievance Description:</span><p class="text-gray-600 leading-relaxed">"Our group was awarded 8.5/10 in the 10% milestone evaluation, but the committee rubric scorecard contained a calculation error in the CLO-2 summation."</p></div>
+                  <div class="flex items-center gap-2"><i class="fas fa-paperclip text-secondary"></i><span class="font-bold text-gray-700">Attached Evidence:</span><a href="#" onclick="showToast('Downloading evidence document...', 'success')" class="text-secondary hover:underline font-bold">rubric_scorecard_error.pdf (1.2 MB)</a></div>
+                  
+                  <div class="flex flex-wrap gap-2 pt-4 border-t border-gray-50 justify-end">
+                    <button onclick="confirmAction('request formal committee re-evaluation', () => showToast('Grievance routed back to PEC-1 for re-evaluation!', 'success'))" class="px-4 py-2.5 bg-primary hover:bg-blue-900 text-white rounded-xl font-bold transition-all cursor-pointer shadow-sm flex items-center gap-2"><i class="fas fa-sync-alt"></i> Request Re-evaluation</button>
+                    <button onclick="confirmAction('escalate grievance to HOD', () => showToast('Grievance escalated to HOD dashboard!', 'warning'))" class="px-4 py-2.5 bg-warning hover:bg-amber-600 text-white rounded-xl font-bold transition-all cursor-pointer shadow-sm flex items-center gap-2"><i class="fas fa-level-up-alt"></i> Escalate to HOD</button>
+                    <button onclick="openModal('dismissGrievanceModal')" class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-2"><i class="fas fa-times"></i> Dismiss</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Grievance Card -->
+              <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 hover:shadow-md transition-all relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-amber-500"></div>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-4 border-b border-gray-50 gap-4 pl-4">
+                  <div>
+                    <div class="flex items-center gap-3 mb-1">
+                      <span class="font-black text-gray-900 text-base">Aima Khalid (SP21-BCS-019)</span>
+                      <span class="bg-amber-50 text-amber-600 font-bold text-xs px-2.5 py-1 rounded-lg border border-amber-200"><i class="fas fa-clock mr-1"></i> SLA Warning (2 Days Left)</span>
+                    </div>
+                    <p class="text-xs text-gray-500 font-bold">Category: Supervision Dispute · Filed: May 15, 2026</p>
+                  </div>
+                  <span class="bg-blue-50 text-secondary font-bold text-xs px-3 py-1.5 rounded-xl border border-blue-200 shadow-sm">New Filing</span>
+                </div>
+
+                <div class="pl-4 space-y-4 text-xs">
+                  <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100"><span class="font-bold text-gray-700 block mb-1">Grievance Description:</span><p class="text-gray-600 leading-relaxed">"Our assigned supervisor has not responded to our weekly meeting logs or draft submissions for the past 3 consecutive weeks."</p></div>
+                  
+                  <div class="flex flex-wrap gap-2 pt-4 border-t border-gray-50 justify-end">
+                    <button onclick="confirmAction('request formal supervisor review', () => showToast('Supervision inquiry dispatched to Dr. Ali Hassan!', 'success'))" class="px-4 py-2.5 bg-primary hover:bg-blue-900 text-white rounded-xl font-bold transition-all cursor-pointer shadow-sm flex items-center gap-2"><i class="fas fa-envelope"></i> Inquire Supervisor</button>
+                    <button onclick="confirmAction('escalate grievance to HOD', () => showToast('Grievance escalated to HOD dashboard!', 'warning'))" class="px-4 py-2.5 bg-warning hover:bg-amber-600 text-white rounded-xl font-bold transition-all cursor-pointer shadow-sm flex items-center gap-2"><i class="fas fa-level-up-alt"></i> Escalate to HOD</button>
+                    <button onclick="openModal('dismissGrievanceModal')" class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-2"><i class="fas fa-times"></i> Dismiss</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: STUDENT REPORTS -->
+          <div id="view-student-reports" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Student Supervision & Milestone Reports</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Per-student audit tracking project details, evaluation history, supervisor remarks, and milestone progress</p>
+            </div>
+
+            <!-- Search & Select Student -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+              <div class="relative w-full sm:w-96">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" placeholder="Search student name or reg no..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-secondary focus:bg-white transition-all" />
+              </div>
+              <select class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer w-full sm:w-auto">
+                <option>Ahmed Farooq (SP21-BCS-001)</option>
+                <option>Aima Khalid (SP21-BCS-019)</option>
+              </select>
+            </div>
+
+            <!-- Detailed Student Report Card -->
+            <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8 space-y-8">
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-gray-100 gap-4">
+                <div class="flex items-center gap-5">
+                  <div class="w-16 h-16 rounded-2xl bg-primary text-white flex items-center justify-center text-2xl font-black flex-shrink-0">AF</div>
+                  <div><h3 class="text-xl font-black text-gray-900">Ahmed Farooq</h3><p class="text-xs text-gray-500 font-mono mt-0.5">SP21-BCS-001 · Computer Science</p></div>
+                </div>
+                <div class="flex items-center gap-3 bg-blue-50 px-4 py-2 rounded-2xl border border-blue-100"><span class="text-xs font-bold text-gray-500">Milestone Progress:</span><span class="text-lg font-black text-secondary">25% Completed</span></div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 space-y-3">
+                  <h4 class="font-black text-gray-800 text-sm pb-2 border-b border-gray-200"><i class="fas fa-project-diagram text-secondary mr-2"></i>Project Overview</h4>
+                  <div class="flex justify-between"><span class="text-gray-500 font-bold">Assigned Title:</span><span class="font-bold text-gray-800 truncate max-w-xs">AI Traffic Management System</span></div>
+                  <div class="flex justify-between"><span class="text-gray-500 font-bold">Supervisor Name:</span><span class="font-bold text-gray-800">Dr. Ali Hassan</span></div>
+                  <div class="flex justify-between"><span class="text-gray-500 font-bold">Group ID:</span><span class="font-mono font-bold text-gray-800">G-042</span></div>
+                </div>
+                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 space-y-3">
+                  <h4 class="font-black text-gray-800 text-sm pb-2 border-b border-gray-200"><i class="fas fa-award text-secondary mr-2"></i>Evaluation History</h4>
+                  <div class="flex justify-between"><span class="text-gray-500 font-bold">10% Milestone Score:</span><span class="font-black text-success">8.5 / 10 (A)</span></div>
+                  <div class="flex justify-between"><span class="text-gray-500 font-bold">Evaluating Committee:</span><span class="font-bold text-gray-800">PEC-1</span></div>
+                  <div class="flex justify-between"><span class="text-gray-500 font-bold">Defense Status:</span><span class="font-bold text-success">Cleared</span></div>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <h4 class="font-black text-gray-800 text-sm"><i class="fas fa-comments text-secondary mr-2"></i>Supervisor Remarks & Log Audit</h4>
+                <div class="space-y-3">
+                  <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 text-xs"><div class="flex justify-between items-center mb-1"><span class="font-bold text-gray-900">Dr. Ali Hassan (Supervisor)</span><span class="text-[10px] text-gray-400 font-bold">May 12, 2026</span></div><p class="text-gray-600 leading-relaxed">"The group has successfully implemented the YOLOv8 object detection pipeline. Ready for mid-term defense presentation."</p></div>
+                  <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 text-xs"><div class="flex justify-between items-center mb-1"><span class="font-bold text-gray-900">Dr. Sara Malik (Committee Head)</span><span class="text-[10px] text-gray-400 font-bold">Apr 20, 2026</span></div><p class="text-gray-600 leading-relaxed">"Proposal approved with minor revisions required in the literature review section."</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: AUDIT LOG VIEWER -->
+          <div id="view-audit-log" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">System Audit Log Viewer</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Track timestamps, user emails, administrative actions, and affected database entities with multi-parameter filtering</p>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+              <div class="relative w-full sm:w-80">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="auditSearch" onkeyup="filterTable('auditTable', 'auditSearch')" placeholder="Search audit logs..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-secondary focus:bg-white transition-all" />
+              </div>
+              <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+                <select id="auditActionFilter" onchange="filterTableByCol('auditTable', this.value, 2)" class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 outline-none focus:border-secondary cursor-pointer">
+                  <option value="">All Action Types</option>
+                  <option value="RUBRIC_UPDATE">RUBRIC_UPDATE</option>
+                  <option value="COMMITTEE_LOCK">COMMITTEE_LOCK</option>
+                  <option value="USER_AUTH">USER_AUTH</option>
+                  <option value="GRIEVANCE_FILE">GRIEVANCE_FILE</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Audit Table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="auditTable">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6">Timestamp</th>
+                      <th class="py-3.5 px-6">User Email</th>
+                      <th class="py-3.5 px-6">Action Type</th>
+                      <th class="py-3.5 px-6">Affected Entity</th>
+                      <th class="py-3.5 px-6">IP Address</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-xs font-medium text-gray-700 font-mono">
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 text-gray-500">2026-05-17 14:32:10</td>
+                      <td class="py-4 px-6 font-bold text-gray-900">incharge@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-purple-50 text-purple-700 font-bold px-2 py-0.5 rounded border border-purple-200">RUBRIC_UPDATE</span></td>
+                      <td class="py-4 px-6 text-gray-600">Proposal Evaluation Rubric v4.0</td>
+                      <td class="py-4 px-6 text-gray-400">192.168.1.45</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 text-gray-500">2026-05-17 11:15:02</td>
+                      <td class="py-4 px-6 font-bold text-gray-900">assistant@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-blue-50 text-secondary font-bold px-2 py-0.5 rounded border border-blue-200">COMMITTEE_LOCK</span></td>
+                      <td class="py-4 px-6 text-gray-600">FEC-FYP1-A (15% Evaluated)</td>
+                      <td class="py-4 px-6 text-gray-400">192.168.1.112</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 text-gray-500">2026-05-16 09:00:15</td>
+                      <td class="py-4 px-6 font-bold text-gray-900">supervisor@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-200">USER_AUTH</span></td>
+                      <td class="py-4 px-6 text-gray-600">Session Login (Success)</td>
+                      <td class="py-4 px-6 text-gray-400">119.156.72.18</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 text-gray-500">2026-05-15 16:45:33</td>
+                      <td class="py-4 px-6 font-bold text-gray-900">student@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded border border-amber-200">GRIEVANCE_FILE</span></td>
+                      <td class="py-4 px-6 text-gray-600">Grievance #GRV-089 (Eval Dispute)</td>
+                      <td class="py-4 px-6 text-gray-400">119.156.88.3</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-bold">
+                <span>Showing 4 of 50 audit records (Page 1 of 1)</span>
+                <div class="flex gap-1">
+                  <button class="px-3 py-1.5 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-50 cursor-pointer" disabled>Previous</button>
+                  <button class="px-3 py-1.5 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-50 cursor-pointer" disabled>Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+  
+  <!-- Reject Request Modal -->
+  <div id="rejectRequestModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Reject Supervision Request</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('rejectRequestModal')"></i>
+      </div>
+      <form onsubmit="handleRejectRequest(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Mandatory Rejection Reason</label>
+          <textarea placeholder="Provide official justification for rejecting this additional supervision slot..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-secondary focus:bg-white transition-all h-32" required></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+          <button type="button" onclick="closeModal('rejectRequestModal')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancel</button>
+          <button type="submit" class="bg-danger hover:bg-red-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-red-600/20 transition-all cursor-pointer">Confirm Rejection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dismiss Grievance Modal -->
+  <div id="dismissGrievanceModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Dismiss Student Grievance</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('dismissGrievanceModal')"></i>
+      </div>
+      <form onsubmit="handleDismissGrievance(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Mandatory Dismissal Reason</label>
+          <textarea placeholder="Provide official justification for dismissing this grievance..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-secondary focus:bg-white transition-all h-32" required></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+          <button type="button" onclick="closeModal('dismissGrievanceModal')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancel</button>
+          <button type="submit" class="bg-danger hover:bg-red-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-red-600/20 transition-all cursor-pointer">Confirm Dismissal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../scripts/auth.js"></script>
+  <script>
+    // SPA Routing Logic
+    function navigateSPA(e, targetId) {
+      if (e) e.preventDefault();
+      
+      const btn = e ? e.currentTarget : null;
+      const titleText = btn ? btn.getAttribute('data-title') : 'Dashboard';
+      
+      document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+      document.getElementById(targetId).classList.add('active');
+      
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        el.classList.remove('bg-secondary', 'text-white', 'shadow-lg', 'shadow-blue-600/30', 'font-bold');
+        el.classList.add('text-white/80');
+      });
+      
+      if(btn) {
+        btn.classList.remove('text-white/80');
+        btn.classList.add('bg-secondary', 'text-white', 'shadow-lg', 'shadow-blue-600/30', 'font-bold');
+      }
+
+      document.getElementById('pageTitle').textContent = titleText;
+      if (window.innerWidth < 1024 && e) toggleMobileSidebar();
+    }
+
+    function toggleMobileSidebar() {
+      const sb = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      sb.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+
+    function toggleDesktopSidebar() {
+      const sb = document.getElementById('sidebar');
+      const icon = document.getElementById('desktopCollapseIcon');
+      sb.classList.toggle('lg:w-64');
+      sb.classList.toggle('lg:w-[68px]');
+      
+      document.querySelectorAll('.nav-label').forEach(el => el.classList.toggle('lg:hidden'));
+      const headerText = document.getElementById('sidebarHeaderText');
+      if (headerText) headerText.classList.toggle('lg:hidden');
+
+      if (sb.classList.contains('lg:w-[68px]')) {
+        icon.classList.remove('fa-chevron-left');
+        icon.classList.add('fa-chevron-right');
+      } else {
+        icon.classList.add('fa-chevron-left');
+        icon.classList.remove('fa-chevron-right');
+      }
+    }
+
+    function toggleNotifications() {
+      const dd = document.getElementById('notifDropdown');
+      dd.classList.toggle('hidden');
+    }
+
+    function markAllRead() {
+      document.getElementById('notifList').innerHTML = '<div class="p-8 text-center text-xs text-gray-400 font-bold">No new notifications</div>';
+      showToast('All notifications marked as read', 'success');
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      document.getElementById('toastMsg').textContent = msg;
+      
+      icon.className = type === 'success' ? 'fas fa-check-circle text-success text-lg' : 'fas fa-exclamation-triangle text-warning text-lg';
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      
+      setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+    function confirmAction(actionName, onConfirm) {
+      if (confirm(`Are you sure you want to ${actionName}? This action cannot be undone.`)) {
+        onConfirm();
+      }
+    }
+
+    // Table Filtering
+    function filterTable(tableId, inputId) {
+      const filter = document.getElementById(inputId).value.toLowerCase();
+      const rows = document.getElementById(tableId).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+      for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = rows[i].innerText.toLowerCase().includes(filter) ? '' : 'none';
+      }
+    }
+
+    function filterTableByCol(tableId, val, colIdx) {
+      const rows = document.getElementById(tableId).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+      for (let i = 0; i < rows.length; i++) {
+        const cell = rows[i].getElementsByTagName('td')[colIdx];
+        if (cell) {
+          rows[i].style.display = val === '' || cell.innerText.includes(val) ? '' : 'none';
+        }
+      }
+    }
+
+    // Rubric Builder Logic
+    function toggleRubricType(type) {
+      const b1 = document.getElementById('btnRubProp');
+      const b2 = document.getElementById('btnRubFyp');
+      const title = document.getElementById('rubTitle');
+      if (type === 'proposal') {
+        b1.className = 'px-4 py-1.5 rounded-xl bg-primary text-white text-xs font-bold transition-all cursor-pointer shadow-md';
+        b2.className = 'px-4 py-1.5 rounded-xl bg-gray-100 text-gray-600 text-xs font-bold transition-all cursor-pointer hover:bg-gray-200';
+        title.value = "Official Proposal Evaluation Rubric v4.0";
+      } else {
+        b2.className = 'px-4 py-1.5 rounded-xl bg-primary text-white text-xs font-bold transition-all cursor-pointer shadow-md';
+        b1.className = 'px-4 py-1.5 rounded-xl bg-gray-100 text-gray-600 text-xs font-bold transition-all cursor-pointer hover:bg-gray-200';
+        title.value = "CLO-Based FYP Final Evaluation Rubric v3.5";
+      }
+      calculateRubricTotal();
+    }
+
+    function addCriterion() {
+      const cont = document.getElementById('criteriaContainer');
+      const div = document.createElement('div');
+      div.className = 'grid grid-cols-12 gap-3 items-center p-4 bg-gray-50 rounded-2xl border border-gray-200 criterion-row';
+      div.innerHTML = `
+        <div class="col-span-6"><label class="block text-[10px] font-bold text-gray-500 mb-1">Criterion Title</label><input type="text" placeholder="Enter title..." class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary" required /></div>
+        <div class="col-span-4"><label class="block text-[10px] font-bold text-gray-500 mb-1">Mapped CLO</label><input type="text" placeholder="e.g. CLO-4" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary" required /></div>
+        <div class="col-span-2"><label class="block text-[10px] font-bold text-gray-500 mb-1">Weight (%)</label><input type="number" value="10" oninput="calculateRubricTotal()" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-secondary rubric-weight" min="1" max="100" required /></div>
+      `;
+      cont.appendChild(div);
+      calculateRubricTotal();
+    }
+
+    function calculateRubricTotal() {
+      const inputs = document.querySelectorAll('.rubric-weight');
+      let total = 0;
+      inputs.forEach(inp => total += (parseInt(inp.value) || 0));
+      
+      const totalText = document.getElementById('rubTotalText');
+      const badge = document.getElementById('rubValidBadge');
+      const saveBtn = document.getElementById('saveRubBtn');
+
+      totalText.textContent = total + '%';
+      if (total === 100) {
+        totalText.className = 'text-xl font-black text-success';
+        badge.className = 'bg-success/10 text-success font-bold text-xs px-3 py-1 rounded-lg border border-success/20';
+        badge.textContent = 'Valid Schema';
+        saveBtn.disabled = false;
+        saveBtn.className = 'bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all cursor-pointer';
+      } else {
+        totalText.className = 'text-xl font-black text-danger';
+        badge.className = 'bg-red-50 text-red-600 font-bold text-xs px-3 py-1 rounded-lg border border-red-200';
+        badge.textContent = 'Invalid (Must equal 100%)';
+        saveBtn.disabled = true;
+        saveBtn.className = 'bg-gray-300 text-gray-500 px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed';
+      }
+    }
+
+    // Form Handlers
+    function handleRubricSubmit(e) { e.preventDefault(); showToast('Rubric schema validated and published successfully!', 'success'); }
+    function handleSessionSubmit(e) { e.preventDefault(); showToast('Academic session configuration locked and saved!', 'success'); }
+    function handleRejectRequest(e) { e.preventDefault(); closeModal('rejectRequestModal'); showToast('Supervision request rejected with official justification.', 'warning'); e.target.reset(); }
+    function handleDismissGrievance(e) { e.preventDefault(); closeModal('dismissGrievanceModal'); showToast('Grievance dismissed with official justification.', 'warning'); e.target.reset(); }
+
+    // Init Auth Info
+    document.addEventListener('DOMContentLoaded', () => {
+      if(typeof AUTH !== 'undefined' && AUTH.requireRole) {
+        const u = AUTH.requireRole('FYP Office In-charge');
+        if (u) {
+          document.getElementById('navName').textContent = u.name || 'Dr. Sara Malik';
+          document.getElementById('navAvatar').textContent = (u.avatar || 'SM');
+        }
+      }
+      calculateRubricTotal();
+    });
+  </script>
+</body>
+</html>

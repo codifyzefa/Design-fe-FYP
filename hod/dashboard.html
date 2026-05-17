@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Head of Department (HOD) Portal — CUI Abbottabad</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+          colors: {
+            primary: '#2B3990',
+            secondary: '#2563EB',
+            lightbg: '#EFF6FF',
+            success: '#059669',
+            warning: '#D97706',
+            danger: '#DC2626',
+            pending: '#B45309'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .app-view { display: none; animation: fadeIn 0.3s ease-out; }
+    .app-view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-lightbg text-slate-700 min-h-screen selection:bg-primary selection:text-white">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-[200] bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 pointer-events-none border border-white/10">
+    <i id="toastIcon" class="fas fa-check-circle text-success text-lg"></i>
+    <span id="toastMsg" class="text-sm font-bold">Action completed successfully!</span>
+  </div>
+
+  <div class="flex h-screen overflow-hidden relative bg-lightbg">
+    
+    <!-- ================= SIDEBAR ================= -->
+    <div id="sidebar" class="bg-primary flex flex-col flex-shrink-0 transition-all duration-300 overflow-hidden fixed lg:relative z-[50] h-full -translate-x-full lg:translate-x-0 w-64 lg:w-64 border-r border-white/10 shadow-2xl lg:shadow-none">
+      
+      <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10 relative">
+        <div class="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+          <i class="fas fa-university text-white text-sm"></i>
+        </div>
+        <div id="sidebarHeaderText" class="overflow-hidden transition-all duration-300">
+          <div class="text-white text-sm font-black whitespace-nowrap tracking-wide">CUI ABBOTTABAD</div>
+          <div class="text-white/60 text-[11px] whitespace-nowrap leading-tight font-semibold">Head of Department</div>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="ml-auto lg:hidden bg-transparent border-0 text-white cursor-pointer p-1 rounded-lg hover:bg-white/15 transition-colors absolute right-4">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto p-3 space-y-1" style="scrollbar-width: none;">
+        
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-2">Executive</div>
+        <div onclick="navigateSPA(event, 'view-dashboard')" data-title="Executive Dashboard" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold">
+          <i class="fas fa-chart-pie text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Dashboard</span>
+        </div>
+
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">Grievance & Escalations</div>
+        <div onclick="navigateSPA(event, 'view-escalations')" data-title="Escalated Grievances" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-gavel text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Escalated Grievances</span>
+        </div>
+
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">Department Oversight</div>
+        <div onclick="navigateSPA(event, 'view-faculty-oversight')" data-title="Faculty Workload Oversight" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-chalkboard-teacher text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Faculty Workload</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-governance')" data-title="Committee & Rubric Governance" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-landmark text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Governance Oversight</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-analytics')" data-title="Departmental FYP Analytics" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-chart-line text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">FYP Analytics</span>
+        </div>
+
+      </nav>
+
+      <div class="p-3 border-t border-white/10 bg-black/10">
+        <div onclick="doLogout(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-white/80 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200 font-bold" title="Logout">
+          <i class="fas fa-right-from-bracket text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm">Logout</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div id="mobileOverlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-[40] lg:hidden backdrop-blur-sm hidden"></div>
+
+    <!-- ================= MAIN CONTENT WRAPPER ================= -->
+    <div class="flex-1 flex flex-col overflow-hidden w-full transition-all duration-300 ease-in-out">
+      
+      <!-- ================= TOPBAR ================= -->
+      <div class="bg-white border-b border-gray-100 px-4 md:px-6 h-16 flex items-center justify-between shadow-sm flex-shrink-0 z-[30] gap-3">
+        
+        <div class="flex items-center gap-3 min-w-0">
+          <button onclick="toggleMobileSidebar()" class="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 lg:hidden flex-shrink-0">
+            <i class="fas fa-bars text-sm"></i>
+          </button>
+          <button onclick="toggleDesktopSidebar()" class="hidden lg:flex w-9 h-9 rounded-xl bg-gray-50 items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 flex-shrink-0 cursor-pointer">
+            <i class="fas fa-chevron-left text-sm" id="desktopCollapseIcon"></i>
+          </button>
+          <div class="min-w-0">
+            <h2 id="pageTitle" class="text-base font-black text-primary leading-tight truncate">Executive Dashboard</h2>
+            <p class="text-[11px] text-gray-400 leading-tight hidden sm:block font-medium">COMSATS University Islamabad, Abbottabad Campus</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          
+          <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-xl text-xs font-bold text-amber-700 whitespace-nowrap shadow-sm">
+            <i class="fas fa-crown text-amber-600"></i>
+            <span>Head of Department</span>
+          </div>
+
+          <!-- Notification Center -->
+          <div class="relative">
+            <button onclick="toggleNotifications()" class="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-50 hover:text-secondary transition-all cursor-pointer relative">
+              <i class="fas fa-bell text-sm"></i>
+              <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-50 rounded-full border-2 border-white animate-pulse"></span>
+            </button>
+            
+            <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100] animate-in fade-in-50 duration-200">
+              <div class="p-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+                <span class="text-sm font-black text-gray-800">HOD Notifications</span>
+                <button onclick="markAllRead()" class="text-xs font-bold text-secondary hover:underline cursor-pointer">Mark all as read</button>
+              </div>
+              <div class="max-h-80 overflow-y-auto divide-y divide-gray-50" id="notifList">
+                <div class="p-4 hover:bg-amber-50/50 transition-colors flex gap-3 items-start border-l-4 border-amber-500 bg-amber-50/20">
+                  <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xs flex-shrink-0 mt-0.5"><i class="fas fa-gavel"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-gray-900">Grievance Escalation Alert</div>
+                    <div class="text-[11px] text-gray-600 mt-0.5">FYP Office In-charge escalated Grievance #GRV-089 (Evaluation Dispute) for HOD binding decision.</div>
+                    <div class="text-[10px] text-gray-400 mt-1 font-bold">30 mins ago</div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                <button onclick="alert('Navigating to full notifications page...')" class="text-xs font-bold text-gray-600 hover:text-primary transition-colors cursor-pointer">View All Notifications</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Menu -->
+          <div class="relative">
+            <button class="flex items-center gap-2 p-1 md:px-2.5 md:py-1.5 bg-gray-50 rounded-xl cursor-pointer border border-gray-100 hover:bg-blue-50 hover:border-blue-100 transition-all">
+              <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center text-amber-700 text-xs font-bold shadow-sm flex-shrink-0">
+                <span id="navAvatar">ZA</span>
+              </div>
+              <div class="text-left hidden sm:block">
+                <div id="navName" class="text-xs font-bold text-gray-800 leading-tight truncate max-w-28">Prof. Dr. Zafar Ali</div>
+                <div class="text-[10px] text-gray-400 leading-tight font-bold">HOD CS</div>
+              </div>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= MAIN CONTENT AREA ================= -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-lightbg scroll-smooth relative">
+        <div class="max-w-[1600px] mx-auto w-full">
+          
+          <!-- VIEW: DASHBOARD -->
+          <div id="view-dashboard" class="app-view active">
+            
+            <!-- Executive Welcome Banner -->
+            <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-[fadeIn_0.4s_ease-out]" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
+              <div class="text-white">
+                <h1 class="text-2xl sm:text-3xl font-black mb-2 tracking-tight">Departmental FYP Executive Oversight 🏛️</h1>
+                <p class="text-sm text-white/80 font-medium max-w-2xl leading-relaxed">Welcome, Prof. Dr. Zafar Ali. Monitor overall academic compliance, resolve escalated student grievances, and review faculty workload distribution across the Computer Science department.</p>
+              </div>
+              <div class="flex gap-3 flex-wrap">
+                <button onclick="navigateSPA(event, 'view-escalations')" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer">
+                  <i class="fas fa-gavel"></i> Pending Escalations (1)
+                </button>
+              </div>
+            </div>
+
+            <!-- Executive Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 text-secondary flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-users"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Total FYP Groups</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">128</span>
+                    <span class="text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-lg">100% Assigned</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-gavel"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Escalated Grievances</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">1</span>
+                    <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-lg">Requires Action</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Active Faculty</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">42</span>
+                    <span class="text-xs font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-lg">Optimal Load</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-check-circle"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">CLO Attainment Avg</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">84.2%</span>
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg">Satisfactory</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Access & Highlights -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+              <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+                  <h3 class="text-base font-black text-gray-800">Department Governance Summary</h3>
+                  <span class="text-xs font-bold text-secondary bg-blue-50 px-3 py-1 rounded-xl border border-blue-100">Spring 2026</span>
+                </div>
+                <div class="space-y-4 text-xs font-medium text-gray-600 leading-relaxed">
+                  <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex items-start gap-4">
+                    <i class="fas fa-shield-alt text-primary text-xl mt-0.5"></i>
+                    <div><span class="block font-black text-gray-900 mb-1 text-sm">Academic Integrity Lock Status</span><p>All 4 evaluation committees have active padlock protection on their rubric schemas. No unauthorized structural modifications detected.</p></div>
+                  </div>
+                  <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex items-start gap-4">
+                    <i class="fas fa-tasks text-success text-xl mt-0.5"></i>
+                    <div><span class="block font-black text-gray-900 mb-1 text-sm">Milestone Defense Completion</span><p>The 10% project specification defense has been completed across all panels. Overall student attendance and deliverable compliance stands at 98%.</p></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Links Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+                <div>
+                  <h3 class="text-base font-black text-gray-800 mb-6 pb-3 border-b border-gray-50">Executive Portals</h3>
+                  <div class="space-y-3">
+                    <div onclick="navigateSPA(event, 'view-escalations')" class="p-3.5 rounded-xl bg-gray-50 hover:bg-amber-50 hover:text-amber-700 border border-gray-100 hover:border-amber-200 transition-all cursor-pointer flex items-center justify-between font-bold text-xs group">
+                      <div class="flex items-center gap-3"><i class="fas fa-gavel text-amber-600 text-sm w-5"></i><span>Escalated Grievances</span></div>
+                      <i class="fas fa-chevron-right text-gray-300 group-hover:text-amber-600 transition-all"></i>
+                    </div>
+                    <div onclick="navigateSPA(event, 'view-faculty-oversight')" class="p-3.5 rounded-xl bg-gray-50 hover:bg-purple-50 hover:text-purple-700 border border-gray-100 hover:border-purple-200 transition-all cursor-pointer flex items-center justify-between font-bold text-xs group">
+                      <div class="flex items-center gap-3"><i class="fas fa-chalkboard-teacher text-purple-600 text-sm w-5"></i><span>Faculty Workload Oversight</span></div>
+                      <i class="fas fa-chevron-right text-gray-300 group-hover:text-purple-600 transition-all"></i>
+                    </div>
+                    <div onclick="navigateSPA(event, 'view-governance')" class="p-3.5 rounded-xl bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-100 hover:border-blue-200 transition-all cursor-pointer flex items-center justify-between font-bold text-xs group">
+                      <div class="flex items-center gap-3"><i class="fas fa-landmark text-secondary text-sm w-5"></i><span>Committee Governance</span></div>
+                      <i class="fas fa-chevron-right text-gray-300 group-hover:text-secondary transition-all"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="pt-4 border-t border-gray-50 text-center">
+                  <span class="text-[11px] text-gray-400 font-bold">CUI Abbottabad Portal v4.0</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- VIEW: ESCALATED GRIEVANCES -->
+          <div id="view-escalations" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Escalated Grievances & Binding Decisions</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Review severe student disputes escalated by the FYP Office In-charge and issue final, binding administrative rulings</p>
+            </div>
+
+            <!-- Escalated Grievance Card -->
+            <div class="bg-white rounded-[2rem] border border-amber-200 shadow-sm p-6 sm:p-8 relative overflow-hidden mb-8">
+              <div class="absolute top-0 left-0 w-2 h-full bg-amber-500"></div>
+              
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-6 border-b border-gray-100 gap-4 pl-4">
+                <div>
+                  <div class="flex items-center gap-3 mb-1">
+                    <span class="font-black text-gray-900 text-lg">Ahmed Farooq (SP21-BCS-001)</span>
+                    <span class="bg-amber-50 text-amber-700 font-bold text-xs px-3 py-1 rounded-xl border border-amber-200 shadow-sm"><i class="fas fa-exclamation-triangle mr-1"></i> Escalated by In-charge</span>
+                  </div>
+                  <p class="text-xs text-gray-500 font-bold">Category: Committee Evaluation Dispute · Escalated: May 16, 2026</p>
+                </div>
+                <span class="bg-red-50 text-red-600 font-bold text-xs px-4 py-2 rounded-2xl border border-red-200 shadow-sm">HOD Ruling Required</span>
+              </div>
+
+              <div class="pl-4 space-y-6 text-xs">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100 space-y-3">
+                    <h4 class="font-black text-gray-800 text-sm pb-2 border-b border-gray-200"><i class="fas fa-file-alt text-amber-600 mr-2"></i>Grievance Details & Evidence</h4>
+                    <p class="text-gray-600 leading-relaxed italic">"Our group was awarded 8.5/10 in the 10% milestone evaluation, but the committee rubric scorecard contained a calculation error in the CLO-2 summation."</p>
+                    <div class="pt-2 flex items-center gap-2"><i class="fas fa-paperclip text-secondary"></i><span class="font-bold text-gray-700">Attached Evidence:</span><a href="#" onclick="showToast('Downloading evidence document...', 'success')" class="text-secondary hover:underline font-bold">rubric_scorecard_error.pdf (1.2 MB)</a></div>
+                  </div>
+                  <div class="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 space-y-3">
+                    <h4 class="font-black text-gray-900 text-sm pb-2 border-b border-blue-200"><i class="fas fa-user-shield text-secondary mr-2"></i>FYP Office In-charge Escalation Note</h4>
+                    <p class="text-gray-700 leading-relaxed">"The committee head (Dr. Ali Hassan) insists the score is final, while the student evidence shows a clear discrepancy in the rubric Excel summation formula. Escalating for HOD binding decision on whether to mandate a formal re-evaluation."</p>
+                    <div class="pt-2"><span class="font-bold text-gray-500">Escalated By:</span> <span class="font-bold text-gray-900">Dr. Sara Malik (FYP Office In-charge)</span></div>
+                  </div>
+                </div>
+
+                <!-- HOD Binding Actions -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-5">
+                  <h4 class="font-black text-gray-900 text-sm border-b border-gray-100 pb-3"><i class="fas fa-gavel text-primary mr-2"></i>Issue Binding HOD Ruling</h4>
+                  
+                  <div class="flex flex-wrap gap-4">
+                    <button onclick="confirmAction('mandate formal committee re-evaluation', () => showToast('Binding ruling issued: Re-evaluation mandated for PEC-1!', 'success'))" class="px-6 py-3 bg-success hover:bg-emerald-700 text-white rounded-xl font-bold transition-all cursor-pointer shadow-lg shadow-emerald-600/20 flex items-center gap-2 text-sm"><i class="fas fa-check-circle"></i> Mandate Re-evaluation</button>
+                    <button onclick="confirmAction('reassign student group supervisor', () => showToast('Binding ruling issued: Supervisor reassignment workflow initiated!', 'success'))" class="px-6 py-3 bg-secondary hover:bg-blue-700 text-white rounded-xl font-bold transition-all cursor-pointer shadow-lg shadow-blue-600/20 flex items-center gap-2 text-sm"><i class="fas fa-user-edit"></i> Re-assign Supervisor</button>
+                    <button onclick="openModal('dismissGrievanceModal')" class="px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-2 text-sm"><i class="fas fa-times-circle"></i> Dismiss Grievance</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: FACULTY WORKLOAD OVERSIGHT -->
+          <div id="view-faculty-oversight" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 class="text-xl font-black text-gray-800">Faculty Workload & Performance Oversight</h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">Monitor faculty supervision caps, research alignment tags, and weekly meeting log compliance</p>
+              </div>
+              <button onclick="window.location.href='faculty_reports.html'" class="px-4 py-2 bg-secondary text-white hover:bg-blue-700 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 cursor-pointer">
+                <i class="fas fa-external-link-alt"></i> View Full Faculty Reports Table
+              </button>
+            </div>
+
+            <!-- Faculty Workload Table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div class="p-5 bg-gray-50 border-b border-gray-100"><h3 class="text-base font-black text-gray-800">Supervision Load Distribution (Computer Science)</h3></div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6">Faculty Member</th>
+                      <th class="py-3.5 px-6">Designation</th>
+                      <th class="py-3.5 px-6 text-center">Supervision Load</th>
+                      <th class="py-3.5 px-6">Research Alignment</th>
+                      <th class="py-3.5 px-6 text-center">Meeting Compliance</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Dr. Ali Hassan</td>
+                      <td class="py-4 px-6 text-gray-500 text-xs font-bold">Associate Professor</td>
+                      <td class="py-4 px-6 text-center"><span class="bg-blue-50 text-secondary font-bold px-2.5 py-1 rounded-lg border border-blue-200 text-xs">4 / 4 Slots (Max)</span></td>
+                      <td class="py-4 px-6"><div class="flex flex-wrap gap-1"><span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold">AI & Vision</span><span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold">Machine Learning</span></div></td>
+                      <td class="py-4 px-6 text-center"><span class="text-xs font-bold text-success bg-success/10 px-2.5 py-1 rounded-lg border border-success/20">100% Compliance</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Dr. Fatima Khan</td>
+                      <td class="py-4 px-6 text-gray-500 text-xs font-bold">Assistant Professor</td>
+                      <td class="py-4 px-6 text-center"><span class="bg-emerald-50 text-emerald-700 font-bold px-2.5 py-1 rounded-lg border border-emerald-200 text-xs">3 / 4 Slots</span></td>
+                      <td class="py-4 px-6"><div class="flex flex-wrap gap-1"><span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold">Cybersecurity</span><span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold">Networks</span></div></td>
+                      <td class="py-4 px-6 text-center"><span class="text-xs font-bold text-success bg-success/10 px-2.5 py-1 rounded-lg border border-success/20">95% Compliance</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: COMMITTEE & RUBRIC GOVERNANCE -->
+          <div id="view-governance" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Committee & Rubric Governance Oversight</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Verify active evaluation boards, approved rubric schemas, and academic session integrity locks</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <!-- Active Committees Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+                <h3 class="text-base font-black text-gray-800 pb-3 border-b border-gray-50">Active Evaluation Boards</h3>
+                <div class="space-y-4">
+                  <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex justify-between items-center text-xs">
+                    <div><span class="font-bold text-gray-900 block mb-0.5 text-sm">PEC-1 (AI & Vision)</span><span class="text-gray-500">Head: Dr. Ali Hassan · 4 Members</span></div>
+                    <span class="bg-success/10 text-success font-bold px-3 py-1 rounded-xl border border-success/20">Active Board</span>
+                  </div>
+                  <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex justify-between items-center text-xs">
+                    <div><span class="font-bold text-gray-900 block mb-0.5 text-sm">FEC-FYP2-B (Software Eng)</span><span class="text-gray-500">Head: Dr. Sara Malik · 3 Members</span></div>
+                    <span class="bg-success/10 text-success font-bold px-3 py-1 rounded-xl border border-success/20">Active Board</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Approved Rubrics Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+                <h3 class="text-base font-black text-gray-800 pb-3 border-b border-gray-50">Approved Rubric Schemas</h3>
+                <div class="space-y-4">
+                  <div class="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 flex justify-between items-center text-xs">
+                    <div><span class="font-bold text-gray-900 block mb-0.5 text-sm">Official Proposal Rubric v4.0</span><span class="text-gray-500">Total Accumulation: 100% (Validated)</span></div>
+                    <span class="bg-blue-100 text-secondary font-bold px-3 py-1 rounded-xl border border-blue-200"><i class="fas fa-lock mr-1"></i> Locked</span>
+                  </div>
+                  <div class="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 flex justify-between items-center text-xs">
+                    <div><span class="font-bold text-gray-900 block mb-0.5 text-sm">CLO-Based FYP Final Rubric v3.5</span><span class="text-gray-500">Total Accumulation: 100% (Validated)</span></div>
+                    <span class="bg-blue-100 text-secondary font-bold px-3 py-1 rounded-xl border border-blue-200"><i class="fas fa-lock mr-1"></i> Locked</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: DEPARTMENTAL FYP ANALYTICS -->
+          <div id="view-analytics" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 class="text-xl font-black text-gray-800">Departmental FYP Analytics & CLO Attainment</h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">Visual metrics of student pass rates, grade distribution, and overall CLO attainment averages</p>
+              </div>
+              <button onclick="window.print()" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 cursor-pointer">
+                <i class="fas fa-print text-secondary"></i> Print Analytics
+              </button>
+            </div>
+
+            <!-- Analytics Cards Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <!-- Pass Rate Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+                <div>
+                  <h3 class="text-base font-black text-gray-800 mb-2">Overall Student Pass Rate</h3>
+                  <p class="text-xs text-gray-500 mb-6 font-medium">FYP-1 and FYP-2 cumulative clearing percentage</p>
+                  <div class="flex items-center justify-center my-8">
+                    <div class="w-40 h-40 rounded-full border-8 border-success flex items-center justify-center shadow-inner bg-success/5">
+                      <span class="text-4xl font-black text-success">96.4%</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-xs text-gray-600 font-bold text-center">
+                  <span>3.6% Repeat Registration Rate (FYP-1)</span>
+                </div>
+              </div>
+
+              <!-- Grade Distribution Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+                <div>
+                  <h3 class="text-base font-black text-gray-800 mb-2">Grade Distribution</h3>
+                  <p class="text-xs text-gray-500 mb-6 font-medium">Final defense grading breakdown for Spring 2026</p>
+                  <div class="space-y-4 my-4">
+                    <div>
+                      <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>Grade A (85% - 100%)</span><span>45%</span></div>
+                      <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden"><div class="bg-primary h-full rounded-full" style="width: 45%;"></div></div>
+                    </div>
+                    <div>
+                      <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>Grade B (70% - 84%)</span><span>38%</span></div>
+                      <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden"><div class="bg-secondary h-full rounded-full" style="width: 38%;"></div></div>
+                    </div>
+                    <div>
+                      <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>Grade C (60% - 69%)</span><span>13.4%</span></div>
+                      <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden"><div class="bg-warning h-full rounded-full" style="width: 13.4%;"></div></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-xs text-gray-600 font-bold text-center">
+                  <span>Normal Distribution Curve Maintained</span>
+                </div>
+              </div>
+
+              <!-- CLO Attainment Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+                <div>
+                  <h3 class="text-base font-black text-gray-800 mb-2">CLO Attainment Averages</h3>
+                  <p class="text-xs text-gray-500 mb-6 font-medium">Mapped CLO performance across all rubric evaluations</p>
+                  <div class="space-y-4 my-4">
+                    <div>
+                      <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>CLO-1 (Problem Identification)</span><span>88.5%</span></div>
+                      <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden"><div class="bg-success h-full rounded-full" style="width: 88.5%;"></div></div>
+                    </div>
+                    <div>
+                      <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>CLO-2 (Design & Methodology)</span><span>82.1%</span></div>
+                      <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden"><div class="bg-success h-full rounded-full" style="width: 82.1%;"></div></div>
+                    </div>
+                    <div>
+                      <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>CLO-3 (Modern Tool Usage)</span><span>85.3%</span></div>
+                      <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden"><div class="bg-success h-full rounded-full" style="width: 85.3%;"></div></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-xs text-gray-600 font-bold text-center">
+                  <span>All CLOs Exceed 70% HEC Benchmark</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+  
+  <!-- Dismiss Grievance Modal -->
+  <div id="dismissGrievanceModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Dismiss Escalated Grievance</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('dismissGrievanceModal')"></i>
+      </div>
+      <form onsubmit="handleDismissGrievance(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Mandatory HOD Dismissal Reason</label>
+          <textarea placeholder="Provide official HOD binding justification for dismissing this escalated grievance..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-secondary focus:bg-white transition-all h-32" required></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+          <button type="button" onclick="closeModal('dismissGrievanceModal')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancel</button>
+          <button type="submit" class="bg-danger hover:bg-red-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-red-600/20 transition-all cursor-pointer">Confirm Binding Dismissal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../scripts/auth.js"></script>
+  <script>
+    // SPA Routing Logic
+    function navigateSPA(e, targetId) {
+      if (e) e.preventDefault();
+      
+      const btn = e ? e.currentTarget : null;
+      const titleText = btn ? btn.getAttribute('data-title') : 'Executive Dashboard';
+      
+      document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+      document.getElementById(targetId).classList.add('active');
+      
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        el.classList.remove('bg-secondary', 'text-white', 'shadow-lg', 'shadow-blue-600/30', 'font-bold');
+        el.classList.add('text-white/80');
+      });
+      
+      if(btn) {
+        btn.classList.remove('text-white/80');
+        btn.classList.add('bg-secondary', 'text-white', 'shadow-lg', 'shadow-blue-600/30', 'font-bold');
+      }
+
+      document.getElementById('pageTitle').textContent = titleText;
+      if (window.innerWidth < 1024 && e) toggleMobileSidebar();
+    }
+
+    function toggleMobileSidebar() {
+      const sb = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      sb.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+
+    function toggleDesktopSidebar() {
+      const sb = document.getElementById('sidebar');
+      const icon = document.getElementById('desktopCollapseIcon');
+      sb.classList.toggle('lg:w-64');
+      sb.classList.toggle('lg:w-[68px]');
+      
+      document.querySelectorAll('.nav-label').forEach(el => el.classList.toggle('lg:hidden'));
+      document.querySelectorAll('.nav-section-label').forEach(el => el.classList.toggle('lg:hidden'));
+      const headerText = document.getElementById('sidebarHeaderText');
+      if (headerText) headerText.classList.toggle('lg:hidden');
+
+      if (sb.classList.contains('lg:w-[68px]')) {
+        icon.classList.remove('fa-chevron-left');
+        icon.classList.add('fa-chevron-right');
+      } else {
+        icon.classList.add('fa-chevron-left');
+        icon.classList.remove('fa-chevron-right');
+      }
+    }
+
+    function toggleNotifications() {
+      const dd = document.getElementById('notifDropdown');
+      dd.classList.toggle('hidden');
+    }
+
+    function markAllRead() {
+      document.getElementById('notifList').innerHTML = '<div class="p-8 text-center text-xs text-gray-400 font-bold">No new notifications</div>';
+      showToast('All notifications marked as read', 'success');
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      document.getElementById('toastMsg').textContent = msg;
+      
+      icon.className = type === 'success' ? 'fas fa-check-circle text-success text-lg' : 'fas fa-exclamation-triangle text-warning text-lg';
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      
+      setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+    function confirmAction(actionName, onConfirm) {
+      if (confirm(`Are you sure you want to ${actionName}? This is a binding HOD ruling and cannot be undone.`)) {
+        onConfirm();
+      }
+    }
+
+    function handleDismissGrievance(e) { e.preventDefault(); closeModal('dismissGrievanceModal'); showToast('Binding HOD ruling issued: Grievance dismissed with official justification.', 'warning'); e.target.reset(); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if(typeof AUTH !== 'undefined' && AUTH.requireRole) {
+        const u = AUTH.requireRole('HOD');
+        if (u) {
+          document.getElementById('navName').textContent = u.name || 'Prof. Dr. Zafar Ali';
+          document.getElementById('navAvatar').textContent = (u.avatar || 'ZA');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

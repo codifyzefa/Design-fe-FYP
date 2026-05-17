@@ -9,13 +9,25 @@ const FYP_USERS = [
     email: 'student@cuiatd.edu.pk', password: 'Student@123',
     regNo: 'SP21-BCS-001', department: 'Computer Science',
     semester: '8th', avatar: 'AF',
-    profileCompleted: false, // Set to false to trigger profile update flow
+    profileCompleted: false,
     group: {
       id: 'G-042',
       title: 'AI-Powered Traffic Management System Using Computer Vision',
       members: 3, progress: 25, phase: 'proposal',
       supervisor: 'Dr. Ali Hassan'
     }
+  },
+  {
+    id: 'A001', role: 'FYP Office Assistant', name: 'Mr. Tariq Mehmood',
+    email: 'assistant@cuiatd.edu.pk', password: 'Assistant@123',
+    designation: 'FYP Office Assistant',
+    department: 'Computer Science', avatar: 'TM'
+  },
+  {
+    id: 'I001', role: 'FYP Office In-charge', name: 'Dr. Sara Malik',
+    email: 'incharge@cuiatd.edu.pk', password: 'Incharge@123',
+    designation: 'FYP Office In-charge · Senior Lecturer',
+    department: 'Computer Science', avatar: 'SM'
   },
   {
     id: 'F001', role: 'Faculty Supervisor', name: 'Dr. Ali Hassan',
@@ -27,27 +39,34 @@ const FYP_USERS = [
     phone: '+92-992-383591', avatar: 'AH', projects: 4
   },
   {
-    id: 'C001', role: 'FYP Office', name: 'Dr. Sara Malik',
-    email: 'coordinator@cuiatd.edu.pk', password: 'Coord@123',
-    designation: 'FYP Coordinator · Senior Lecturer',
-    department: 'Computer Science', avatar: 'SM'
+    id: 'H001', role: 'HOD', name: 'Dr. Kashif Bilal',
+    email: 'hod@cuiatd.edu.pk', password: 'Hod@123',
+    designation: 'Head of Department · Professor',
+    department: 'Computer Science', avatar: 'KB'
   },
   {
-    id: 'E001', role: 'Evaluator', name: 'Dr. Usman Qureshi',
-    email: 'evaluator@cuiatd.edu.pk', password: 'Eval@123',
-    designation: 'External Evaluator · Associate Professor',
-    department: 'Computer Science', avatar: 'UQ'
+    id: 'ADM01', role: 'System Administrator', name: 'Mr. Rizwan Ali',
+    email: 'admin@cuiatd.edu.pk', password: 'Admin@123',
+    designation: 'Senior System Administrator',
+    department: 'IT Services', avatar: 'RA'
+  },
+  {
+    id: 'IND01', role: 'Industry Supervisor', name: 'Engr. Bilal Ahmed',
+    email: 'industry@cuiatd.edu.pk', password: 'Industry@123',
+    designation: 'Senior AI Architect · LMKR',
+    department: 'External Evaluator', avatar: 'BA'
   }
 ];
 
 // ── Role → Home Page Map ─────────────────────────────────────
 const ROLE_HOME = {
   'Student': 'student/dashboard.html',
-  'Faculty Supervisor': 'supervisor/dashboard.html',
-  'FYP Office': 'coordinator/dashboard.html',
+  'FYP Office Assistant': 'fyp_office_assistant/dashboard.html',
+  'FYP Office In-charge': 'fyp_office_incharge/dashboard.html',
+  'Faculty Supervisor': 'faculty/dashboard.html',
+  'HOD': 'hod/dashboard.html',
   'System Administrator': 'admin/dashboard.html',
-  'Industry Supervisor': 'industry/dashboard.html',
-  'HOD': 'hod/dashboard.html'
+  'Industry Supervisor': 'industry/dashboard.html'
 };
 
 // ── AUTH Object ──────────────────────────────────────────────

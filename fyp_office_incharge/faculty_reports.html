@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faculty Supervision Reports — CUI Abbottabad</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+          colors: {
+            primary: '#2B3990',
+            secondary: '#2563EB',
+            lightbg: '#EFF6FF',
+            success: '#059669',
+            warning: '#D97706',
+            danger: '#DC2626',
+            pending: '#B45309'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-lightbg text-slate-700 min-h-screen selection:bg-primary selection:text-white">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-[200] bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 pointer-events-none border border-white/10">
+    <i id="toastIcon" class="fas fa-check-circle text-success text-lg"></i>
+    <span id="toastMsg" class="text-sm font-bold">Action completed successfully!</span>
+  </div>
+
+  <div class="flex h-screen overflow-hidden relative bg-lightbg">
+    
+    <!-- ================= SIDEBAR ================= -->
+    <div id="sidebar" class="bg-primary flex flex-col flex-shrink-0 transition-all duration-300 overflow-hidden fixed lg:relative z-[50] h-full -translate-x-full lg:translate-x-0 w-64 lg:w-64 border-r border-white/10 shadow-2xl lg:shadow-none">
+      
+      <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10 relative">
+        <div class="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+          <i class="fas fa-university text-white text-sm"></i>
+        </div>
+        <div id="sidebarHeaderText" class="overflow-hidden transition-all duration-300">
+          <div class="text-white text-sm font-black whitespace-nowrap tracking-wide">CUI ABBOTTABAD</div>
+          <div class="text-white/60 text-[11px] whitespace-nowrap leading-tight font-semibold">FYP Office In-charge</div>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="ml-auto lg:hidden bg-transparent border-0 text-white cursor-pointer p-1 rounded-lg hover:bg-white/15 transition-colors absolute right-4">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto p-3 space-y-1" style="scrollbar-width: none;">
+        
+        <div class="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-2">Navigation</div>
+        <div onclick="window.location.href='dashboard.html'" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-arrow-left text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Back to Dashboard</span>
+        </div>
+
+        <div class="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">Analytics & Reports</div>
+        <div class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold">
+          <i class="fas fa-chart-bar text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Faculty Reports</span>
+        </div>
+
+      </nav>
+
+      <div class="p-3 border-t border-white/10 bg-black/10">
+        <div onclick="doLogout(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-white/80 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200 font-bold" title="Logout">
+          <i class="fas fa-right-from-bracket text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm">Logout</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div id="mobileOverlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-[40] lg:hidden backdrop-blur-sm hidden"></div>
+
+    <!-- ================= MAIN CONTENT WRAPPER ================= -->
+    <div class="flex-1 flex flex-col overflow-hidden w-full transition-all duration-300 ease-in-out">
+      
+      <!-- ================= TOPBAR ================= -->
+      <div class="bg-white border-b border-gray-100 px-4 md:px-6 h-16 flex items-center justify-between shadow-sm flex-shrink-0 z-[30] gap-3">
+        
+        <div class="flex items-center gap-3 min-w-0">
+          <button onclick="toggleMobileSidebar()" class="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 lg:hidden flex-shrink-0">
+            <i class="fas fa-bars text-sm"></i>
+          </button>
+          <div class="min-w-0">
+            <h2 class="text-base font-black text-primary leading-tight truncate">Faculty Supervision Reports</h2>
+            <p class="text-[11px] text-gray-400 leading-tight hidden sm:block font-medium">COMSATS University Islamabad, Abbottabad Campus</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-xl text-xs font-bold text-purple-700 whitespace-nowrap shadow-sm">
+            <i class="fas fa-user-tie text-purple-600"></i>
+            <span>FYP Office In-charge</span>
+          </div>
+
+          <!-- User Menu -->
+          <div class="relative">
+            <button class="flex items-center gap-2 p-1 md:px-2.5 md:py-1.5 bg-gray-50 rounded-xl cursor-pointer border border-gray-100 hover:bg-blue-50 hover:border-blue-100 transition-all">
+              <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-700 text-xs font-bold shadow-sm flex-shrink-0">
+                <span id="navAvatar">SM</span>
+              </div>
+              <div class="text-left hidden sm:block">
+                <div id="navName" class="text-xs font-bold text-gray-800 leading-tight truncate max-w-28">Dr. Sara Malik</div>
+                <div class="text-[10px] text-gray-400 leading-tight font-bold">In-charge</div>
+              </div>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= MAIN CONTENT AREA ================= -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-lightbg scroll-smooth relative">
+        <div class="max-w-[1600px] mx-auto w-full space-y-6">
+          
+          <div class="border-b border-gray-100 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h1 class="text-2xl font-black text-gray-800 tracking-tight">Faculty Supervision & Workload Analytics</h1>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Comprehensive audit of faculty supervision loads, proposed projects, active student groups, and weekly meeting frequencies</p>
+            </div>
+            <button onclick="window.print()" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 cursor-pointer">
+              <i class="fas fa-file-export text-secondary"></i> Export PDF Report
+            </button>
+          </div>
+
+          <!-- Stats Summary -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-blue-50 text-secondary flex items-center justify-center text-2xl font-bold"><i class="fas fa-chalkboard-teacher"></i></div>
+              <div><div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Active Faculty</div><div class="text-3xl font-black text-gray-800">42</div></div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center text-2xl font-bold"><i class="fas fa-user-graduate"></i></div>
+              <div><div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Supervised Groups</div><div class="text-3xl font-black text-gray-800">128</div></div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-bold"><i class="fas fa-calendar-check"></i></div>
+              <div><div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Avg Weekly Meetings</div><div class="text-3xl font-black text-gray-800">94.5%</div></div>
+            </div>
+          </div>
+
+          <!-- Filter & Search -->
+          <div class="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div class="relative w-full sm:w-96">
+              <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+              <input type="text" id="facSearch" onkeyup="filterFaculty()" placeholder="Search faculty name or designation..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-secondary focus:bg-white transition-all" />
+            </div>
+            <div class="flex gap-2 w-full sm:w-auto">
+              <select id="deptFilter" onchange="filterFaculty()" class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 outline-none focus:border-secondary cursor-pointer w-full sm:w-auto">
+                <option value="">All Departments</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Software Engineering">Software Engineering</option>
+                <option value="AI & Data Science">AI & Data Science</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Faculty Reports Table -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse" id="facTable">
+                <thead>
+                  <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                    <th class="py-4 px-6">Faculty Member</th>
+                    <th class="py-4 px-6">Department</th>
+                    <th class="py-4 px-6 text-center">Supervised Groups</th>
+                    <th class="py-4 px-6 text-center">Proposed Projects</th>
+                    <th class="py-4 px-6 text-center">Meeting Frequency</th>
+                    <th class="py-4 px-6 text-center">Workload Status</th>
+                    <th class="py-4 px-6 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+                  <tr class="hover:bg-gray-50/50 transition-colors">
+                    <td class="py-4 px-6">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-secondary flex items-center justify-center font-bold text-sm border border-blue-100 flex-shrink-0">AH</div>
+                        <div><div class="font-bold text-gray-900">Dr. Ali Hassan</div><div class="text-xs text-gray-500">Associate Professor</div></div>
+                      </div>
+                    </td>
+                    <td class="py-4 px-6 text-gray-600">Computer Science</td>
+                    <td class="py-4 px-6 text-center font-bold text-gray-900">4 Groups</td>
+                    <td class="py-4 px-6 text-center text-gray-600">6 Projects</td>
+                    <td class="py-4 px-6 text-center"><span class="text-xs font-bold text-success bg-success/10 px-2.5 py-1 rounded-lg border border-success/20">100% (Weekly)</span></td>
+                    <td class="py-4 px-6 text-center"><span class="text-xs font-bold text-secondary bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">Full Load (4/4)</span></td>
+                    <td class="py-4 px-6 text-right"><button onclick="viewDetails('Dr. Ali Hassan')" class="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 transition-all cursor-pointer">View Audit</button></td>
+                  </tr>
+
+                  <tr class="hover:bg-gray-50/50 transition-colors">
+                    <td class="py-4 px-6">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold text-sm border border-purple-200 flex-shrink-0">FK</div>
+                        <div><div class="font-bold text-gray-900">Dr. Fatima Khan</div><div class="text-xs text-gray-500">Assistant Professor</div></div>
+                      </div>
+                    </td>
+                    <td class="py-4 px-6 text-gray-600">Software Engineering</td>
+                    <td class="py-4 px-6 text-center font-bold text-gray-900">3 Groups</td>
+                    <td class="py-4 px-6 text-center text-gray-600">5 Projects</td>
+                    <td class="py-4 px-6 text-center"><span class="text-xs font-bold text-success bg-success/10 px-2.5 py-1 rounded-lg border border-success/20">92% (Regular)</span></td>
+                    <td class="py-4 px-6 text-center"><span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">Optimal (3/4)</span></td>
+                    <td class="py-4 px-6 text-right"><button onclick="viewDetails('Dr. Fatima Khan')" class="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 transition-all cursor-pointer">View Audit</button></td>
+                  </tr>
+
+                  <tr class="hover:bg-gray-50/50 transition-colors">
+                    <td class="py-4 px-6">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm border border-amber-200 flex-shrink-0">UK</div>
+                        <div><div class="font-bold text-gray-900">Dr. Usman Khalid</div><div class="text-xs text-gray-500">Professor</div></div>
+                      </div>
+                    </td>
+                    <td class="py-4 px-6 text-gray-600">AI & Data Science</td>
+                    <td class="py-4 px-6 text-center font-bold text-gray-900">2 Groups</td>
+                    <td class="py-4 px-6 text-center text-gray-600">3 Projects</td>
+                    <td class="py-4 px-6 text-center"><span class="text-xs font-bold text-warning bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">75% (Irregular)</span></td>
+                    <td class="py-4 px-6 text-center"><span class="text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">Under Load (2/4)</span></td>
+                    <td class="py-4 px-6 text-right"><button onclick="viewDetails('Dr. Usman Khalid')" class="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-xs font-bold text-gray-700 transition-all cursor-pointer">View Audit</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="p-4 bg-gray-50 border-t border-gray-100 text-xs text-gray-500 font-bold text-center">
+              <span>Showing all 3 registered faculty supervision records</span>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../scripts/auth.js"></script>
+  <script>
+    function toggleMobileSidebar() {
+      const sb = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      sb.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      document.getElementById('toastMsg').textContent = msg;
+      
+      icon.className = type === 'success' ? 'fas fa-check-circle text-success text-lg' : 'fas fa-exclamation-triangle text-warning text-lg';
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      
+      setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+    }
+
+    function filterFaculty() {
+      const search = document.getElementById('facSearch').value.toLowerCase();
+      const dept = document.getElementById('deptFilter').value.toLowerCase();
+      const rows = document.getElementById('facTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+      for (let i = 0; i < rows.length; i++) {
+        const nameText = rows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
+        const deptText = rows[i].getElementsByTagName('td')[1].innerText.toLowerCase();
+        
+        const matchSearch = nameText.includes(search);
+        const matchDept = dept === '' || deptText.includes(dept);
+
+        rows[i].style.display = matchSearch && matchDept ? '' : 'none';
+      }
+    }
+
+    function viewDetails(name) {
+      showToast(`Generating detailed audit report for ${name}...`, 'success');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if(typeof AUTH !== 'undefined' && AUTH.requireRole) {
+        const u = AUTH.requireRole('FYP Office In-charge');
+        if (u) {
+          document.getElementById('navName').textContent = u.name || 'Dr. Sara Malik';
+          document.getElementById('navAvatar').textContent = (u.avatar || 'SM');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

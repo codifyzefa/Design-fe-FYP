@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FYP Office Assistant Portal — CUI Abbottabad</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+          colors: {
+            primary: '#2B3990',
+            secondary: '#2563EB',
+            lightbg: '#EFF6FF',
+            success: '#059669',
+            warning: '#D97706',
+            danger: '#DC2626',
+            pending: '#B45309'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .app-view { display: none; animation: fadeIn 0.3s ease-out; }
+    .app-view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Custom Tooltip */
+    .has-tooltip { position: relative; }
+    .has-tooltip:hover .custom-tooltip { display: block; }
+    .custom-tooltip {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: normal;
+      width: max-content;
+      max-width: 260px;
+      z-index: 100;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+      margin-bottom: 6px;
+    }
+    .custom-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: #1e293b transparent transparent transparent;
+    }
+
+    /* Print styling */
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background: white; }
+    }
+  </style>
+</head>
+<body class="bg-lightbg text-slate-700 min-h-screen selection:bg-primary selection:text-white">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-[200] bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 pointer-events-none border border-white/10">
+    <i id="toastIcon" class="fas fa-check-circle text-success text-lg"></i>
+    <span id="toastMsg" class="text-sm font-bold">Action completed successfully!</span>
+  </div>
+
+  <div class="flex h-screen overflow-hidden relative bg-lightbg">
+    
+    <!-- ================= SIDEBAR ================= -->
+    <div id="sidebar" class="bg-primary flex flex-col flex-shrink-0 transition-all duration-300 overflow-hidden fixed lg:relative z-[50] h-full -translate-x-full lg:translate-x-0 w-64 lg:w-64 border-r border-white/10 shadow-2xl lg:shadow-none">
+      
+      <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10 relative">
+        <div class="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+          <i class="fas fa-user-cog text-white text-sm"></i>
+        </div>
+        <div id="sidebarHeaderText" class="overflow-hidden transition-all duration-300">
+          <div class="text-white text-sm font-black whitespace-nowrap tracking-wide">CUI ABBOTTABAD</div>
+          <div class="text-white/60 text-[11px] whitespace-nowrap leading-tight font-semibold">FYP Office Assistant</div>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="ml-auto lg:hidden bg-transparent border-0 text-white cursor-pointer p-1 rounded-lg hover:bg-white/15 transition-colors absolute right-4">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto p-3 space-y-1" style="scrollbar-width: none;">
+        
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-2">Overview</div>
+        <div onclick="navigateSPA(event, 'view-dashboard')" data-title="Dashboard" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold">
+          <i class="fas fa-home text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Dashboard</span>
+        </div>
+
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">User & Account</div>
+        <div onclick="navigateSPA(event, 'view-users')" data-title="User Account Management" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-users-gear text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">User Management</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-students')" data-title="Student Management" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-user-graduate text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Student Records</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-faculty')" data-title="Faculty Profile View" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-chalkboard-teacher text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Faculty Profiles</span>
+        </div>
+
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">FYP Workflow</div>
+        <div onclick="navigateSPA(event, 'view-projects')" data-title="Project List" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-project-diagram text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Project Directory</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-content')" data-title="FYP Content Management" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-file-invoice text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Content & Templates</span>
+        </div>
+
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">Committees & Evaluators</div>
+        <div onclick="navigateSPA(event, 'view-proposal-committee')" data-title="Proposal Committee Management" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-users text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Proposal Committees</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-eval-committee')" data-title="FYP Evaluation Committee Management" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-layer-group text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Evaluation Committees</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-external-supervisors')" data-title="External / Industry Supervisor Management" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-user-tie text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Industry Supervisors</span>
+        </div>
+
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">Outcomes</div>
+        <div onclick="navigateSPA(event, 'view-results')" data-title="Final Results & Reports" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-award text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Results & Printing</span>
+        </div>
+
+      </nav>
+
+      <div class="p-3 border-t border-white/10 bg-black/10">
+        <div onclick="doLogout(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-white/80 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200 font-bold" title="Logout">
+          <i class="fas fa-right-from-bracket text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm">Logout</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div id="mobileOverlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-[40] lg:hidden backdrop-blur-sm hidden"></div>
+
+    <!-- ================= MAIN CONTENT WRAPPER ================= -->
+    <div class="flex-1 flex flex-col overflow-hidden w-full transition-all duration-300 ease-in-out">
+      
+      <!-- ================= TOPBAR ================= -->
+      <div class="bg-white border-b border-gray-100 px-4 md:px-6 h-16 flex items-center justify-between shadow-sm flex-shrink-0 z-[30] gap-3">
+        
+        <div class="flex items-center gap-3 min-w-0">
+          <button onclick="toggleMobileSidebar()" class="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 lg:hidden flex-shrink-0">
+            <i class="fas fa-bars text-sm"></i>
+          </button>
+          <button onclick="toggleDesktopSidebar()" class="hidden lg:flex w-9 h-9 rounded-xl bg-gray-50 items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 flex-shrink-0 cursor-pointer">
+            <i class="fas fa-chevron-left text-sm" id="desktopCollapseIcon"></i>
+          </button>
+          <div class="min-w-0">
+            <h2 id="pageTitle" class="text-base font-black text-primary leading-tight truncate">Dashboard</h2>
+            <p class="text-[11px] text-gray-400 leading-tight hidden sm:block font-medium">COMSATS University Islamabad, Abbottabad Campus</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          
+          <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-xl text-xs font-bold text-primary whitespace-nowrap shadow-sm">
+            <i class="fas fa-user-shield text-secondary"></i>
+            <span>FYP Office Assistant</span>
+          </div>
+
+          <!-- Notification Center -->
+          <div class="relative" id="notifWrap">
+            <button onclick="toggleNotifications()" class="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-50 hover:text-secondary transition-all cursor-pointer relative">
+              <i class="fas fa-bell text-sm"></i>
+              <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-50 rounded-full border-2 border-white animate-pulse"></span>
+            </button>
+            
+            <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100] animate-in fade-in-50 duration-200">
+              <div class="p-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+                <span class="text-sm font-black text-gray-800">Notifications</span>
+                <button onclick="markAllRead()" class="text-xs font-bold text-secondary hover:underline cursor-pointer">Mark all as read</button>
+              </div>
+              <div class="max-h-80 overflow-y-auto divide-y divide-gray-50" id="notifList">
+                <div class="p-4 hover:bg-blue-50/50 transition-colors flex gap-3 items-start border-l-4 border-secondary bg-blue-50/20">
+                  <div class="w-8 h-8 rounded-xl bg-blue-100 text-secondary flex items-center justify-center text-xs flex-shrink-0 mt-0.5"><i class="fas fa-bullhorn"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-gray-900">Proposal Decisions Published</div>
+                    <div class="text-[11px] text-gray-600 mt-0.5">PEC-1 has published decisions for 14 pending proposals.</div>
+                    <div class="text-[10px] text-gray-400 mt-1 font-bold">10 mins ago</div>
+                  </div>
+                </div>
+                <div class="p-4 hover:bg-gray-50 transition-colors flex gap-3 items-start border-l-4 border-amber-500 bg-amber-50/10">
+                  <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xs flex-shrink-0 mt-0.5"><i class="fas fa-exclamation-triangle"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-gray-900">1-Day Milestone Deadline Warning</div>
+                    <div class="text-[11px] text-gray-600 mt-0.5">FYP-1 Mid-term evaluation window closes tomorrow at 11:59 PM.</div>
+                    <div class="text-[10px] text-gray-400 mt-1 font-bold">2 hours ago</div>
+                  </div>
+                </div>
+                <div class="p-4 hover:bg-gray-50 transition-colors flex gap-3 items-start">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs flex-shrink-0 mt-0.5"><i class="fas fa-user-check"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-gray-800">New User Account Registered</div>
+                    <div class="text-[11px] text-gray-500 mt-0.5">Dr. Usman Qureshi created a temporary evaluator account.</div>
+                    <div class="text-[10px] text-gray-400 mt-1 font-bold">5 hours ago</div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                <button onclick="alert('Navigating to full notifications page...')" class="text-xs font-bold text-gray-600 hover:text-primary transition-colors cursor-pointer">View All Notifications</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Menu -->
+          <div class="relative">
+            <button class="flex items-center gap-2 p-1 md:px-2.5 md:py-1.5 bg-gray-50 rounded-xl cursor-pointer border border-gray-100 hover:bg-blue-50 hover:border-blue-100 transition-all">
+              <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-xs font-bold shadow-sm flex-shrink-0">
+                <span id="navAvatar">TM</span>
+              </div>
+              <div class="text-left hidden sm:block">
+                <div id="navName" class="text-xs font-bold text-gray-800 leading-tight truncate max-w-28">Mr. Tariq Mehmood</div>
+                <div class="text-[10px] text-gray-400 leading-tight font-bold">Assistant</div>
+              </div>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= MAIN CONTENT AREA ================= -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-lightbg scroll-smooth relative">
+        <div class="max-w-[1600px] mx-auto w-full">
+          
+          <!-- VIEW: DASHBOARD -->
+          <div id="view-dashboard" class="app-view active">
+            
+            <!-- Welcome Banner -->
+            <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-[fadeIn_0.4s_ease-out]" style="background: linear-gradient(135deg, #2B3990, #1E3A8A);">
+              <div class="text-white">
+                <h1 class="text-2xl sm:text-3xl font-black mb-2 tracking-tight">Good day, Mr. Mehmood! 👋</h1>
+                <p class="text-sm text-white/80 font-medium max-w-2xl leading-relaxed">Here is the administrative overview of the FYP Management System for the Spring 2026 academic session. All portals and committee assignments are active.</p>
+              </div>
+              <div class="flex gap-3 flex-wrap">
+                <button onclick="navigateSPA(event, 'view-users')" class="bg-white text-primary hover:bg-gray-50 px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer">
+                  <i class="fas fa-user-plus"></i> Add User
+                </button>
+                <button onclick="navigateSPA(event, 'view-students')" class="bg-secondary hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer">
+                  <i class="fas fa-graduation-cap"></i> View Students
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 text-secondary flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-users"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Total Users</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">142</span>
+                    <span class="text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-lg">Active</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-user-graduate"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">FYP Students</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">284</span>
+                    <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg">Enrolled</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-project-diagram"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Active Projects</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">76</span>
+                    <span class="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-lg">Assigned</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-users-viewfinder"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Committees</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">8</span>
+                    <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-lg">Operational</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Navigation & Recent Activities -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+              <div class="lg:col-span-2 bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8">
+                <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                  <div>
+                    <h3 class="text-lg font-black text-gray-800">System Workflow Quick Access</h3>
+                    <p class="text-xs text-gray-500 mt-0.5 font-medium">Manage core database entities and committee configurations</p>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div onclick="navigateSPA(event, 'view-users')" class="p-5 rounded-2xl bg-gray-50 border border-gray-100 hover:border-secondary hover:bg-blue-50/30 transition-all cursor-pointer flex flex-col justify-between group">
+                    <div class="flex justify-between items-center mb-4">
+                      <div class="w-10 h-10 rounded-xl bg-blue-100 text-secondary flex items-center justify-center font-bold"><i class="fas fa-users-gear"></i></div>
+                      <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-gray-800 text-base mb-1">User Account Management</h4>
+                      <p class="text-xs text-gray-500 font-medium">Assign roles, manage account locks, and register new administrative or academic users.</p>
+                    </div>
+                  </div>
+                  <div onclick="navigateSPA(event, 'view-students')" class="p-5 rounded-2xl bg-gray-50 border border-gray-100 hover:border-secondary hover:bg-blue-50/30 transition-all cursor-pointer flex flex-col justify-between group">
+                    <div class="flex justify-between items-center mb-4">
+                      <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold"><i class="fas fa-user-graduate"></i></div>
+                      <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-gray-800 text-base mb-1">Student Records & Bulk Messaging</h4>
+                      <p class="text-xs text-gray-500 font-medium">Search registration numbers, view read-only profiles, and dispatch milestone alerts.</p>
+                    </div>
+                  </div>
+                  <div onclick="navigateSPA(event, 'view-proposal-committee')" class="p-5 rounded-2xl bg-gray-50 border border-gray-100 hover:border-secondary hover:bg-blue-50/30 transition-all cursor-pointer flex flex-col justify-between group">
+                    <div class="flex justify-between items-center mb-4">
+                      <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold"><i class="fas fa-users"></i></div>
+                      <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-gray-800 text-base mb-1">Proposal Committees</h4>
+                      <p class="text-xs text-gray-500 font-medium">Configure evaluation boards with AI-assisted faculty interest and availability suggestions.</p>
+                    </div>
+                  </div>
+                  <div onclick="navigateSPA(event, 'view-eval-committee')" class="p-5 rounded-2xl bg-gray-50 border border-gray-100 hover:border-secondary hover:bg-blue-50/30 transition-all cursor-pointer flex flex-col justify-between group">
+                    <div class="flex justify-between items-center mb-4">
+                      <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold"><i class="fas fa-layer-group"></i></div>
+                      <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-gray-800 text-base mb-1">FYP Evaluation Boards</h4>
+                      <p class="text-xs text-gray-500 font-medium">Manage FYP-1 & FYP-2 boards, enforce 50% member rotation, and monitor evaluation locks.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8">
+                <h3 class="text-lg font-black text-gray-800 mb-6">Recent Administrative Actions</h3>
+                <div class="space-y-4">
+                  <div class="flex gap-4 items-start pb-4 border-b border-gray-50">
+                    <div class="w-8 h-8 rounded-xl bg-blue-50 text-secondary flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"><i class="fas fa-user-edit"></i></div>
+                    <div>
+                      <div class="text-xs font-bold text-gray-800">Role Assigned: Dr. Ali Hassan</div>
+                      <div class="text-[11px] text-gray-500 mt-0.5">Assigned to Proposal Evaluation Committee (PEC-1).</div>
+                      <div class="text-[10px] text-gray-400 font-bold mt-1">Today, 10:15 AM</div>
+                    </div>
+                  </div>
+                  <div class="flex gap-4 items-start pb-4 border-b border-gray-50">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"><i class="fas fa-file-upload"></i></div>
+                    <div>
+                      <div class="text-xs font-bold text-gray-800">Thesis Template v2.4 Uploaded</div>
+                      <div class="text-[11px] text-gray-500 mt-0.5">Replaced older version in FYP Content Management repository.</div>
+                      <div class="text-[10px] text-gray-400 font-bold mt-1">Yesterday, 04:30 PM</div>
+                    </div>
+                  </div>
+                  <div class="flex gap-4 items-start pb-2">
+                    <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"><i class="fas fa-calendar-check"></i></div>
+                    <div>
+                      <div class="text-xs font-bold text-gray-800">Meeting Schedule Published</div>
+                      <div class="text-[11px] text-gray-500 mt-0.5">Published FYP-1 mid-term defense schedule for 24 groups.</div>
+                      <div class="text-[10px] text-gray-400 font-bold mt-1">May 15, 2026</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- VIEW: USER ACCOUNT MANAGEMENT -->
+          <div id="view-users" class="app-view">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
+              <div>
+                <h2 class="text-xl font-black text-gray-800">User Account Management</h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">Manage system accounts, assign or revoke roles, and handle account locks</p>
+              </div>
+              <button onclick="openModal('createUserModal')" class="bg-secondary hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all flex items-center gap-2 cursor-pointer">
+                <i class="fas fa-user-plus"></i> Create New User
+              </button>
+            </div>
+
+            <!-- Search & Filter Bar -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+              <div class="relative w-full sm:w-80">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="userSearch" onkeyup="filterTable('userTable', 'userSearch')" placeholder="Search by name, email, or role..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-secondary focus:bg-white transition-all" />
+              </div>
+              <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <span class="text-xs font-bold text-gray-500">Filter Status:</span>
+                <select id="userStatusFilter" onchange="filterTableByCol('userTable', this.value, 3)" class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 outline-none focus:border-secondary cursor-pointer">
+                  <option value="">All Statuses</option>
+                  <option value="Active">Active</option>
+                  <option value="Locked">Locked</option>
+                  <option value="Deactivated">Deactivated</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="userTable">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6">User Details</th>
+                      <th class="py-3.5 px-6">Email Address</th>
+                      <th class="py-3.5 px-6">Assigned Role(s)</th>
+                      <th class="py-3.5 px-6">Account Status</th>
+                      <th class="py-3.5 px-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-secondary flex items-center justify-center font-bold flex-shrink-0">AH</div>
+                        <div>
+                          <div class="font-bold text-gray-900">Dr. Ali Hassan</div>
+                          <div class="text-xs text-gray-400">Faculty Supervisor</div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-6 text-gray-600">supervisor@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-blue-50 text-secondary font-bold text-xs px-2.5 py-1 rounded-lg border border-blue-100">Faculty Supervisor</span></td>
+                      <td class="py-4 px-6"><span class="bg-success/10 text-success font-bold text-xs px-2.5 py-1 rounded-lg border border-success/20">Active</span></td>
+                      <td class="py-4 px-6 text-right space-x-1">
+                        <button onclick="openEditUserModal('Dr. Ali Hassan', 'supervisor@cuiatd.edu.pk', 'Faculty Supervisor')" class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">Edit</button>
+                        <button onclick="confirmAction('deactivate user Dr. Ali Hassan', () => showToast('User deactivated successfully!', 'warning'))" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-100 text-xs font-bold transition-all cursor-pointer">Deactivate</button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold flex-shrink-0">FK</div>
+                        <div>
+                          <div class="font-bold text-gray-900">Dr. Fatima Khan</div>
+                          <div class="text-xs text-gray-400">Faculty Supervisor</div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-6 text-gray-600">fatima@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-blue-50 text-secondary font-bold text-xs px-2.5 py-1 rounded-lg border border-blue-100">Faculty Supervisor</span></td>
+                      <td class="py-4 px-6"><span class="bg-amber-50 text-amber-600 font-bold text-xs px-2.5 py-1 rounded-lg border border-amber-200">Locked</span></td>
+                      <td class="py-4 px-6 text-right space-x-1">
+                        <button onclick="showToast('User account unlocked successfully!', 'success')" class="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition-all cursor-pointer">Unlock</button>
+                        <button onclick="openEditUserModal('Dr. Fatima Khan', 'fatima@cuiatd.edu.pk', 'Faculty Supervisor')" class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">Edit</button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold flex-shrink-0">SM</div>
+                        <div>
+                          <div class="font-bold text-gray-900">Dr. Sara Malik</div>
+                          <div class="text-xs text-gray-400">FYP Office In-charge</div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-6 text-gray-600">incharge@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-purple-50 text-purple-700 font-bold text-xs px-2.5 py-1 rounded-lg border border-purple-200">FYP Office In-charge</span></td>
+                      <td class="py-4 px-6"><span class="bg-success/10 text-success font-bold text-xs px-2.5 py-1 rounded-lg border border-success/20">Active</span></td>
+                      <td class="py-4 px-6 text-right space-x-1">
+                        <button onclick="openEditUserModal('Dr. Sara Malik', 'incharge@cuiatd.edu.pk', 'FYP Office In-charge')" class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">Edit</button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center font-bold flex-shrink-0">UQ</div>
+                        <div>
+                          <div class="font-bold text-gray-900">Dr. Usman Qureshi</div>
+                          <div class="text-xs text-gray-400">Industry Supervisor</div>
+                        </div>
+                      </td>
+                      <td class="py-4 px-6 text-gray-600">evaluator@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-gray-50 text-gray-700 font-bold text-xs px-2.5 py-1 rounded-lg border border-gray-200">Industry Supervisor</span></td>
+                      <td class="py-4 px-6"><span class="bg-red-50 text-red-600 font-bold text-xs px-2.5 py-1 rounded-lg border border-red-200">Deactivated</span></td>
+                      <td class="py-4 px-6 text-right space-x-1">
+                        <button onclick="showToast('User account reactivated successfully!', 'success')" class="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition-all cursor-pointer">Reactivate</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-bold">
+                <span>Showing 4 of 142 users</span>
+                <div class="flex gap-1">
+                  <button class="px-3 py-1.5 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-50 cursor-pointer" disabled>Previous</button>
+                  <button class="px-3 py-1.5 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 cursor-pointer">Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: STUDENT MANAGEMENT -->
+          <div id="view-students" class="app-view">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
+              <div>
+                <h2 class="text-xl font-black text-gray-800">Student Management</h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">Search registration numbers, filter by FYP status, and dispatch bulk milestone messages</p>
+              </div>
+              <button onclick="openModal('bulkMessageModal')" class="bg-secondary hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all flex items-center gap-2 cursor-pointer">
+                <i class="fas fa-paper-plane"></i> Bulk Message
+              </button>
+            </div>
+
+            <!-- Search & Filter Bar -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+              <div class="relative w-full sm:w-80">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="studentSearch" onkeyup="filterTable('studentTable', 'studentSearch')" placeholder="Search student name or reg no..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-secondary focus:bg-white transition-all" />
+              </div>
+              <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <span class="text-xs font-bold text-gray-500">FYP Status:</span>
+                <select id="studentStatusFilter" onchange="filterTableByCol('studentTable', this.value, 2)" class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 outline-none focus:border-secondary cursor-pointer">
+                  <option value="">All Statuses</option>
+                  <option value="No Project">No Project</option>
+                  <option value="FYP-1">FYP-1</option>
+                  <option value="FYP-2">FYP-2</option>
+                  <option value="FYP-1 Repeat">FYP-1 Repeat</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Students Table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="studentTable">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6 w-12"><input type="checkbox" onchange="toggleSelectAll(this, 'studentCheck')" class="accent-primary cursor-pointer" /></th>
+                      <th class="py-3.5 px-6">Student Name</th>
+                      <th class="py-3.5 px-6">Registration Number</th>
+                      <th class="py-3.5 px-6">FYP Status</th>
+                      <th class="py-3.5 px-6">Assigned Project</th>
+                      <th class="py-3.5 px-6 text-right">Profile</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+                    <tr class="hover:bg-gray-50/50 transition-colors cursor-pointer" onclick="openStudentProfileModal('Ahmed Farooq', 'SP21-BCS-001', 'FYP-1', 'AI-Powered Traffic Management System', 'Dr. Ali Hassan', '25%')">
+                      <td class="py-4 px-6" onclick="event.stopPropagation()"><input type="checkbox" class="studentCheck accent-primary cursor-pointer" value="Ahmed Farooq" /></td>
+                      <td class="py-4 px-6 font-bold text-gray-900">Ahmed Farooq</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono">SP21-BCS-001</td>
+                      <td class="py-4 px-6"><span class="bg-blue-50 text-secondary font-bold text-xs px-2.5 py-1 rounded-lg border border-blue-100">FYP-1</span></td>
+                      <td class="py-4 px-6 text-gray-600 truncate max-w-xs">AI-Powered Traffic Management System</td>
+                      <td class="py-4 px-6 text-right"><button class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">View Profile</button></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors cursor-pointer" onclick="openStudentProfileModal('Aima Khalid', 'SP21-BCS-019', 'FYP-2', 'Federated Learning for Medical Diagnosis', 'Dr. Sara Malik', '75%')">
+                      <td class="py-4 px-6" onclick="event.stopPropagation()"><input type="checkbox" class="studentCheck accent-primary cursor-pointer" value="Aima Khalid" /></td>
+                      <td class="py-4 px-6 font-bold text-gray-900">Aima Khalid</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono">SP21-BCS-019</td>
+                      <td class="py-4 px-6"><span class="bg-purple-50 text-purple-700 font-bold text-xs px-2.5 py-1 rounded-lg border border-purple-200">FYP-2</span></td>
+                      <td class="py-4 px-6 text-gray-600 truncate max-w-xs">Federated Learning for Medical Diagnosis</td>
+                      <td class="py-4 px-6 text-right"><button class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">View Profile</button></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors cursor-pointer" onclick="openStudentProfileModal('Faizan Ali', 'SP21-BCS-031', 'FYP-1 Repeat', 'None', 'Unassigned', '0%')">
+                      <td class="py-4 px-6" onclick="event.stopPropagation()"><input type="checkbox" class="studentCheck accent-primary cursor-pointer" value="Faizan Ali" /></td>
+                      <td class="py-4 px-6 font-bold text-gray-900">Faizan Ali</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono">SP21-BCS-031</td>
+                      <td class="py-4 px-6"><span class="bg-amber-50 text-amber-600 font-bold text-xs px-2.5 py-1 rounded-lg border border-amber-200">FYP-1 Repeat</span></td>
+                      <td class="py-4 px-6 text-gray-400 italic">No Project Assigned</td>
+                      <td class="py-4 px-6 text-right"><button class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">View Profile</button></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors cursor-pointer" onclick="openStudentProfileModal('Sana Mehmood', 'SP21-BCS-007', 'Completed', 'NLP-Based Legal Document Summarization', 'Dr. Ali Hassan', '100%')">
+                      <td class="py-4 px-6" onclick="event.stopPropagation()"><input type="checkbox" class="studentCheck accent-primary cursor-pointer" value="Sana Mehmood" /></td>
+                      <td class="py-4 px-6 font-bold text-gray-900">Sana Mehmood</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono">SP21-BCS-007</td>
+                      <td class="py-4 px-6"><span class="bg-success/10 text-success font-bold text-xs px-2.5 py-1 rounded-lg border border-success/20">Completed</span></td>
+                      <td class="py-4 px-6 text-gray-600 truncate max-w-xs">NLP-Based Legal Document Summarization</td>
+                      <td class="py-4 px-6 text-right"><button class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">View Profile</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-bold">
+                <span>Showing 4 of 284 students</span>
+                <div class="flex gap-1">
+                  <button class="px-3 py-1.5 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-50 cursor-pointer" disabled>Previous</button>
+                  <button class="px-3 py-1.5 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 cursor-pointer">Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: FACULTY PROFILE VIEW -->
+          <div id="view-faculty" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Faculty Profiles & Availability</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Read-only view of faculty supervision load, research areas, and weekly availability schedule</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- Faculty Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between hover:border-secondary transition-all">
+                <div>
+                  <div class="flex items-center gap-4 mb-4">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 text-secondary flex items-center justify-center text-xl font-black flex-shrink-0 border border-blue-100">AH</div>
+                    <div>
+                      <h3 class="font-black text-gray-900 text-base">Dr. Ali Hassan</h3>
+                      <p class="text-xs text-gray-500 font-medium mt-0.5">Associate Professor</p>
+                    </div>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3 mb-4 space-y-1.5 text-xs">
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">Proposed Projects:</span><span class="font-black text-gray-800">6</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">In-Progress (Supervising):</span><span class="font-black text-secondary">4 (Max)</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">Completed Projects:</span><span class="font-black text-success">28</span></div>
+                  </div>
+                  <div class="mb-6">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Research Areas</span>
+                    <div class="flex flex-wrap gap-1.5">
+                      <span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2.5 py-1 rounded-lg">Artificial Intelligence</span>
+                      <span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2.5 py-1 rounded-lg">Machine Learning</span>
+                      <span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2.5 py-1 rounded-lg">Computer Vision</span>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="openAvailabilityModal('Dr. Ali Hassan', ['Mon 10:00-12:00', 'Tue 10:00-12:00', 'Wed 10:00-12:00'])" class="w-full py-2.5 bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2">
+                  <i class="fas fa-calendar-alt"></i> View Weekly Schedule
+                </button>
+              </div>
+
+              <!-- Faculty Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between hover:border-secondary transition-all">
+                <div>
+                  <div class="flex items-center gap-4 mb-4">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center text-xl font-black flex-shrink-0 border border-purple-200">SM</div>
+                    <div>
+                      <h3 class="font-black text-gray-900 text-base">Dr. Sara Malik</h3>
+                      <p class="text-xs text-gray-500 font-medium mt-0.5">Senior Lecturer · In-charge</p>
+                    </div>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3 mb-4 space-y-1.5 text-xs">
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">Proposed Projects:</span><span class="font-black text-gray-800">4</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">In-Progress (Supervising):</span><span class="font-black text-secondary">3</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">Completed Projects:</span><span class="font-black text-success">19</span></div>
+                  </div>
+                  <div class="mb-6">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Research Areas</span>
+                    <div class="flex flex-wrap gap-1.5">
+                      <span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2.5 py-1 rounded-lg">Software Engineering</span>
+                      <span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2.5 py-1 rounded-lg">Federated Learning</span>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="openAvailabilityModal('Dr. Sara Malik', ['Thu 14:00-16:00', 'Fri 10:00-12:00'])" class="w-full py-2.5 bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2">
+                  <i class="fas fa-calendar-alt"></i> View Weekly Schedule
+                </button>
+              </div>
+
+              <!-- Faculty Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between hover:border-secondary transition-all">
+                <div>
+                  <div class="flex items-center gap-4 mb-4">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-black flex-shrink-0 border border-amber-200">FK</div>
+                    <div>
+                      <h3 class="font-black text-gray-900 text-base">Dr. Fatima Khan</h3>
+                      <p class="text-xs text-gray-500 font-medium mt-0.5">Assistant Professor</p>
+                    </div>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3 mb-4 space-y-1.5 text-xs">
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">Proposed Projects:</span><span class="font-black text-gray-800">5</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">In-Progress (Supervising):</span><span class="font-black text-secondary">1</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500 font-bold">Completed Projects:</span><span class="font-black text-success">14</span></div>
+                  </div>
+                  <div class="mb-6">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Research Areas</span>
+                    <div class="flex flex-wrap gap-1.5">
+                      <span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2.5 py-1 rounded-lg">IoT Systems</span>
+                      <span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2.5 py-1 rounded-lg">Cybersecurity</span>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="openAvailabilityModal('Dr. Fatima Khan', ['Mon 09:00-11:00', 'Wed 14:00-16:00'])" class="w-full py-2.5 bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2">
+                  <i class="fas fa-calendar-alt"></i> View Weekly Schedule
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: PROJECT LIST -->
+          <div id="view-projects" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Project Directory</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Searchable repository of all proposed, active, and completed FYP projects</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 shadow-sm flex items-center justify-between">
+              <div class="relative w-full sm:w-96">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="projectSearch" onkeyup="filterTable('projectTable', 'projectSearch')" placeholder="Search project title, student, or supervisor..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-secondary focus:bg-white transition-all" />
+              </div>
+            </div>
+
+            <!-- Project Table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="projectTable">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6">Project Title</th>
+                      <th class="py-3.5 px-6">Group Leader</th>
+                      <th class="py-3.5 px-6">Supervisor Name</th>
+                      <th class="py-3.5 px-6">Status</th>
+                      <th class="py-3.5 px-6 text-right">Details</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+                    <tr class="hover:bg-gray-50/50 transition-colors cursor-pointer" onclick="openProjectDetailModal('AI-Powered Traffic Management System', 'Ahmed Farooq (SP21-BCS-001)', 'Dr. Ali Hassan', 'Approved', 'Computer Vision, Deep Learning, YOLOv8', 'The project aims to optimize urban traffic signals using real-time video feeds and AI object detection.')">
+                      <td class="py-4 px-6 font-bold text-gray-900 max-w-md truncate">AI-Powered Traffic Management System Using Computer Vision</td>
+                      <td class="py-4 px-6 text-gray-600">Ahmed Farooq</td>
+                      <td class="py-4 px-6 text-gray-600">Dr. Ali Hassan</td>
+                      <td class="py-4 px-6"><span class="bg-success/10 text-success font-bold text-xs px-2.5 py-1 rounded-lg border border-success/20">Approved</span></td>
+                      <td class="py-4 px-6 text-right"><button class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">View Detail</button></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors cursor-pointer" onclick="openProjectDetailModal('Federated Learning for Medical Diagnosis', 'Aima Khalid (SP21-BCS-019)', 'Dr. Sara Malik', 'Approved', 'Python, PyTorch, Federated Learning', 'A privacy-preserving framework for training diagnostic AI models across multiple hospitals without sharing raw patient data.')">
+                      <td class="py-4 px-6 font-bold text-gray-900 max-w-md truncate">Federated Learning for Privacy-Preserving Medical Diagnosis</td>
+                      <td class="py-4 px-6 text-gray-600">Aima Khalid</td>
+                      <td class="py-4 px-6 text-gray-600">Dr. Sara Malik</td>
+                      <td class="py-4 px-6"><span class="bg-success/10 text-success font-bold text-xs px-2.5 py-1 rounded-lg border border-success/20">Approved</span></td>
+                      <td class="py-4 px-6 text-right"><button class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">View Detail</button></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors cursor-pointer" onclick="openProjectDetailModal('Smart Energy Management Using IoT', 'Zain Ali (SP21-BCS-005)', 'Dr. Fatima Khan', 'Pending', 'ESP32, AWS IoT, React', 'An IoT-based smart grid monitoring system designed to reduce electricity wastage in university dormitories.')">
+                      <td class="py-4 px-6 font-bold text-gray-900 max-w-md truncate">Smart Energy Management System Using IoT</td>
+                      <td class="py-4 px-6 text-gray-600">Zain Ali</td>
+                      <td class="py-4 px-6 text-gray-600">Dr. Fatima Khan</td>
+                      <td class="py-4 px-6"><span class="bg-amber-50 text-amber-600 font-bold text-xs px-2.5 py-1 rounded-lg border border-amber-200">Pending</span></td>
+                      <td class="py-4 px-6 text-right"><button class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">View Detail</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: FYP CONTENT MANAGEMENT -->
+          <div id="view-content" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center">
+              <div>
+                <h2 class="text-xl font-black text-gray-800">FYP Content & Template Management</h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">Manage official documentation templates, track version history, and upload new releases</p>
+              </div>
+              <button onclick="openModal('uploadContentModal')" class="bg-secondary hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all flex items-center gap-2 cursor-pointer">
+                <i class="fas fa-cloud-upload-alt"></i> Upload New Version
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Category Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-50">
+                    <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-2xl font-black"><i class="fas fa-file-powerpoint"></i></div>
+                    <div>
+                      <h3 class="font-black text-gray-900 text-base">Presentation Template</h3>
+                      <p class="text-xs text-gray-400 font-bold mt-0.5">Current: v3.1</p>
+                    </div>
+                  </div>
+                  <div class="space-y-3 mb-6">
+                    <div class="flex justify-between items-center text-xs">
+                      <span class="text-gray-500 font-bold">Uploaded Date:</span>
+                      <span class="font-bold text-gray-800">May 10, 2026</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                      <span class="text-gray-500 font-bold">File Size:</span>
+                      <span class="font-bold text-gray-800">4.2 MB</span>
+                    </div>
+                  </div>
+                  <!-- Collapsible History -->
+                  <div class="mb-6 border border-gray-100 rounded-xl overflow-hidden">
+                    <button onclick="toggleCollapse('hist-pres')" class="w-full p-3 bg-gray-50 flex justify-between items-center text-xs font-bold text-gray-700 cursor-pointer">
+                      <span>Version History</span>
+                      <i class="fas fa-chevron-down text-gray-400"></i>
+                    </button>
+                    <div id="hist-pres" class="hidden p-3 bg-white divide-y divide-gray-50 text-xs">
+                      <div class="py-2 flex justify-between items-center"><span class="font-bold text-gray-600">v3.0 (Apr 12, 2026)</span><button onclick="showToast('Downloading v3.0...', 'success')" class="text-secondary hover:underline font-bold cursor-pointer">Download</button></div>
+                      <div class="py-2 flex justify-between items-center"><span class="font-bold text-gray-600">v2.5 (Jan 05, 2026)</span><button onclick="showToast('Downloading v2.5...', 'success')" class="text-secondary hover:underline font-bold cursor-pointer">Download</button></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="showToast('Downloading current template...', 'success')" class="flex-1 py-2.5 bg-secondary hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-blue-600/20">
+                    <i class="fas fa-download"></i> Download
+                  </button>
+                  <button onclick="confirmAction('delete template', () => showToast('Template deleted!', 'warning'))" class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition-all cursor-pointer">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Category Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-50">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-secondary flex items-center justify-center text-2xl font-black"><i class="fas fa-file-word"></i></div>
+                    <div>
+                      <h3 class="font-black text-gray-900 text-base">Thesis Template</h3>
+                      <p class="text-xs text-gray-400 font-bold mt-0.5">Current: v2.4</p>
+                    </div>
+                  </div>
+                  <div class="space-y-3 mb-6">
+                    <div class="flex justify-between items-center text-xs">
+                      <span class="text-gray-500 font-bold">Uploaded Date:</span>
+                      <span class="font-bold text-gray-800">May 16, 2026</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                      <span class="text-gray-500 font-bold">File Size:</span>
+                      <span class="font-bold text-gray-800">1.8 MB</span>
+                    </div>
+                  </div>
+                  <!-- Collapsible History -->
+                  <div class="mb-6 border border-gray-100 rounded-xl overflow-hidden">
+                    <button onclick="toggleCollapse('hist-thes')" class="w-full p-3 bg-gray-50 flex justify-between items-center text-xs font-bold text-gray-700 cursor-pointer">
+                      <span>Version History</span>
+                      <i class="fas fa-chevron-down text-gray-400"></i>
+                    </button>
+                    <div id="hist-thes" class="hidden p-3 bg-white divide-y divide-gray-50 text-xs">
+                      <div class="py-2 flex justify-between items-center"><span class="font-bold text-gray-600">v2.3 (Mar 20, 2026)</span><button onclick="showToast('Downloading v2.3...', 'success')" class="text-secondary hover:underline font-bold cursor-pointer">Download</button></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="showToast('Downloading current template...', 'success')" class="flex-1 py-2.5 bg-secondary hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-blue-600/20">
+                    <i class="fas fa-download"></i> Download
+                  </button>
+                  <button onclick="confirmAction('delete template', () => showToast('Template deleted!', 'warning'))" class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition-all cursor-pointer">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Category Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-50">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-black"><i class="fas fa-file-pdf"></i></div>
+                    <div>
+                      <h3 class="font-black text-gray-900 text-base">Report Template</h3>
+                      <p class="text-xs text-gray-400 font-bold mt-0.5">Current: v1.9</p>
+                    </div>
+                  </div>
+                  <div class="space-y-3 mb-6">
+                    <div class="flex justify-between items-center text-xs">
+                      <span class="text-gray-500 font-bold">Uploaded Date:</span>
+                      <span class="font-bold text-gray-800">Apr 02, 2026</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                      <span class="text-gray-500 font-bold">File Size:</span>
+                      <span class="font-bold text-gray-800">2.5 MB</span>
+                    </div>
+                  </div>
+                  <!-- Collapsible History -->
+                  <div class="mb-6 border border-gray-100 rounded-xl overflow-hidden">
+                    <button onclick="toggleCollapse('hist-rep')" class="w-full p-3 bg-gray-50 flex justify-between items-center text-xs font-bold text-gray-700 cursor-pointer">
+                      <span>Version History</span>
+                      <i class="fas fa-chevron-down text-gray-400"></i>
+                    </button>
+                    <div id="hist-rep" class="hidden p-3 bg-white divide-y divide-gray-50 text-xs">
+                      <div class="py-2 flex justify-between items-center"><span class="font-bold text-gray-600">v1.8 (Feb 14, 2026)</span><button onclick="showToast('Downloading v1.8...', 'success')" class="text-secondary hover:underline font-bold cursor-pointer">Download</button></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="showToast('Downloading current template...', 'success')" class="flex-1 py-2.5 bg-secondary hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-blue-600/20">
+                    <i class="fas fa-download"></i> Download
+                  </button>
+                  <button onclick="confirmAction('delete template', () => showToast('Template deleted!', 'warning'))" class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition-all cursor-pointer">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: PROPOSAL EVALUATION COMMITTEE MANAGEMENT -->
+          <div id="view-proposal-committee" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Proposal Evaluation Committee Management</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Create evaluation boards, leverage AI-assisted faculty matching, assign pending proposals, and publish schedules</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+              <!-- Create Committee Form -->
+              <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="text-base font-black text-gray-800 mb-6 pb-3 border-b border-gray-50">Create Proposal Committee</h3>
+                <form onsubmit="handleCommitteeSubmit(event, 'proposal')" class="space-y-5">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label class="block text-xs font-bold text-gray-700 mb-1.5">Committee Name</label>
+                      <input type="text" placeholder="e.g. PEC-1 (AI & Vision)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-700 mb-1.5">Research Area / Track</label>
+                      <input type="text" placeholder="e.g. Artificial Intelligence" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label class="block text-xs font-bold text-gray-700 mb-1.5">Assign Committee Head</label>
+                      <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer" required>
+                        <option value="">Select Head...</option>
+                        <option value="Dr. Ali Hassan">Dr. Ali Hassan (AI & Vision)</option>
+                        <option value="Dr. Sara Malik">Dr. Sara Malik (Software Eng)</option>
+                        <option value="Dr. Fatima Khan">Dr. Fatima Khan (IoT & Cyber)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-700 mb-1.5">Assign Members (Multi-select)</label>
+                      <select multiple class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer h-24" required>
+                        <option value="Dr. Ali Hassan">Dr. Ali Hassan</option>
+                        <option value="Dr. Sara Malik">Dr. Sara Malik</option>
+                        <option value="Dr. Fatima Khan">Dr. Fatima Khan</option>
+                        <option value="Dr. Usman Qureshi">Dr. Usman Qureshi</option>
+                      </select>
+                      <p class="text-[10px] text-gray-400 mt-1 font-bold">Hold Ctrl/Cmd to select multiple members</p>
+                    </div>
+                  </div>
+                  <div class="pt-4 border-t border-gray-50 flex justify-end">
+                    <button type="submit" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all cursor-pointer">
+                      Create Committee
+                    </button>
+                  </div>
+                </form>
+
+                <!-- Assign Proposals & Publish Schedule -->
+                <div class="mt-10 pt-6 border-t border-gray-100">
+                  <h3 class="text-base font-black text-gray-800 mb-4">Assign Pending Proposals & Publish Schedule</h3>
+                  <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100 space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                      <div class="w-full sm:w-1/2">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Select Proposal</label>
+                        <select class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer">
+                          <option>Smart Energy Management Using IoT (G-005)</option>
+                          <option>Blockchain Voting System (G-012)</option>
+                        </select>
+                      </div>
+                      <div class="w-full sm:w-1/2">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Target Committee</label>
+                        <select class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer">
+                          <option>PEC-1 (AI & Vision)</option>
+                          <option>PEC-2 (IoT & Cyber)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="flex gap-3 justify-end pt-2">
+                      <button onclick="showToast('Proposal assigned successfully!', 'success')" class="bg-primary hover:bg-blue-900 text-white px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer">Assign Proposal</button>
+                      <button onclick="showToast('Meeting schedule published to faculty and students!', 'success')" class="bg-success hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2"><i class="fas fa-calendar-check"></i> Publish Schedule</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Side Suggestion Panel -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-50">
+                  <i class="fas fa-robot text-secondary text-lg"></i>
+                  <h3 class="text-sm font-black text-gray-800">AI Faculty Matcher</h3>
+                </div>
+                <p class="text-xs text-gray-500 mb-6 font-medium leading-relaxed">The system automatically analyzes faculty research interests and teaching schedules to recommend optimal committee placements.</p>
+                
+                <div class="space-y-4 divide-y divide-gray-50">
+                  <div class="pt-2">
+                    <div class="flex justify-between items-baseline mb-1">
+                      <span class="font-black text-gray-900 text-xs">Dr. Ali Hassan</span>
+                      <span class="text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded">Highly Recommended</span>
+                    </div>
+                    <p class="text-[11px] text-gray-500 font-medium mb-2">Track: AI, Machine Learning, Computer Vision</p>
+                    <div class="flex justify-between items-center text-[10px] bg-gray-50 p-2 rounded-lg">
+                      <span class="text-gray-400 font-bold">Availability:</span>
+                      <span class="font-bold text-gray-700">Mon–Wed Mornings</span>
+                    </div>
+                  </div>
+                  <div class="pt-4">
+                    <div class="flex justify-between items-baseline mb-1">
+                      <span class="font-black text-gray-900 text-xs">Dr. Fatima Khan</span>
+                      <span class="text-[10px] font-bold text-secondary bg-blue-50 px-2 py-0.5 rounded">Available</span>
+                    </div>
+                    <p class="text-[11px] text-gray-500 font-medium mb-2">Track: IoT Systems, Cybersecurity</p>
+                    <div class="flex justify-between items-center text-[10px] bg-gray-50 p-2 rounded-lg">
+                      <span class="text-gray-400 font-bold">Availability:</span>
+                      <span class="font-bold text-gray-700">Mon & Wed Afternoons</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: FYP EVALUATION COMMITTEE MANAGEMENT -->
+          <div id="view-eval-committee" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">FYP Evaluation Committee Management</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Configure FYP-1 & FYP-2 boards, enforce 50% rotation rules, monitor workload counters, and manage milestone locks</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+              <!-- Committee Configuration Form -->
+              <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+                  <h3 class="text-base font-black text-gray-800">Configure Evaluation Board</h3>
+                  <div class="flex gap-2">
+                    <button onclick="toggleEvalType('fyp1')" id="btnFyp1" class="px-4 py-1.5 rounded-xl bg-primary text-white text-xs font-bold transition-all cursor-pointer shadow-md">FYP-1 Board</button>
+                    <button onclick="toggleEvalType('fyp2')" id="btnFyp2" class="px-4 py-1.5 rounded-xl bg-gray-100 text-gray-600 text-xs font-bold transition-all cursor-pointer hover:bg-gray-200">FYP-2 Board</button>
+                  </div>
+                </div>
+
+                <form onsubmit="handleCommitteeSubmit(event, 'eval')" class="space-y-5">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label class="block text-xs font-bold text-gray-700 mb-1.5">Committee Name</label>
+                      <input type="text" id="evalCommName" placeholder="e.g. FEC-FYP1-A" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-700 mb-1.5">Milestone Window</label>
+                      <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer" required>
+                        <option value="10">10% Milestone</option>
+                        <option value="30">30% Milestone</option>
+                        <option value="60">60% Milestone</option>
+                        <option value="100">100% Final Defense</option>
+                        <option value="External">External Evaluation</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="has-tooltip">
+                      <label class="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-2">
+                        <span>Assign Committee Head</span>
+                        <i class="fas fa-info-circle text-secondary"></i>
+                      </label>
+                      <select id="evalCommHead" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed" required>
+                        <option value="Dr. Ali Hassan">Dr. Ali Hassan</option>
+                        <option value="Dr. Sara Malik">Dr. Sara Malik</option>
+                      </select>
+                      <!-- Tooltip for FYP-2 -->
+                      <div id="headTooltip" class="custom-tooltip hidden">Committee head cannot be changed for FYP-2. Submit a formal request to the FYP Office In-charge.</div>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-gray-700 mb-1.5">Assign Members (Max 50% change for FYP-2)</label>
+                      <select multiple class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer h-24" required>
+                        <option value="Dr. Ali Hassan" selected>Dr. Ali Hassan (Workload: 4)</option>
+                        <option value="Dr. Sara Malik" selected>Dr. Sara Malik (Workload: 3)</option>
+                        <option value="Dr. Fatima Khan">Dr. Fatima Khan (Workload: 1)</option>
+                        <option value="Dr. Usman Qureshi">Dr. Usman Qureshi (Workload: 0)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Conflict Flagging Box -->
+                  <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3 text-xs text-amber-800 font-bold hidden" id="conflictBox">
+                    <i class="fas fa-exclamation-triangle text-amber-600 text-base mt-0.5 flex-shrink-0"></i>
+                    <div>
+                      <span class="block font-black mb-0.5">Scheduling Conflict Detected!</span>
+                      <span>Dr. Fatima Khan has a stated availability conflict during the selected milestone evaluation window.</span>
+                    </div>
+                  </div>
+
+                  <div class="pt-4 border-t border-gray-50 flex justify-end">
+                    <button type="submit" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all cursor-pointer">
+                      Save Committee Configuration
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Active Evaluation Boards & Locking -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+                <h3 class="text-base font-black text-gray-800 pb-3 border-b border-gray-50">Active Boards & Locking</h3>
+                
+                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-between">
+                  <div>
+                    <div class="font-black text-gray-900 text-sm mb-0.5 flex items-center gap-2">
+                      <span>FEC-FYP1-A</span>
+                      <span class="has-tooltip inline-flex items-center">
+                        <i class="fas fa-lock text-gray-400 text-xs cursor-pointer"></i>
+                        <span class="custom-tooltip">Locked after evaluations began (15% completed). Committee head must request a change.</span>
+                      </span>
+                    </div>
+                    <div class="text-xs text-gray-500 font-medium">Head: Dr. Ali Hassan</div>
+                  </div>
+                  <span class="bg-gray-200 text-gray-700 font-bold text-[10px] px-2.5 py-1 rounded-lg border border-gray-300">Locked</span>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-between">
+                  <div>
+                    <div class="font-black text-gray-900 text-sm mb-0.5 flex items-center gap-2">
+                      <span>FEC-FYP2-B</span>
+                      <span class="has-tooltip inline-flex items-center">
+                        <i class="fas fa-lock-open text-success text-xs cursor-pointer"></i>
+                        <span class="custom-tooltip">Unlocked. Evaluations have not reached the 10% threshold.</span>
+                      </span>
+                    </div>
+                    <div class="text-xs text-gray-500 font-medium">Head: Dr. Sara Malik</div>
+                  </div>
+                  <span class="bg-success/10 text-success font-bold text-[10px] px-2.5 py-1 rounded-lg border border-success/20">Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: EXTERNAL / INDUSTRY SUPERVISOR MANAGEMENT -->
+          <div id="view-external-supervisors" class="app-view">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
+              <div>
+                <h2 class="text-xl font-black text-gray-800">External & Industry Supervisor Management</h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">Create temporary evaluator accounts, set evaluation windows, and allocate project assignments</p>
+              </div>
+              <button onclick="openModal('createExternalModal')" class="bg-secondary hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all flex items-center gap-2 cursor-pointer">
+                <i class="fas fa-user-plus"></i> Create Temporary Evaluator
+              </button>
+            </div>
+
+            <!-- External Evaluators Table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6">Evaluator Name</th>
+                      <th class="py-3.5 px-6">Email Address</th>
+                      <th class="py-3.5 px-6">Evaluation Window</th>
+                      <th class="py-3.5 px-6">Assigned Project</th>
+                      <th class="py-3.5 px-6">Status</th>
+                      <th class="py-3.5 px-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Engr. Bilal Ahmed</td>
+                      <td class="py-4 px-6 text-gray-600">industry@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono text-xs">May 10 – May 25, 2026</td>
+                      <td class="py-4 px-6 text-gray-600 truncate max-w-xs">AI-Powered Traffic Management System</td>
+                      <td class="py-4 px-6"><span class="bg-success/10 text-success font-bold text-xs px-2.5 py-1 rounded-lg border border-success/20">Allocated</span></td>
+                      <td class="py-4 px-6 text-right"><button onclick="showToast('Notification email dispatched to Engr. Bilal!', 'success')" class="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-blue-50 hover:text-secondary border border-gray-200 text-xs font-bold transition-all cursor-pointer">Notify</button></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Dr. Usman Qureshi</td>
+                      <td class="py-4 px-6 text-gray-600">evaluator@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono text-xs">Jun 01 – Jun 15, 2026</td>
+                      <td class="py-4 px-6 text-gray-400 italic">Unassigned</td>
+                      <td class="py-4 px-6"><span class="bg-amber-50 text-amber-600 font-bold text-xs px-2.5 py-1 rounded-lg border border-amber-200">Pending Assignment</span></td>
+                      <td class="py-4 px-6 text-right"><button onclick="openModal('assignProjectModal')" class="px-3 py-1.5 rounded-lg bg-secondary text-white font-bold text-xs transition-all cursor-pointer shadow-sm hover:bg-blue-700">Assign Project</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: RESULTS -->
+          <div id="view-results" class="app-view">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-gray-100 pb-4">
+              <div>
+                <h2 class="text-xl font-black text-gray-800">Final Results & Reports</h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">Review milestone scorecards, print formatted official transcripts, and export PDF summaries</p>
+              </div>
+              <div class="flex gap-3">
+                <button onclick="window.print()" class="bg-white border border-gray-200 hover:border-primary text-gray-700 hover:text-primary px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all flex items-center gap-2 cursor-pointer">
+                  <i class="fas fa-print text-secondary"></i> Print Report
+                </button>
+                <button onclick="showToast('Exporting official PDF report...', 'success')" class="bg-secondary hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/20 transition-all flex items-center gap-2 cursor-pointer">
+                  <i class="fas fa-file-pdf"></i> Export as PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Printable Results Table -->
+            <div id="printArea" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div class="p-6 bg-gray-50 border-b border-gray-100 hidden print:block text-center mb-6">
+                <h1 class="text-2xl font-black text-primary mb-1">COMSATS University Islamabad, Abbottabad Campus</h1>
+                <h2 class="text-lg font-bold text-gray-700">Official Final Year Project Milestone Results — Spring 2026</h2>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6">Student Name</th>
+                      <th class="py-3.5 px-6">Registration No</th>
+                      <th class="py-3.5 px-6">Project Title</th>
+                      <th class="py-3.5 px-6 text-center">10% Milestone</th>
+                      <th class="py-3.5 px-6 text-center">30% Milestone</th>
+                      <th class="py-3.5 px-6 text-center">60% Milestone</th>
+                      <th class="py-3.5 px-6 text-center">100% Defense</th>
+                      <th class="py-3.5 px-6 text-center font-black text-primary">Final Score</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-sm font-medium text-gray-700">
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Ahmed Farooq</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono text-xs">SP21-BCS-001</td>
+                      <td class="py-4 px-6 text-gray-600 max-w-xs truncate">AI-Powered Traffic Management System</td>
+                      <td class="py-4 px-6 text-center font-bold">8.5 / 10</td>
+                      <td class="py-4 px-6 text-center font-bold">26.0 / 30</td>
+                      <td class="py-4 px-6 text-center font-bold">53.5 / 60</td>
+                      <td class="py-4 px-6 text-center font-bold">89.0 / 100</td>
+                      <td class="py-4 px-6 text-center font-black text-success text-base">89.0% (A)</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Aima Khalid</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono text-xs">SP21-BCS-019</td>
+                      <td class="py-4 px-6 text-gray-600 max-w-xs truncate">Federated Learning for Medical Diagnosis</td>
+                      <td class="py-4 px-6 text-center font-bold">9.0 / 10</td>
+                      <td class="py-4 px-6 text-center font-bold">28.0 / 30</td>
+                      <td class="py-4 px-6 text-center font-bold">55.0 / 60</td>
+                      <td class="py-4 px-6 text-center font-bold">92.0 / 100</td>
+                      <td class="py-4 px-6 text-center font-black text-success text-base">92.0% (A)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+  
+  <!-- Create User Modal -->
+  <div id="createUserModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Create New System User</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('createUserModal')"></i>
+      </div>
+      <form onsubmit="handleCreateUser(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Full Name</label>
+          <input type="text" placeholder="Enter full name" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Email Address</label>
+          <input type="email" placeholder="user@cuiatd.edu.pk" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Account Type</label>
+          <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer" required>
+            <option value="Staff">Academic Staff</option>
+            <option value="Admin">Administrative</option>
+            <option value="External">External Evaluator</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-2">Role Assignment (Checklist)</label>
+          <div class="grid grid-cols-2 gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-200 max-h-40 overflow-y-auto">
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary" value="Student" /> Student</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary" value="FYP Office Assistant" /> FYP Office Assistant</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary" value="FYP Office In-charge" /> FYP Office In-charge</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary" value="Faculty Supervisor" /> Faculty Supervisor</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary" value="HOD" /> HOD</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary" value="System Administrator" /> System Administrator</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary" value="Industry Supervisor" /> Industry Supervisor</label>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+          <button type="button" onclick="closeModal('createUserModal')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancel</button>
+          <button type="submit" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all cursor-pointer">Register User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div id="editUserModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Edit User Details</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('editUserModal')"></i>
+      </div>
+      <form onsubmit="handleEditUser(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Full Name</label>
+          <input type="text" id="editUserName" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Email Address</label>
+          <input type="email" id="editUserEmail" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-2">Modify Roles</label>
+          <div class="grid grid-cols-2 gap-3 p-4 bg-gray-50 rounded-2.5 border border-gray-200 max-h-40 overflow-y-auto">
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary editRoleCheck" value="Student" /> Student</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary editRoleCheck" value="FYP Office Assistant" /> FYP Office Assistant</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary editRoleCheck" value="FYP Office In-charge" /> FYP Office In-charge</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary editRoleCheck" value="Faculty Supervisor" /> Faculty Supervisor</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary editRoleCheck" value="HOD" /> HOD</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary editRoleCheck" value="System Administrator" /> System Administrator</label>
+            <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer"><input type="checkbox" class="accent-primary editRoleCheck" value="Industry Supervisor" /> Industry Supervisor</label>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+          <button type="button" onclick="closeModal('editUserModal')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancel</button>
+          <button type="submit" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all cursor-pointer">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bulk Message Modal -->
+  <div id="bulkMessageModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Compose Bulk Message</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('bulkMessageModal')"></i>
+      </div>
+      <form onsubmit="handleBulkMessage(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Selected Recipients</label>
+          <input type="text" id="bulkRecipients" readonly class="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-bold text-gray-600 outline-none" value="None selected" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Message Subject</label>
+          <input type="text" placeholder="e.g. Urgent: FYP Milestone Deliverable Reminder" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Message Body</label>
+          <textarea placeholder="Compose your official dispatch here..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-secondary focus:bg-white transition-all h-32" required></textarea>
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+          <button type="button" onclick="closeModal('bulkMessageModal')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancel</button>
+          <button type="submit" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all cursor-pointer flex items-center gap-2"><i class="fas fa-paper-plane"></i> Send Broadcast</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Student Profile Modal -->
+  <div id="studentProfileModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-2xl p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Student Profile & FYP Audit</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('studentProfileModal')"></i>
+      </div>
+      <div class="space-y-6">
+        <div class="flex items-center gap-5 p-4 rounded-2xl bg-blue-50/50 border border-blue-100">
+          <div class="w-16 h-16 rounded-2xl bg-primary text-white flex items-center justify-center text-2xl font-black flex-shrink-0">ST</div>
+          <div>
+            <h4 id="spName" class="text-xl font-black text-gray-900">Ahmed Farooq</h4>
+            <p id="spReg" class="text-xs text-gray-600 font-mono mt-0.5">SP21-BCS-001</p>
+            <div class="flex gap-2 mt-2"><span id="spStatus" class="bg-blue-50 text-secondary font-bold text-[10px] px-2.5 py-0.5 rounded-lg border border-blue-100">FYP-1</span></div>
+          </div>
+        </div>
+
+        <div>
+          <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Project & Supervisor</h5>
+          <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 space-y-2 text-xs">
+            <div class="flex justify-between"><span class="text-gray-500 font-bold">Assigned Project:</span><span id="spProject" class="font-bold text-gray-800">AI-Powered Traffic Management</span></div>
+            <div class="flex justify-between"><span class="text-gray-500 font-bold">Supervisor Name:</span><span id="spSuper" class="font-bold text-gray-800">Dr. Ali Hassan</span></div>
+            <div class="flex justify-between"><span class="text-gray-500 font-bold">Milestone Progress:</span><span id="spProg" class="font-black text-secondary">25%</span></div>
+          </div>
+        </div>
+
+        <div>
+          <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Proposal History</h5>
+          <div class="space-y-2 text-xs">
+            <div class="p-3 rounded-xl bg-success/10 border border-success/20 flex justify-between items-center"><span class="font-bold text-gray-800">AI-Powered Traffic Management System</span><span class="font-bold text-success">Approved</span></div>
+            <div class="p-3 rounded-xl bg-red-50 border border-red-100 flex justify-between items-center"><span class="font-bold text-gray-800">Smart Parking System Using RFID</span><span class="font-bold text-red-600">Rejected</span></div>
+          </div>
+        </div>
+
+        <div>
+          <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Meetings & Presentation Schedule</h5>
+          <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100 space-y-3 text-xs">
+            <div class="flex justify-between items-center pb-2 border-b border-gray-200"><span class="text-gray-600 font-bold">Week 12 Log Submission:</span><span class="font-bold text-success">Verified by Supervisor</span></div>
+            <div class="flex justify-between items-center pb-2 border-b border-gray-200"><span class="text-gray-600 font-bold">Mid-Term Defense Date:</span><span class="font-bold text-gray-800">May 18, 2026 (10:00 AM)</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 font-bold">Current Marks Accumulation:</span><span class="font-black text-primary text-sm">34.5 / 40</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 pt-4 border-t border-gray-50 text-right">
+        <button onclick="closeModal('studentProfileModal')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer">Close Audit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Availability Modal -->
+  <div id="availabilityModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-md p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 id="availTitle" class="text-lg font-black text-gray-900">Weekly Availability Schedule</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('availabilityModal')"></i>
+      </div>
+      <div class="space-y-3 text-sm" id="availList">
+        <!-- Injected slots -->
+      </div>
+      <div class="mt-8 pt-4 border-t border-gray-50 text-right">
+        <button onclick="closeModal('availabilityModal')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer">Close Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Detail Modal -->
+  <div id="projectDetailModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-2xl p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Project Detail View</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('projectDetailModal')"></i>
+      </div>
+      <div class="space-y-5">
+        <div>
+          <h4 id="pdTitle" class="text-xl font-black text-primary">Project Title</h4>
+          <div class="flex gap-2 mt-2"><span id="pdStatus" class="bg-success/10 text-success font-bold text-xs px-2.5 py-0.5 rounded-lg border border-success/20">Approved</span></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100 text-xs">
+          <div><span class="text-gray-400 font-bold uppercase tracking-wider block mb-1">Group Leader</span><span id="pdLeader" class="font-bold text-gray-800 text-sm">Ahmed Farooq</span></div>
+          <div><span class="text-gray-400 font-bold uppercase tracking-wider block mb-1">Assigned Supervisor</span><span id="pdSuper" class="font-bold text-gray-800 text-sm">Dr. Ali Hassan</span></div>
+        </div>
+        <div>
+          <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Technology Stack</h5>
+          <p id="pdStack" class="text-xs font-bold text-gray-700 bg-gray-100 p-3 rounded-xl">Computer Vision, YOLOv8</p>
+        </div>
+        <div>
+          <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Project Abstract</h5>
+          <p id="pdDesc" class="text-xs text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100">Abstract text...</p>
+        </div>
+      </div>
+      <div class="mt-8 pt-4 border-t border-gray-50 text-right">
+        <button onclick="closeModal('projectDetailModal')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer">Close Detail</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Content Modal -->
+  <div id="uploadContentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Upload Official Template</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('uploadContentModal')"></i>
+      </div>
+      <form onsubmit="handleUploadContent(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Document Category</label>
+          <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer" required>
+            <option value="Presentation Template">Presentation Template</option>
+            <option value="Thesis Template">Thesis Template</option>
+            <option value="Report Template">Report Template</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Version Number</label>
+          <input type="text" placeholder="e.g. v3.2" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Select File</label>
+          <input type="file" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-secondary hover:file:bg-blue-100 cursor-pointer" required />
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+          <button type="button" onclick="closeModal('uploadContentModal')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancel</button>
+          <button type="submit" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all cursor-pointer">Upload Release</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create External Evaluator Modal -->
+  <div id="createExternalModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Create Temporary Evaluator Account</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('createExternalModal')"></i>
+      </div>
+      <form onsubmit="handleCreateExternal(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Evaluator Full Name</label>
+          <input type="text" placeholder="e.g. Dr. Usman Qureshi" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Email Address</label>
+          <input type="email" placeholder="evaluator@cuiatd.edu.pk" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-secondary focus:bg-white transition-all" required />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1.5">Evaluation Window Start</label>
+            <input type="date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-secondary cursor-pointer" required />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1.5">Evaluation Window End</label>
+            <input type="date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-secondary cursor-pointer" required />
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+          <button type="button" onclick="closeModal('createExternalModal')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancel</button>
+          <button type="submit" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all cursor-pointer">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Assign Project Modal -->
+  <div id="assignProjectModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Allocate Project to Evaluator</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('assignProjectModal')"></i>
+      </div>
+      <form onsubmit="handleAssignProject(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Select Project</label>
+          <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer" required>
+            <option value="Federated Learning for Medical Diagnosis">Federated Learning for Medical Diagnosis</option>
+            <option value="Smart Energy Management Using IoT">Smart Energy Management Using IoT</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+          <button type="button" onclick="closeModal('assignProjectModal')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancel</button>
+          <button type="submit" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all cursor-pointer">Confirm Allocation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../scripts/auth.js"></script>
+  <script>
+    // SPA Routing Logic
+    function navigateSPA(e, targetId) {
+      if (e) e.preventDefault();
+      
+      const btn = e ? e.currentTarget : null;
+      const titleText = btn ? btn.getAttribute('data-title') : 'Dashboard';
+      
+      document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+      document.getElementById(targetId).classList.add('active');
+      
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        el.classList.remove('bg-secondary', 'text-white', 'shadow-lg', 'shadow-blue-600/30', 'font-bold');
+        el.classList.add('text-white/80');
+      });
+      
+      if(btn) {
+        btn.classList.remove('text-white/80');
+        btn.classList.add('bg-secondary', 'text-white', 'shadow-lg', 'shadow-blue-600/30', 'font-bold');
+      }
+
+      document.getElementById('pageTitle').textContent = titleText;
+      if (window.innerWidth < 1024 && e) toggleMobileSidebar();
+    }
+
+    function toggleMobileSidebar() {
+      const sb = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      sb.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+
+    function toggleDesktopSidebar() {
+      const sb = document.getElementById('sidebar');
+      const icon = document.getElementById('desktopCollapseIcon');
+      sb.classList.toggle('lg:w-64');
+      sb.classList.toggle('lg:w-[68px]');
+      
+      document.querySelectorAll('.nav-label').forEach(el => el.classList.toggle('lg:hidden'));
+      document.querySelectorAll('.nav-section-label').forEach(el => el.classList.toggle('lg:hidden'));
+      const headerText = document.getElementById('sidebarHeaderText');
+      if (headerText) headerText.classList.toggle('lg:hidden');
+
+      if (sb.classList.contains('lg:w-[68px]')) {
+        icon.classList.remove('fa-chevron-left');
+        icon.classList.add('fa-chevron-right');
+      } else {
+        icon.classList.add('fa-chevron-left');
+        icon.classList.remove('fa-chevron-right');
+      }
+    }
+
+    function toggleNotifications() {
+      const dd = document.getElementById('notifDropdown');
+      dd.classList.toggle('hidden');
+    }
+
+    function markAllRead() {
+      document.getElementById('notifList').innerHTML = '<div class="p-8 text-center text-xs text-gray-400 font-bold">No new notifications</div>';
+      showToast('All notifications marked as read', 'success');
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      document.getElementById('toastMsg').textContent = msg;
+      
+      icon.className = type === 'success' ? 'fas fa-check-circle text-success text-lg' : 'fas fa-exclamation-triangle text-warning text-lg';
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      
+      setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+    function confirmAction(actionName, onConfirm) {
+      if (confirm(`Are you sure you want to ${actionName}? This action cannot be undone.`)) {
+        onConfirm();
+      }
+    }
+
+    // Table Filtering
+    function filterTable(tableId, inputId) {
+      const filter = document.getElementById(inputId).value.toLowerCase();
+      const rows = document.getElementById(tableId).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+      for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = rows[i].innerText.toLowerCase().includes(filter) ? '' : 'none';
+      }
+    }
+
+    function filterTableByCol(tableId, val, colIdx) {
+      const rows = document.getElementById(tableId).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+      for (let i = 0; i < rows.length; i++) {
+        const cell = rows[i].getElementsByTagName('td')[colIdx];
+        if (cell) {
+          rows[i].style.display = val === '' || cell.innerText.includes(val) ? '' : 'none';
+        }
+      }
+    }
+
+    // Select All Checkboxes
+    function toggleSelectAll(master, classNm) {
+      const cbs = document.querySelectorAll('.' + classNm);
+      cbs.forEach(cb => cb.checked = master.checked);
+      updateBulkRecipients();
+    }
+
+    document.addEventListener('change', e => {
+      if (e.target.classList.contains('studentCheck')) updateBulkRecipients();
+    });
+
+    function updateBulkRecipients() {
+      const checked = Array.from(document.querySelectorAll('.studentCheck:checked')).map(cb => cb.value);
+      const inp = document.getElementById('bulkRecipients');
+      if (inp) inp.value = checked.length > 0 ? checked.join(', ') : 'None selected';
+    }
+
+    // Modal Populators
+    function openEditUserModal(name, email, role) {
+      document.getElementById('editUserName').value = name;
+      document.getElementById('editUserEmail').value = email;
+      document.querySelectorAll('.editRoleCheck').forEach(cb => cb.checked = cb.value === role);
+      openModal('editUserModal');
+    }
+
+    function openStudentProfileModal(name, reg, status, proj, superv, prog) {
+      document.getElementById('spName').textContent = name;
+      document.getElementById('spReg').textContent = reg;
+      document.getElementById('spStatus').textContent = status;
+      document.getElementById('spProject').textContent = proj;
+      document.getElementById('spSuper').textContent = superv;
+      document.getElementById('spProg').textContent = prog;
+      openModal('studentProfileModal');
+    }
+
+    function openAvailabilityModal(name, slots) {
+      document.getElementById('availTitle').textContent = `Availability: ${name}`;
+      const list = document.getElementById('availList');
+      list.innerHTML = slots.map(s => `<div class="p-3 bg-gray-50 rounded-xl border border-gray-100 flex justify-between font-bold text-gray-700"><i class="fas fa-clock text-secondary mr-2"></i><span>${s}</span><span class="text-success text-xs">Available</span></div>`).join('');
+      openModal('availabilityModal');
+    }
+
+    function openProjectDetailModal(title, leader, superv, status, stack, desc) {
+      document.getElementById('pdTitle').textContent = title;
+      document.getElementById('pdLeader').textContent = leader;
+      document.getElementById('pdSuper').textContent = superv;
+      document.getElementById('pdStatus').textContent = status;
+      document.getElementById('pdStack').textContent = stack;
+      document.getElementById('pdDesc').textContent = desc;
+      openModal('projectDetailModal');
+    }
+
+    function toggleCollapse(id) {
+      document.getElementById(id).classList.toggle('hidden');
+    }
+
+    function toggleEvalType(type) {
+      const b1 = document.getElementById('btnFyp1');
+      const b2 = document.getElementById('btnFyp2');
+      const head = document.getElementById('evalCommHead');
+      const tooltip = document.getElementById('headTooltip');
+      const conf = document.getElementById('conflictBox');
+
+      if (type === 'fyp1') {
+        b1.className = 'px-4 py-1.5 rounded-xl bg-primary text-white text-xs font-bold transition-all cursor-pointer shadow-md';
+        b2.className = 'px-4 py-1.5 rounded-xl bg-gray-100 text-gray-600 text-xs font-bold transition-all cursor-pointer hover:bg-gray-200';
+        head.disabled = false;
+        tooltip.classList.add('hidden');
+        conf.classList.add('hidden');
+      } else {
+        b2.className = 'px-4 py-1.5 rounded-xl bg-primary text-white text-xs font-bold transition-all cursor-pointer shadow-md';
+        b1.className = 'px-4 py-1.5 rounded-xl bg-gray-100 text-gray-600 text-xs font-bold transition-all cursor-pointer hover:bg-gray-200';
+        head.disabled = true;
+        tooltip.classList.remove('hidden');
+        conf.classList.remove('hidden'); // simulate conflict detection for demo
+      }
+    }
+
+    // Form Handlers
+    function handleCreateUser(e) { e.preventDefault(); closeModal('createUserModal'); showToast('New user account registered successfully!', 'success'); e.target.reset(); }
+    function handleEditUser(e) { e.preventDefault(); closeModal('editUserModal'); showToast('User details updated successfully!', 'success'); }
+    function handleBulkMessage(e) { e.preventDefault(); closeModal('bulkMessageModal'); showToast('Official broadcast dispatched to selected students!', 'success'); e.target.reset(); }
+    function handleCommitteeSubmit(e, type) { e.preventDefault(); showToast(`${type === 'proposal' ? 'Proposal' : 'Evaluation'} committee configured successfully!`, 'success'); e.target.reset(); }
+    function handleUploadContent(e) { e.preventDefault(); closeModal('uploadContentModal'); showToast('Official template uploaded successfully!', 'success'); e.target.reset(); }
+    function handleCreateExternal(e) { e.preventDefault(); closeModal('createExternalModal'); showToast('Temporary evaluator account provisioned successfully!', 'success'); e.target.reset(); }
+    function handleAssignProject(e) { e.preventDefault(); closeModal('assignProjectModal'); showToast('Project successfully allocated to evaluator!', 'success'); }
+
+    // Init Auth Info
+    document.addEventListener('DOMContentLoaded', () => {
+      if(typeof AUTH !== 'undefined' && AUTH.requireRole) {
+        const u = AUTH.requireRole('FYP Office Assistant');
+        if (u) {
+          document.getElementById('navName').textContent = u.name || 'Mr. Tariq Mehmood';
+          document.getElementById('navAvatar').textContent = (u.avatar || 'TM');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

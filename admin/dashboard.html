@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Administrator Portal — CUI Abbottabad</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+          colors: {
+            primary: '#2B3990',
+            secondary: '#2563EB',
+            lightbg: '#EFF6FF',
+            success: '#059669',
+            warning: '#D97706',
+            danger: '#DC2626',
+            pending: '#B45309'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .app-view { display: none; animation: fadeIn 0.3s ease-out; }
+    .app-view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-lightbg text-slate-700 min-h-screen selection:bg-primary selection:text-white">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-[200] bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 pointer-events-none border border-white/10">
+    <i id="toastIcon" class="fas fa-check-circle text-success text-lg"></i>
+    <span id="toastMsg" class="text-sm font-bold">Action completed successfully!</span>
+  </div>
+
+  <div class="flex h-screen overflow-hidden relative bg-lightbg">
+    
+    <!-- ================= SIDEBAR ================= -->
+    <div id="sidebar" class="bg-primary flex flex-col flex-shrink-0 transition-all duration-300 overflow-hidden fixed lg:relative z-[50] h-full -translate-x-full lg:translate-x-0 w-64 lg:w-64 border-r border-white/10 shadow-2xl lg:shadow-none">
+      
+      <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10 relative">
+        <div class="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+          <i class="fas fa-university text-white text-sm"></i>
+        </div>
+        <div id="sidebarHeaderText" class="overflow-hidden transition-all duration-300">
+          <div class="text-white text-sm font-black whitespace-nowrap tracking-wide">CUI ABBOTTABAD</div>
+          <div class="text-white/60 text-[11px] whitespace-nowrap leading-tight font-semibold">System Administrator</div>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="ml-auto lg:hidden bg-transparent border-0 text-white cursor-pointer p-1 rounded-lg hover:bg-white/15 transition-colors absolute right-4">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto p-3 space-y-1" style="scrollbar-width: none;">
+        
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-2">System</div>
+        <div onclick="navigateSPA(event, 'view-dashboard')" data-title="System Dashboard" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 bg-secondary text-white shadow-lg shadow-blue-600/30 font-bold">
+          <i class="fas fa-server text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Dashboard</span>
+        </div>
+
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">Account & RBAC</div>
+        <div onclick="navigateSPA(event, 'view-users')" data-title="User Account Management" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-user-cog text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">User Accounts</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-rbac')" data-title="Role Checklists & RBAC" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-user-shield text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">Role Checklists</span>
+        </div>
+
+        <div class="nav-section-label text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-2 pt-4">Security & Maintenance</div>
+        <div onclick="navigateSPA(event, 'view-audit')" data-title="System Audit Logs" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-history text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">System Audit Logs</span>
+        </div>
+        <div onclick="navigateSPA(event, 'view-maintenance')" data-title="System Maintenance & Backup" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 text-white/80 hover:bg-white/10 hover:text-white">
+          <i class="fas fa-tools text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm font-medium whitespace-nowrap flex-1">System Maintenance</span>
+        </div>
+
+      </nav>
+
+      <div class="p-3 border-t border-white/10 bg-black/10">
+        <div onclick="doLogout(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-white/80 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200 font-bold" title="Logout">
+          <i class="fas fa-right-from-bracket text-sm w-5 text-center flex-shrink-0"></i>
+          <span class="nav-label text-sm">Logout</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div id="mobileOverlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-[40] lg:hidden backdrop-blur-sm hidden"></div>
+
+    <!-- ================= MAIN CONTENT WRAPPER ================= -->
+    <div class="flex-1 flex flex-col overflow-hidden w-full transition-all duration-300 ease-in-out">
+      
+      <!-- ================= TOPBAR ================= -->
+      <div class="bg-white border-b border-gray-100 px-4 md:px-6 h-16 flex items-center justify-between shadow-sm flex-shrink-0 z-[30] gap-3">
+        
+        <div class="flex items-center gap-3 min-w-0">
+          <button onclick="toggleMobileSidebar()" class="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 lg:hidden flex-shrink-0">
+            <i class="fas fa-bars text-sm"></i>
+          </button>
+          <button onclick="toggleDesktopSidebar()" class="hidden lg:flex w-9 h-9 rounded-xl bg-gray-50 items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-primary transition-all border-0 flex-shrink-0 cursor-pointer">
+            <i class="fas fa-chevron-left text-sm" id="desktopCollapseIcon"></i>
+          </button>
+          <div class="min-w-0">
+            <h2 id="pageTitle" class="text-base font-black text-primary leading-tight truncate">System Dashboard</h2>
+            <p class="text-[11px] text-gray-400 leading-tight hidden sm:block font-medium">COMSATS University Islamabad, Abbottabad Campus</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          
+          <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-rose-50 border border-rose-200 rounded-xl text-xs font-bold text-rose-700 whitespace-nowrap shadow-sm">
+            <i class="fas fa-shield-alt text-rose-600"></i>
+            <span>System Administrator</span>
+          </div>
+
+          <!-- Notification Center -->
+          <div class="relative">
+            <button onclick="toggleNotifications()" class="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-50 hover:text-secondary transition-all cursor-pointer relative">
+              <i class="fas fa-bell text-sm"></i>
+              <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-50 rounded-full border-2 border-white animate-pulse"></span>
+            </button>
+            
+            <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100] animate-in fade-in-50 duration-200">
+              <div class="p-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+                <span class="text-sm font-black text-gray-800">System Notifications</span>
+                <button onclick="markAllRead()" class="text-xs font-bold text-secondary hover:underline cursor-pointer">Mark all as read</button>
+              </div>
+              <div class="max-h-80 overflow-y-auto divide-y divide-gray-50" id="notifList">
+                <div class="p-4 hover:bg-rose-50/50 transition-colors flex gap-3 items-start border-l-4 border-rose-500 bg-rose-50/20">
+                  <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-xs flex-shrink-0 mt-0.5"><i class="fas fa-database"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-gray-900">Database Backup Completed</div>
+                    <div class="text-[11px] text-gray-600 mt-0.5">Automated full snapshot backup completed successfully at 04:00 AM.</div>
+                    <div class="text-[10px] text-gray-400 mt-1 font-bold">6 hours ago</div>
+                  </div>
+                </div>
+              </div>
+              <div class="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                <button onclick="alert('Navigating to full notifications page...')" class="text-xs font-bold text-gray-600 hover:text-primary transition-colors cursor-pointer">View All Notifications</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Menu -->
+          <div class="relative">
+            <button class="flex items-center gap-2 p-1 md:px-2.5 md:py-1.5 bg-gray-50 rounded-xl cursor-pointer border border-gray-100 hover:bg-blue-50 hover:border-blue-100 transition-all">
+              <div class="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center text-rose-700 text-xs font-bold shadow-sm flex-shrink-0">
+                <span id="navAvatar">SA</span>
+              </div>
+              <div class="text-left hidden sm:block">
+                <div id="navName" class="text-xs font-bold text-gray-800 leading-tight truncate max-w-28">Tariq Mehmood</div>
+                <div class="text-[10px] text-gray-400 leading-tight font-bold">SysAdmin</div>
+              </div>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= MAIN CONTENT AREA ================= -->
+      <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-lightbg scroll-smooth relative">
+        <div class="max-w-[1600px] mx-auto w-full">
+          
+          <!-- VIEW: DASHBOARD -->
+          <div id="view-dashboard" class="app-view active">
+            
+            <!-- Welcome Banner -->
+            <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-[fadeIn_0.4s_ease-out]" style="background: linear-gradient(135deg, #111827, #374151);">
+              <div class="text-white">
+                <h1 class="text-2xl sm:text-3xl font-black mb-2 tracking-tight">System Administration Console ⚡</h1>
+                <p class="text-sm text-white/80 font-medium max-w-2xl leading-relaxed">Welcome, Tariq Mehmood. Manage user credentials, configure role-based access control (RBAC), monitor system audit logs, and maintain database backups for the FYP Portal.</p>
+              </div>
+              <div class="flex gap-3 flex-wrap">
+                <button onclick="navigateSPA(event, 'view-users')" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer">
+                  <i class="fas fa-user-plus"></i> Create User Account
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 text-secondary flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-users"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Total Registered Users</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">512</span>
+                    <span class="text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-lg">Active</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-user-shield"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Active Roles</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">6 Roles</span>
+                    <span class="text-xs font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-lg">RBAC Enforced</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-history"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">Audit Log Entries</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">12.4k</span>
+                    <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">Indexed</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner"><i class="fas fa-server"></i></div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 truncate">System Health</div>
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-black text-gray-800">99.9%</span>
+                    <span class="text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-lg">Optimal</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Access Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div onclick="navigateSPA(event, 'view-users')" class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-blue-50 text-secondary flex items-center justify-center font-bold"><i class="fas fa-user-cog text-base"></i></div>
+                  <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div><h3 class="font-bold text-gray-800 text-base mb-1">User Accounts</h3><p class="text-xs text-gray-500 font-medium">Create credentials, manage profile details, and trigger password resets.</p></div>
+              </div>
+              <div onclick="navigateSPA(event, 'view-rbac')" class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold"><i class="fas fa-user-shield text-base"></i></div>
+                  <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div><h3 class="font-bold text-gray-800 text-base mb-1">Role Checklists</h3><p class="text-xs text-gray-500 font-medium">Configure RBAC permissions and assign secondary committee roles.</p></div>
+              </div>
+              <div onclick="navigateSPA(event, 'view-audit')" class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold"><i class="fas fa-history text-base"></i></div>
+                  <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div><h3 class="font-bold text-gray-800 text-base mb-1">System Audit Logs</h3><p class="text-xs text-gray-500 font-medium">Comprehensive system-wide event logging with multi-parameter filtering.</p></div>
+              </div>
+              <div onclick="navigateSPA(event, 'view-maintenance')" class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-secondary hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold"><i class="fas fa-tools text-base"></i></div>
+                  <i class="fas fa-arrow-right text-gray-300 group-hover:text-secondary group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div><h3 class="font-bold text-gray-800 text-base mb-1">System Maintenance</h3><p class="text-xs text-gray-500 font-medium">Trigger database backups, clear system cache, and view health metrics.</p></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- VIEW: USER ACCOUNT MANAGEMENT -->
+          <div id="view-users" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 class="text-xl font-black text-gray-800">User Account Management & Credentials</h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">Create new user accounts, assign initial roles, manage active status, and trigger password resets</p>
+              </div>
+              <button onclick="openModal('createUserModal')" class="px-5 py-2.5 bg-secondary text-white hover:bg-blue-700 rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all flex items-center gap-2 cursor-pointer">
+                <i class="fas fa-plus"></i> Create New User Account
+              </button>
+            </div>
+
+            <!-- Search & Filter Bar -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+              <div class="relative w-full sm:w-80">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="userSearch" onkeyup="filterTable('userTable', 'userSearch')" placeholder="Search user name, email, or role..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-secondary focus:bg-white transition-all" />
+              </div>
+              <select id="roleFilter" onchange="filterTableByCol('userTable', this.value, 2)" class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-700 outline-none focus:border-secondary cursor-pointer w-full sm:w-auto">
+                <option value="">All Roles</option>
+                <option value="FYP Office Assistant">FYP Office Assistant</option>
+                <option value="FYP Office In-charge">FYP Office In-charge</option>
+                <option value="Faculty Supervisor">Faculty Supervisor</option>
+                <option value="HOD">HOD</option>
+                <option value="System Administrator">System Administrator</option>
+                <option value="Industry Supervisor">Industry Supervisor</option>
+              </select>
+            </div>
+
+            <!-- Users Table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="userTable">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6">Full Name</th>
+                      <th class="py-3.5 px-6">Email Address</th>
+                      <th class="py-3.5 px-6">Primary Role</th>
+                      <th class="py-3.5 px-6 text-center">Account Status</th>
+                      <th class="py-3.5 px-6 text-right">Administrative Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-xs font-medium text-gray-700">
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Dr. Ali Hassan</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono">supervisor@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-blue-50 text-secondary font-bold px-2.5 py-1 rounded-lg border border-blue-200">Faculty Supervisor</span></td>
+                      <td class="py-4 px-6 text-center"><span class="bg-success/10 text-success font-bold px-2.5 py-1 rounded-lg border border-success/20">Active</span></td>
+                      <td class="py-4 px-6 text-right space-x-1">
+                        <button onclick="confirmAction('reset password for Dr. Ali Hassan', () => showToast('Password reset email sent!', 'success'))" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold transition-all cursor-pointer">Reset Pass</button>
+                        <button onclick="confirmAction('deactivate account for Dr. Ali Hassan', () => showToast('User account deactivated.', 'warning'))" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold transition-all cursor-pointer">Deactivate</button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Dr. Sara Malik</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono">incharge@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-purple-50 text-purple-700 font-bold px-2.5 py-1 rounded-lg border border-purple-200">FYP Office In-charge</span></td>
+                      <td class="py-4 px-6 text-center"><span class="bg-success/10 text-success font-bold px-2.5 py-1 rounded-lg border border-success/20">Active</span></td>
+                      <td class="py-4 px-6 text-right space-x-1">
+                        <button onclick="confirmAction('reset password for Dr. Sara Malik', () => showToast('Password reset email sent!', 'success'))" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold transition-all cursor-pointer">Reset Pass</button>
+                        <button onclick="confirmAction('deactivate account for Dr. Sara Malik', () => showToast('User account deactivated.', 'warning'))" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold transition-all cursor-pointer">Deactivate</button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Noman Abbasi</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono">assistant@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-emerald-50 text-emerald-700 font-bold px-2.5 py-1 rounded-lg border border-emerald-200">FYP Office Assistant</span></td>
+                      <td class="py-4 px-6 text-center"><span class="bg-success/10 text-success font-bold px-2.5 py-1 rounded-lg border border-success/20">Active</span></td>
+                      <td class="py-4 px-6 text-right space-x-1">
+                        <button onclick="confirmAction('reset password for Noman Abbasi', () => showToast('Password reset email sent!', 'success'))" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold transition-all cursor-pointer">Reset Pass</button>
+                        <button onclick="confirmAction('deactivate account for Noman Abbasi', () => showToast('User account deactivated.', 'warning'))" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold transition-all cursor-pointer">Deactivate</button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Engr. Kamran Shah</td>
+                      <td class="py-4 px-6 text-gray-600 font-mono">industry@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-amber-50 text-amber-700 font-bold px-2.5 py-1 rounded-lg border border-amber-200">Industry Supervisor</span></td>
+                      <td class="py-4 px-6 text-center"><span class="bg-success/10 text-success font-bold px-2.5 py-1 rounded-lg border border-success/20">Active</span></td>
+                      <td class="py-4 px-6 text-right space-x-1">
+                        <button onclick="confirmAction('reset password for Engr. Kamran Shah', () => showToast('Password reset email sent!', 'success'))" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold transition-all cursor-pointer">Reset Pass</button>
+                        <button onclick="confirmAction('deactivate account for Engr. Kamran Shah', () => showToast('User account deactivated.', 'warning'))" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold transition-all cursor-pointer">Deactivate</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: ROLE CHECKLISTS & RBAC -->
+          <div id="view-rbac" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">Role Checklists & RBAC Configuration</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Verify role permissions, assign secondary committee roles, and audit role assignments</p>
+            </div>
+
+            <!-- Role Checklists Table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
+              <div class="p-5 bg-gray-50 border-b border-gray-100"><h3 class="text-base font-black text-gray-800">System Role Permission Matrix</h3></div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6">System Role</th>
+                      <th class="py-3.5 px-6">Core Permissions & Access Scope</th>
+                      <th class="py-3.5 px-6 text-center">Assigned Users</th>
+                      <th class="py-3.5 px-6 text-right">RBAC Status</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-xs font-medium text-gray-700">
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">FYP Office Assistant</td>
+                      <td class="py-4 px-6 text-gray-600">User creation, student management, faculty profiles, committee locking, results view</td>
+                      <td class="py-4 px-6 text-center font-bold">3 Users</td>
+                      <td class="py-4 px-6 text-right"><span class="bg-success/10 text-success font-bold px-2.5 py-1 rounded-lg border border-success/20">Enforced</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">FYP Office In-charge</td>
+                      <td class="py-4 px-6 text-gray-600">Rubric builder (100% validation), academic session lock, supervision requests, grievance SLAs</td>
+                      <td class="py-4 px-6 text-center font-bold">2 Users</td>
+                      <td class="py-4 px-6 text-right"><span class="bg-success/10 text-success font-bold px-2.5 py-1 rounded-lg border border-success/20">Enforced</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">Faculty Supervisor</td>
+                      <td class="py-4 px-6 text-gray-600">Research tags, availability grid, proposal workflows, weekly logs, committee scoring</td>
+                      <td class="py-4 px-6 text-center font-bold">42 Users</td>
+                      <td class="py-4 px-6 text-right"><span class="bg-success/10 text-success font-bold px-2.5 py-1 rounded-lg border border-success/20">Enforced</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">HOD</td>
+                      <td class="py-4 px-6 text-gray-600">Executive dashboard, escalated grievances (binding rulings), faculty workload oversight</td>
+                      <td class="py-4 px-6 text-center font-bold">1 User</td>
+                      <td class="py-4 px-6 text-right"><span class="bg-success/10 text-success font-bold px-2.5 py-1 rounded-lg border border-success/20">Enforced</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 font-bold text-gray-900">System Administrator</td>
+                      <td class="py-4 px-6 text-gray-600">User account management, RBAC checklists, system audit logs, database backups</td>
+                      <td class="py-4 px-6 text-center font-bold">2 Users</td>
+                      <td class="py-4 px-6 text-right"><span class="bg-success/10 text-success font-bold px-2.5 py-1 rounded-lg border border-success/20">Enforced</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: SYSTEM AUDIT LOGS -->
+          <div id="view-audit" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 class="text-xl font-black text-gray-800">System Audit Logs & Security Index</h2>
+                <p class="text-xs text-gray-500 mt-0.5 font-medium">Track timestamps, user emails, administrative actions, and affected database entities with multi-parameter filtering</p>
+              </div>
+              <button onclick="window.print()" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 cursor-pointer">
+                <i class="fas fa-file-export text-secondary"></i> Export Audit Logs
+              </button>
+            </div>
+
+            <!-- Search & Filter Bar -->
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+              <div class="relative w-full sm:w-80">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <input type="text" id="sysAuditSearch" onkeyup="filterTable('sysAuditTable', 'sysAuditSearch')" placeholder="Search audit logs..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-secondary focus:bg-white transition-all" />
+              </div>
+              <select id="sysAuditActionFilter" onchange="filterTableByCol('sysAuditTable', this.value, 2)" class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 outline-none focus:border-secondary cursor-pointer w-full sm:w-auto">
+                <option value="">All Action Types</option>
+                <option value="ACCOUNT_CREATE">ACCOUNT_CREATE</option>
+                <option value="RUBRIC_UPDATE">RUBRIC_UPDATE</option>
+                <option value="COMMITTEE_LOCK">COMMITTEE_LOCK</option>
+                <option value="USER_AUTH">USER_AUTH</option>
+                <option value="DB_BACKUP">DB_BACKUP</option>
+              </select>
+            </div>
+
+            <!-- Audit Table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="sysAuditTable">
+                  <thead>
+                    <tr class="bg-gray-50/75 border-b border-gray-100 text-[11px] font-black text-gray-500 uppercase tracking-wider">
+                      <th class="py-3.5 px-6">Timestamp</th>
+                      <th class="py-3.5 px-6">User Email</th>
+                      <th class="py-3.5 px-6">Action Type</th>
+                      <th class="py-3.5 px-6">Affected Entity</th>
+                      <th class="py-3.5 px-6">IP Address</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-xs font-medium text-gray-700 font-mono">
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 text-gray-500">2026-05-17 15:30:12</td>
+                      <td class="py-4 px-6 font-bold text-gray-900">admin@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded border border-rose-200">DB_BACKUP</span></td>
+                      <td class="py-4 px-6 text-gray-600">Full System Snapshot (Success)</td>
+                      <td class="py-4 px-6 text-gray-400">192.168.1.10</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 text-gray-500">2026-05-17 14:32:10</td>
+                      <td class="py-4 px-6 font-bold text-gray-900">incharge@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-purple-50 text-purple-700 font-bold px-2 py-0.5 rounded border border-purple-200">RUBRIC_UPDATE</span></td>
+                      <td class="py-4 px-6 text-gray-600">Proposal Evaluation Rubric v4.0</td>
+                      <td class="py-4 px-6 text-gray-400">192.168.1.45</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 text-gray-500">2026-05-17 11:15:02</td>
+                      <td class="py-4 px-6 font-bold text-gray-900">assistant@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-blue-50 text-secondary font-bold px-2 py-0.5 rounded border border-blue-200">COMMITTEE_LOCK</span></td>
+                      <td class="py-4 px-6 text-gray-600">FEC-FYP1-A (15% Evaluated)</td>
+                      <td class="py-4 px-6 text-gray-400">192.168.1.112</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                      <td class="py-4 px-6 text-gray-500">2026-05-16 10:20:05</td>
+                      <td class="py-4 px-6 font-bold text-gray-900">admin@cuiatd.edu.pk</td>
+                      <td class="py-4 px-6"><span class="bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-200">ACCOUNT_CREATE</span></td>
+                      <td class="py-4 px-6 text-gray-600">User: Engr. Kamran Shah (Industry)</td>
+                      <td class="py-4 px-6 text-gray-400">192.168.1.10</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-bold">
+                <span>Showing 4 of 12,410 audit records (Page 1 of 249)</span>
+                <div class="flex gap-1">
+                  <button class="px-3 py-1.5 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-50 cursor-pointer" disabled>Previous</button>
+                  <button class="px-3 py-1.5 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 cursor-pointer">Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW: SYSTEM MAINTENANCE & BACKUP -->
+          <div id="view-maintenance" class="app-view">
+            <div class="border-b border-gray-100 pb-4 mb-6">
+              <h2 class="text-xl font-black text-gray-800">System Maintenance & Database Backup Console</h2>
+              <p class="text-xs text-gray-500 mt-0.5 font-medium">Trigger automated database backups, view system health metrics, and clear application cache</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+              <!-- Maintenance Actions Card -->
+              <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+                <h3 class="text-base font-black text-gray-800 pb-3 border-b border-gray-50">Database & Cache Maintenance</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 flex flex-col justify-between space-y-4">
+                    <div>
+                      <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center font-bold text-xl mb-3"><i class="fas fa-database"></i></div>
+                      <h4 class="font-black text-gray-900 text-sm mb-1">Database Backup Snapshot</h4>
+                      <p class="text-xs text-gray-600 leading-relaxed">Create an immediate, fully encrypted snapshot of the entire FYP database including user credentials, rubrics, and committee evaluations.</p>
+                    </div>
+                    <button onclick="confirmAction('trigger full database backup', () => showToast('Database backup initiated successfully!', 'success'))" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-md shadow-rose-600/20 flex items-center justify-center gap-2"><i class="fas fa-cloud-download-alt"></i> Trigger Snapshot Backup</button>
+                  </div>
+
+                  <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 flex flex-col justify-between space-y-4">
+                    <div>
+                      <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xl mb-3"><i class="fas fa-broom"></i></div>
+                      <h4 class="font-black text-gray-900 text-sm mb-1">Clear Application Cache</h4>
+                      <p class="text-xs text-gray-600 leading-relaxed">Flush system routing cache, compiled rubric validation schemas, and temporary student session files to ensure optimal performance.</p>
+                    </div>
+                    <button onclick="confirmAction('clear system application cache', () => showToast('Application cache cleared successfully!', 'success'))" class="w-full py-2.5 bg-warning hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-md shadow-amber-600/20 flex items-center justify-center gap-2"><i class="fas fa-sync-alt"></i> Flush System Cache</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- System Health Card -->
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
+                <h3 class="text-base font-black text-gray-800 pb-3 border-b border-gray-50">System Health Metrics</h3>
+                <div class="space-y-4 text-xs">
+                  <div>
+                    <div class="flex justify-between font-bold text-gray-700 mb-1"><span>Server CPU Load</span><span>14.2%</span></div>
+                    <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden"><div class="bg-success h-full rounded-full" style="width: 14.2%;"></div></div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between font-bold text-gray-700 mb-1"><span>Memory Allocation (RAM)</span><span>4.1 GB / 16 GB</span></div>
+                    <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden"><div class="bg-secondary h-full rounded-full" style="width: 25.6%;"></div></div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between font-bold text-gray-700 mb-1"><span>Database Storage Capacity</span><span>18.5 GB / 100 GB</span></div>
+                    <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden"><div class="bg-success h-full rounded-full" style="width: 18.5%;"></div></div>
+                  </div>
+                  <div class="pt-4 border-t border-gray-50 flex justify-between items-center font-bold text-gray-500">
+                    <span>System Uptime:</span><span class="text-success font-black">99.98% (42 Days)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+  
+  <!-- Create User Modal -->
+  <div id="createUserModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100">
+      <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-50">
+        <h3 class="text-lg font-black text-gray-900">Create New User Account</h3>
+        <i class="fas fa-times text-gray-400 hover:text-gray-600 cursor-pointer text-lg" onclick="closeModal('createUserModal')"></i>
+      </div>
+      <form onsubmit="handleCreateUser(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Full Name</label>
+          <input type="text" placeholder="e.g. Dr. Bilal Ahmed" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary transition-all" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Email Address</label>
+          <input type="email" placeholder="e.g. bilal@cuiatd.edu.pk" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary transition-all" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1.5">Assign Primary System Role</label>
+          <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none focus:border-secondary cursor-pointer" required>
+            <option value="Faculty Supervisor">Faculty Supervisor</option>
+            <option value="FYP Office Assistant">FYP Office Assistant</option>
+            <option value="FYP Office In-charge">FYP Office In-charge</option>
+            <option value="HOD">HOD</option>
+            <option value="System Administrator">System Administrator</option>
+            <option value="Industry Supervisor">Industry Supervisor</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-50">
+          <button type="button" onclick="closeModal('createUserModal')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">Cancel</button>
+          <button type="submit" class="bg-secondary hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all cursor-pointer">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../scripts/auth.js"></script>
+  <script>
+    // SPA Routing Logic
+    function navigateSPA(e, targetId) {
+      if (e) e.preventDefault();
+      
+      const btn = e ? e.currentTarget : null;
+      const titleText = btn ? btn.getAttribute('data-title') : 'System Dashboard';
+      
+      document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+      document.getElementById(targetId).classList.add('active');
+      
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        el.classList.remove('bg-secondary', 'text-white', 'shadow-lg', 'shadow-blue-600/30', 'font-bold');
+        el.classList.add('text-white/80');
+      });
+      
+      if(btn) {
+        btn.classList.remove('text-white/80');
+        btn.classList.add('bg-secondary', 'text-white', 'shadow-lg', 'shadow-blue-600/30', 'font-bold');
+      }
+
+      document.getElementById('pageTitle').textContent = titleText;
+      if (window.innerWidth < 1024 && e) toggleMobileSidebar();
+    }
+
+    function toggleMobileSidebar() {
+      const sb = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      sb.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+
+    function toggleDesktopSidebar() {
+      const sb = document.getElementById('sidebar');
+      const icon = document.getElementById('desktopCollapseIcon');
+      sb.classList.toggle('lg:w-64');
+      sb.classList.toggle('lg:w-[68px]');
+      
+      document.querySelectorAll('.nav-label').forEach(el => el.classList.toggle('lg:hidden'));
+      document.querySelectorAll('.nav-section-label').forEach(el => el.classList.toggle('lg:hidden'));
+      const headerText = document.getElementById('sidebarHeaderText');
+      if (headerText) headerText.classList.toggle('lg:hidden');
+
+      if (sb.classList.contains('lg:w-[68px]')) {
+        icon.classList.remove('fa-chevron-left');
+        icon.classList.add('fa-chevron-right');
+      } else {
+        icon.classList.add('fa-chevron-left');
+        icon.classList.remove('fa-chevron-right');
+      }
+    }
+
+    function toggleNotifications() {
+      const dd = document.getElementById('notifDropdown');
+      dd.classList.toggle('hidden');
+    }
+
+    function markAllRead() {
+      document.getElementById('notifList').innerHTML = '<div class="p-8 text-center text-xs text-gray-400 font-bold">No new notifications</div>';
+      showToast('All notifications marked as read', 'success');
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      document.getElementById('toastMsg').textContent = msg;
+      
+      icon.className = type === 'success' ? 'fas fa-check-circle text-success text-lg' : 'fas fa-exclamation-triangle text-warning text-lg';
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      
+      setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+    function confirmAction(actionName, onConfirm) {
+      if (confirm(`Are you sure you want to ${actionName}? This administrative action will be logged.`)) {
+        onConfirm();
+      }
+    }
+
+    // Table Filtering
+    function filterTable(tableId, inputId) {
+      const filter = document.getElementById(inputId).value.toLowerCase();
+      const rows = document.getElementById(tableId).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+      for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = rows[i].innerText.toLowerCase().includes(filter) ? '' : 'none';
+      }
+    }
+
+    function filterTableByCol(tableId, val, colIdx) {
+      const rows = document.getElementById(tableId).getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+      for (let i = 0; i < rows.length; i++) {
+        const cell = rows[i].getElementsByTagName('td')[colIdx];
+        if (cell) {
+          rows[i].style.display = val === '' || cell.innerText.includes(val) ? '' : 'none';
+        }
+      }
+    }
+
+    // Form Handlers
+    function handleCreateUser(e) { e.preventDefault(); closeModal('createUserModal'); showToast('New user account created successfully!', 'success'); e.target.reset(); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if(typeof AUTH !== 'undefined' && AUTH.requireRole) {
+        const u = AUTH.requireRole('System Administrator');
+        if (u) {
+          document.getElementById('navName').textContent = u.name || 'Tariq Mehmood';
+          document.getElementById('navAvatar').textContent = (u.avatar || 'SA');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
